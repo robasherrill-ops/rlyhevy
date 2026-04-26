@@ -1,0 +1,5612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RlyHevy</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080808;--s1:#111;--s2:#1c1c1c;--br:#222;
+  --acc:#ff2d55;--acc8:rgba(255,45,85,.08);--acc20:rgba(255,45,85,.22);
+  --tx:#fff;--tm:#666;--ts:#aaa;
+  --err:#ff6b6b;--err8:rgba(255,107,107,.08);--err20:rgba(255,107,107,.2);
+  --r:12px;--rs:8px;
+}
+html,body{background:#000;color:var(--tx);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased}
+#root{display:flex;justify-content:center;min-height:100vh;background:#000}
+.wrap{width:100%;max-width:420px;min-height:100vh;background:var(--bg);position:relative}
+.screen{padding-bottom:88px;min-height:100vh}
+.hdr{padding:48px 20px 8px;display:flex;align-items:center;justify-content:space-between}
+.hdr-ttl{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1.5px}
+.hdr-btn{background:none;border:none;color:var(--ts);cursor:pointer;padding:8px;display:flex;align-items:center;gap:5px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500}
+.hdr-btn:hover{background:var(--s2)}
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(8,8,8,.97);backdrop-filter:blur(20px);border-top:1px solid var(--br);display:flex;z-index:100;padding:10px 0 16px}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;cursor:pointer;background:none;border:none;color:var(--tm);font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;transition:color .15s}
+.ni.on{color:var(--acc)}
+.ni svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.card{background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:16px;margin:0 16px 12px}
+.card-ttl{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);margin-bottom:12px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 20px;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:none;transition:transform .1s;width:100%}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--acc);color:#fff}
+.btn-s{background:var(--s2);color:var(--tx);border:1px solid var(--br)}
+.btn-g{background:transparent;color:var(--tm);border:1px solid var(--br)}
+.btn-d{background:rgba(255,68,68,.08);color:#ff6b6b;border:1px solid rgba(255,68,68,.2)}
+.inp{width:100%;background:var(--s2);border:1px solid var(--br);border-radius:var(--rs);padding:14px 16px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s}
+.inp:focus{border-color:var(--acc)}
+.inp::placeholder{color:var(--tm)}
+.igrp{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.ilbl{font-size:11px;font-weight:600;letter-spacing:.5px;color:var(--tm);text-transform:uppercase}
+.sel{width:100%;background:var(--s2);border:1px solid var(--br);border-radius:var(--rs);padding:14px 16px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;appearance:none;cursor:pointer}
+.sel:focus{border-color:var(--acc)}
+.alert-e{color:var(--err);font-size:13px;padding:10px 14px;background:var(--err8);border-radius:var(--rs);margin-bottom:12px;border:1px solid var(--err20)}
+.alert-s{color:var(--acc);font-size:13px;padding:10px 14px;background:var(--acc8);border-radius:var(--rs);margin-bottom:12px;border:1px solid var(--acc20)}
+.auth{min-height:100vh;display:flex;flex-direction:column;padding:64px 24px 40px}
+.auth-logo{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:4px;color:var(--acc);line-height:1;text-shadow:0 0 20px rgba(255,45,85,.5),0 0 40px rgba(255,45,85,.25)}
+.auth-sub{font-size:13px;color:var(--tm);margin-top:6px;margin-bottom:44px}
+.auth-tabs{display:flex;background:var(--s1);border-radius:var(--r);padding:4px;margin-bottom:20px;border:1px solid var(--br)}
+.auth-tab{flex:1;padding:10px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--tm);transition:all .2s}
+.auth-tab.on{background:var(--acc);color:#fff}
+.srch{display:flex;align-items:center;background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:0 14px;margin:0 16px 12px;gap:10px}
+.srch input{flex:1;background:transparent;border:none;outline:none;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 0}
+.srch input::placeholder{color:var(--tm)}
+.fscroll{display:flex;gap:8px;overflow-x:auto;padding:0 16px 12px;scrollbar-width:none}
+.fscroll::-webkit-scrollbar{display:none}
+.fchip{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--br);background:var(--s1);color:var(--tm);transition:all .15s;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.fchip.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.lst{margin:0 16px;background:var(--s1);border:1px solid var(--br);border-radius:var(--r);overflow:hidden}
+.li{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--br);cursor:pointer;transition:background .1s}
+.li:last-child{border-bottom:none}
+.li:hover{background:var(--s2)}
+.li-name{font-size:15px;font-weight:500}
+.li-sub{font-size:12px;color:var(--ts);margin-top:3px}
+.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;font-family:'DM Sans',sans-serif}
+.bw-badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;font-family:'DM Sans',sans-serif;background:rgba(255,45,85,.12);color:var(--acc);border:1px solid rgba(255,45,85,.25);letter-spacing:.5px}
+.global-badge{padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;font-family:'DM Sans',sans-serif;background:rgba(100,120,255,.1);color:#8899ff;border:1px solid rgba(100,120,255,.2);white-space:nowrap}
+.empty{text-align:center;padding:48px 24px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.empty-ttl{font-size:15px;font-weight:500;color:var(--ts)}
+.empty-sub{font-size:13px;color:var(--tm)}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:flex-end;max-width:420px;left:50%;transform:translateX(-50%)}
+.mo-box{background:var(--s1);border:1px solid var(--br);border-top-left-radius:var(--r);border-top-right-radius:var(--r);padding:24px;width:100%;display:flex;flex-direction:column;gap:12px;max-height:92vh;overflow-y:auto}
+.mo-ttl{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
+.divider{height:1px;background:var(--br)}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 16px 12px}
+.stat-card{background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:14px}
+.stat-v{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;color:var(--acc);text-shadow:0 0 12px rgba(255,45,85,.4)}
+.stat-l{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--tm);margin-top:3px}
+.stat-hint{font-size:10px;color:var(--tm);margin-top:1px;opacity:.7}
+.toggle{position:relative;width:44px;height:26px;flex-shrink:0;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;background:var(--s2);border:1px solid var(--br);border-radius:13px;transition:all .2s}
+.toggle input:checked + .toggle-track{background:var(--acc);border-color:var(--acc)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .2s;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.toggle input:checked ~ .toggle-thumb{transform:translateX(18px)}
+.sec-hd{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);margin:16px 16px 8px}
+.unit-toggle{display:flex;background:var(--s2);border:1px solid var(--br);border-radius:var(--rs);overflow:hidden;flex-shrink:0}
+.unit-btn{padding:0 18px;background:transparent;color:var(--tm);border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;transition:all .15s;min-height:48px}
+.unit-btn.on{background:var(--acc);color:#fff}
+.bw-preview{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.bw-chip{padding:5px 10px;border-radius:20px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;background:var(--acc8);color:var(--acc);border:1px solid var(--acc20)}
+/* Stepper */
+.stepper{display:flex;align-items:center;background:var(--s2);border:1px solid var(--br);border-radius:var(--rs);overflow:hidden}
+.stepper-val{width:40px;text-align:center;font-size:15px;font-weight:600;color:var(--tx)}
+.stepper-btn{width:36px;height:40px;background:none;border:none;color:var(--ts);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s}
+.stepper-btn:hover{background:var(--br)}
+/* TUT selector */
+.tut-badge-btn{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid var(--br);background:var(--s2);color:var(--tm);white-space:nowrap;transition:all .15s}
+.tut-badge-btn.active{background:var(--acc8);color:var(--acc);border-color:var(--acc20)}
+.tut-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:6px}
+.tut-opt{padding:8px 4px;border-radius:var(--rs);font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--br);background:var(--s1);color:var(--tm);transition:all .15s;text-align:center;font-family:'DM Sans',sans-serif}
+.tut-opt.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.tut-opt-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px;margin-top:6px}
+.tut-opt-2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.tut-lbl{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--tm);margin-top:10px;margin-bottom:0}
+/* Exercise row in template */
+.ex-row{border-bottom:1px solid var(--br)}
+.ex-row:last-child{border-bottom:none}
+.ex-row-main{display:flex;align-items:center;padding:13px 16px;cursor:pointer;transition:background .1s;gap:12px}
+.ex-row-main:hover{background:var(--s2)}
+.ex-row-expand{padding:12px 16px 16px;border-top:1px solid var(--br);background:rgba(255,255,255,.02)}
+.ex-row-controls{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+/* Spinner */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{width:18px;height:18px;border:2px solid var(--br);border-top-color:var(--acc);border-radius:50%;animation:spin .6s linear infinite;display:inline-block;flex-shrink:0}
+.loading{display:flex;justify-content:center;padding:40px}
+/* Full screen picker overlay */
+.picker{position:fixed;inset:0;background:var(--bg);z-index:300;max-width:420px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;overflow:hidden}
+.picker-hdr{padding:48px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.picker-body{flex:1;overflow-y:auto;padding-bottom:20px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const {
+  useState,
+  useEffect,
+  useRef
+} = React;
+const SB = "https://grubhtqgbgxagqsiakal.supabase.co",
+  KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdydWJodHFnYmd4YWdxc2lha2FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMjUzMTUsImV4cCI6MjA5MjgwMTMxNX0.GwOfm-bo9gCx3isDnzSMxitWCaY3IuyVV_aP0HMDKZ8";
+const BW_PCTS = [25, 50, 75, 100];
+const db = {
+  token: null,
+  uid: null,
+  h(x = {}) {
+    return {
+      "Content-Type": "application/json",
+      apikey: KEY,
+      Authorization: `Bearer ${this.token || KEY}`,
+      ...x
+    };
+  },
+  async signIn(e, p) {
+    const r = await fetch(`${SB}/auth/v1/token?grant_type=password`, {
+      method: "POST",
+      headers: this.h(),
+      body: JSON.stringify({
+        email: e,
+        password: p
+      })
+    });
+    const d = await r.json();
+    if (d.access_token) {
+      var _d$user;
+      this.token = d.access_token;
+      this.uid = (_d$user = d.user) === null || _d$user === void 0 ? void 0 : _d$user.id;
+    }
+    return d;
+  },
+  async signUp(e, p, n) {
+    const r = await fetch(`${SB}/auth/v1/signup`, {
+      method: "POST",
+      headers: this.h(),
+      body: JSON.stringify({
+        email: e,
+        password: p,
+        data: {
+          full_name: n
+        }
+      })
+    });
+    const d = await r.json();
+    if (d.access_token) {
+      var _d$user2;
+      this.token = d.access_token;
+      this.uid = (_d$user2 = d.user) === null || _d$user2 === void 0 ? void 0 : _d$user2.id;
+    }
+    return d;
+  },
+  async updateUser(data) {
+    const r = await fetch(`${SB}/auth/v1/user`, {
+      method: "PUT",
+      headers: this.h(),
+      body: JSON.stringify({
+        data
+      })
+    });
+    return r.json();
+  },
+  async signOut() {
+    try {
+      await fetch(`${SB}/auth/v1/logout`, {
+        method: "POST",
+        headers: this.h()
+      });
+    } catch (_) {}
+    this.token = null;
+    this.uid = null;
+    try {
+      localStorage.removeItem('rlyhevy_session');
+    } catch (_) {}
+  },
+  saveSession(d, u) {
+    try {
+      localStorage.setItem('rlyhevy_session', JSON.stringify({
+        access_token: d.access_token,
+        refresh_token: d.refresh_token,
+        user: u
+      }));
+    } catch (_) {}
+  },
+  async restoreSession() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('rlyhevy_session') || 'null');
+      if (!(saved !== null && saved !== void 0 && saved.refresh_token)) return null;
+      const r = await fetch(`${SB}/auth/v1/token?grant_type=refresh_token`, {
+        method: 'POST',
+        headers: this.h(),
+        body: JSON.stringify({
+          refresh_token: saved.refresh_token
+        })
+      });
+      const d = await r.json();
+      if (d.access_token) {
+        var _d$user3;
+        this.token = d.access_token;
+        this.uid = (_d$user3 = d.user) === null || _d$user3 === void 0 ? void 0 : _d$user3.id;
+        return {
+          d,
+          savedUser: saved.user
+        };
+      }
+    } catch (_) {}
+    try {
+      localStorage.removeItem('rlyhevy_session');
+    } catch (_) {}
+    return null;
+  },
+  async get(t, q = "") {
+    const r = await fetch(`${SB}/rest/v1/${t}${q ? "?" + q : ""}`, {
+      headers: this.h()
+    });
+    return r.ok ? {
+      data: await r.json(),
+      error: null
+    } : {
+      data: null,
+      error: await r.json()
+    };
+  },
+  async post(t, b) {
+    const r = await fetch(`${SB}/rest/v1/${t}`, {
+      method: "POST",
+      headers: this.h({
+        Prefer: "return=representation"
+      }),
+      body: JSON.stringify(b)
+    });
+    return r.ok ? {
+      data: await r.json(),
+      error: null
+    } : {
+      data: null,
+      error: await r.json()
+    };
+  },
+  async patch(t, b, q) {
+    const r = await fetch(`${SB}/rest/v1/${t}?${q}`, {
+      method: "PATCH",
+      headers: this.h({
+        Prefer: "return=representation"
+      }),
+      body: JSON.stringify(b)
+    });
+    return r.ok ? {
+      data: await r.json(),
+      error: null
+    } : {
+      data: null,
+      error: await r.json()
+    };
+  },
+  async del(t, q) {
+    const r = await fetch(`${SB}/rest/v1/${t}?${q}`, {
+      method: "DELETE",
+      headers: this.h()
+    });
+    return {
+      error: r.ok ? null : await r.json()
+    };
+  }
+};
+const MG_COLOR = {
+  chest: "#ff6b6b",
+  back: "#4dabf7",
+  shoulders: "#cc5de8",
+  biceps: "#ff922b",
+  triceps: "#ffd43b",
+  forearms: "#f783ac",
+  core: "#20c997",
+  quads: "#74c0fc",
+  hamstrings: "#63e6be",
+  glutes: "#e599f7",
+  calves: "#a9e34b",
+  full_body: "#ff2d55",
+  other: "#868e96"
+};
+const MG_LABEL = {
+  chest: "Chest",
+  back: "Back",
+  shoulders: "Shoulders",
+  biceps: "Biceps",
+  triceps: "Triceps",
+  forearms: "Forearms",
+  core: "Core",
+  quads: "Quads",
+  hamstrings: "Hamstrings",
+  glutes: "Glutes",
+  calves: "Calves",
+  full_body: "Full Body",
+  other: "Other"
+};
+const MG_ALL = Object.keys(MG_COLOR);
+const TUT_TENSION_LABEL = {
+  neither: "—",
+  controlled_negative: "Neg",
+  static_hold: "Hold",
+  both: "Both"
+};
+const TUT_TYPE_LABEL = {
+  none: "None",
+  concentric: "Con",
+  eccentric: "Ecc"
+};
+const GLOW = {
+  filter: "drop-shadow(0 0 3px #ff2d55) drop-shadow(0 0 8px rgba(255,45,85,.5)) drop-shadow(0 0 16px rgba(255,45,85,.2))"
+};
+const NeonDumbbell = ({
+  size = 72
+}) => /*#__PURE__*/React.createElement("svg", {
+  width: size,
+  height: size,
+  viewBox: "0 0 72 72",
+  fill: "none",
+  style: GLOW
+}, /*#__PURE__*/React.createElement("line", {
+  x1: "18",
+  y1: "36",
+  x2: "54",
+  y2: "36",
+  stroke: "#ff2d55",
+  strokeWidth: "3",
+  strokeLinecap: "round"
+}), /*#__PURE__*/React.createElement("rect", {
+  x: "4",
+  y: "24",
+  width: "14",
+  height: "24",
+  rx: "4",
+  stroke: "#ff2d55",
+  strokeWidth: "2.2"
+}), /*#__PURE__*/React.createElement("rect", {
+  x: "54",
+  y: "24",
+  width: "14",
+  height: "24",
+  rx: "4",
+  stroke: "#ff2d55",
+  strokeWidth: "2.2"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "16",
+  y1: "30",
+  x2: "16",
+  y2: "42",
+  stroke: "#ff2d55",
+  strokeWidth: "1.5",
+  strokeLinecap: "round",
+  opacity: "0.45"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "56",
+  y1: "30",
+  x2: "56",
+  y2: "42",
+  stroke: "#ff2d55",
+  strokeWidth: "1.5",
+  strokeLinecap: "round",
+  opacity: "0.45"
+}));
+const NeonSearch = ({
+  size = 72
+}) => /*#__PURE__*/React.createElement("svg", {
+  width: size,
+  height: size,
+  viewBox: "0 0 72 72",
+  fill: "none",
+  style: GLOW
+}, /*#__PURE__*/React.createElement("circle", {
+  cx: "30",
+  cy: "30",
+  r: "19",
+  stroke: "#ff2d55",
+  strokeWidth: "2.5"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "44",
+  y1: "44",
+  x2: "62",
+  y2: "62",
+  stroke: "#ff2d55",
+  strokeWidth: "3.5",
+  strokeLinecap: "round"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "22",
+  y1: "30",
+  x2: "38",
+  y2: "30",
+  stroke: "#ff2d55",
+  strokeWidth: "1.5",
+  strokeLinecap: "round",
+  opacity: "0.4"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "30",
+  y1: "22",
+  x2: "30",
+  y2: "38",
+  stroke: "#ff2d55",
+  strokeWidth: "1.5",
+  strokeLinecap: "round",
+  opacity: "0.4"
+}));
+const NeonBolt = ({
+  size = 72
+}) => /*#__PURE__*/React.createElement("svg", {
+  width: size,
+  height: size,
+  viewBox: "0 0 72 72",
+  fill: "none",
+  style: GLOW
+}, /*#__PURE__*/React.createElement("polyline", {
+  points: "42,6 24,36 36,36 30,66 48,30 36,30 42,6",
+  stroke: "#ff2d55",
+  strokeWidth: "2.5",
+  strokeLinejoin: "round",
+  strokeLinecap: "round"
+}));
+const NeonChart = ({
+  size = 72
+}) => /*#__PURE__*/React.createElement("svg", {
+  width: size,
+  height: size,
+  viewBox: "0 0 72 72",
+  fill: "none",
+  style: GLOW
+}, /*#__PURE__*/React.createElement("line", {
+  x1: "12",
+  y1: "60",
+  x2: "60",
+  y2: "60",
+  stroke: "#ff2d55",
+  strokeWidth: "2.5",
+  strokeLinecap: "round"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "12",
+  y1: "12",
+  x2: "12",
+  y2: "60",
+  stroke: "#ff2d55",
+  strokeWidth: "2.5",
+  strokeLinecap: "round"
+}), /*#__PURE__*/React.createElement("polyline", {
+  points: "18,50 30,36 42,42 56,20",
+  stroke: "#ff2d55",
+  strokeWidth: "2.5",
+  strokeLinejoin: "round",
+  strokeLinecap: "round"
+}), /*#__PURE__*/React.createElement("circle", {
+  cx: "18",
+  cy: "50",
+  r: "3",
+  stroke: "#ff2d55",
+  strokeWidth: "2",
+  opacity: "0.6"
+}), /*#__PURE__*/React.createElement("circle", {
+  cx: "30",
+  cy: "36",
+  r: "3",
+  stroke: "#ff2d55",
+  strokeWidth: "2",
+  opacity: "0.6"
+}), /*#__PURE__*/React.createElement("circle", {
+  cx: "42",
+  cy: "42",
+  r: "3",
+  stroke: "#ff2d55",
+  strokeWidth: "2",
+  opacity: "0.6"
+}), /*#__PURE__*/React.createElement("circle", {
+  cx: "56",
+  cy: "20",
+  r: "3",
+  stroke: "#ff2d55",
+  strokeWidth: "2",
+  opacity: "0.6"
+}));
+const NeonBarbell = ({
+  size = 72
+}) => /*#__PURE__*/React.createElement("svg", {
+  width: size,
+  height: size,
+  viewBox: "0 0 72 72",
+  fill: "none",
+  style: GLOW
+}, /*#__PURE__*/React.createElement("line", {
+  x1: "8",
+  y1: "36",
+  x2: "64",
+  y2: "36",
+  stroke: "#ff2d55",
+  strokeWidth: "2.5",
+  strokeLinecap: "round"
+}), /*#__PURE__*/React.createElement("rect", {
+  x: "4",
+  y: "26",
+  width: "10",
+  height: "20",
+  rx: "3",
+  stroke: "#ff2d55",
+  strokeWidth: "2"
+}), /*#__PURE__*/React.createElement("rect", {
+  x: "58",
+  y: "26",
+  width: "10",
+  height: "20",
+  rx: "3",
+  stroke: "#ff2d55",
+  strokeWidth: "2"
+}), /*#__PURE__*/React.createElement("rect", {
+  x: "14",
+  y: "28",
+  width: "8",
+  height: "16",
+  rx: "2",
+  stroke: "#ff2d55",
+  strokeWidth: "2"
+}), /*#__PURE__*/React.createElement("rect", {
+  x: "50",
+  y: "28",
+  width: "8",
+  height: "16",
+  rx: "2",
+  stroke: "#ff2d55",
+  strokeWidth: "2"
+}));
+const IHome = () => /*#__PURE__*/React.createElement("svg", {
+  viewBox: "0 0 24 24"
+}, /*#__PURE__*/React.createElement("path", {
+  d: "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+}), /*#__PURE__*/React.createElement("polyline", {
+  points: "9 22 9 12 15 12 15 22"
+}));
+const IBar = () => /*#__PURE__*/React.createElement("svg", {
+  viewBox: "0 0 24 24"
+}, /*#__PURE__*/React.createElement("line", {
+  x1: "2",
+  y1: "12",
+  x2: "22",
+  y2: "12"
+}), /*#__PURE__*/React.createElement("rect", {
+  x: "3",
+  y: "9",
+  width: "2",
+  height: "6",
+  rx: "1"
+}), /*#__PURE__*/React.createElement("rect", {
+  x: "19",
+  y: "9",
+  width: "2",
+  height: "6",
+  rx: "1"
+}), /*#__PURE__*/React.createElement("rect", {
+  x: "5",
+  y: "10",
+  width: "14",
+  height: "4",
+  rx: "1"
+}));
+const IPlus = () => /*#__PURE__*/React.createElement("svg", {
+  viewBox: "0 0 24 24"
+}, /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "12",
+  r: "10"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "12",
+  y1: "8",
+  x2: "12",
+  y2: "16"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "8",
+  y1: "12",
+  x2: "16",
+  y2: "12"
+}));
+const IClock = () => /*#__PURE__*/React.createElement("svg", {
+  viewBox: "0 0 24 24"
+}, /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "12",
+  r: "10"
+}), /*#__PURE__*/React.createElement("polyline", {
+  points: "12 6 12 12 16 14"
+}));
+const IChart = () => /*#__PURE__*/React.createElement("svg", {
+  viewBox: "0 0 24 24"
+}, /*#__PURE__*/React.createElement("line", {
+  x1: "18",
+  y1: "20",
+  x2: "18",
+  y2: "10"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "12",
+  y1: "20",
+  x2: "12",
+  y2: "4"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "6",
+  y1: "20",
+  x2: "6",
+  y2: "14"
+}));
+const IGear = () => /*#__PURE__*/React.createElement("svg", {
+  style: {
+    width: 22,
+    height: 22,
+    stroke: "currentColor",
+    fill: "none",
+    strokeWidth: 1.8,
+    strokeLinecap: "round"
+  },
+  viewBox: "0 0 24 24"
+}, /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "12",
+  r: "3"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+}));
+const ISearch = () => /*#__PURE__*/React.createElement("svg", {
+  style: {
+    width: 18,
+    height: 18,
+    stroke: "var(--tm)",
+    fill: "none",
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    flexShrink: 0
+  },
+  viewBox: "0 0 24 24"
+}, /*#__PURE__*/React.createElement("circle", {
+  cx: "11",
+  cy: "11",
+  r: "8"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "21",
+  y1: "21",
+  x2: "16.65",
+  y2: "16.65"
+}));
+const IX = () => /*#__PURE__*/React.createElement("svg", {
+  style: {
+    width: 16,
+    height: 16,
+    stroke: "currentColor",
+    fill: "none",
+    strokeWidth: 2,
+    strokeLinecap: "round"
+  },
+  viewBox: "0 0 24 24"
+}, /*#__PURE__*/React.createElement("line", {
+  x1: "18",
+  y1: "6",
+  x2: "6",
+  y2: "18"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "6",
+  y1: "6",
+  x2: "18",
+  y2: "18"
+}));
+const IChev = () => /*#__PURE__*/React.createElement("svg", {
+  style: {
+    width: 16,
+    height: 16,
+    stroke: "var(--tm)",
+    fill: "none",
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    flexShrink: 0
+  },
+  viewBox: "0 0 24 24"
+}, /*#__PURE__*/React.createElement("polyline", {
+  points: "9 18 15 12 9 6"
+}));
+const IChevL = () => /*#__PURE__*/React.createElement("svg", {
+  style: {
+    width: 18,
+    height: 18,
+    stroke: "currentColor",
+    fill: "none",
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  },
+  viewBox: "0 0 24 24"
+}, /*#__PURE__*/React.createElement("polyline", {
+  points: "15 18 9 12 15 6"
+}));
+const IChevD = () => /*#__PURE__*/React.createElement("svg", {
+  style: {
+    width: 16,
+    height: 16,
+    stroke: "var(--tm)",
+    fill: "none",
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    flexShrink: 0
+  },
+  viewBox: "0 0 24 24"
+}, /*#__PURE__*/React.createElement("polyline", {
+  points: "6 9 12 15 18 9"
+}));
+const IOut = () => /*#__PURE__*/React.createElement("svg", {
+  style: {
+    width: 20,
+    height: 20,
+    stroke: "currentColor",
+    fill: "none",
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  },
+  viewBox: "0 0 24 24"
+}, /*#__PURE__*/React.createElement("path", {
+  d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+}), /*#__PURE__*/React.createElement("polyline", {
+  points: "16 17 21 12 16 7"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "21",
+  y1: "12",
+  x2: "9",
+  y2: "12"
+}));
+const ITrash = () => /*#__PURE__*/React.createElement("svg", {
+  style: {
+    width: 16,
+    height: 16,
+    stroke: "var(--err)",
+    fill: "none",
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  },
+  viewBox: "0 0 24 24"
+}, /*#__PURE__*/React.createElement("polyline", {
+  points: "3 6 5 6 21 6"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M10 11v6M14 11v6"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M9 6V4h6v2"
+}));
+const ICopy = () => /*#__PURE__*/React.createElement("svg", {
+  style: {
+    width: 16,
+    height: 16,
+    stroke: "currentColor",
+    fill: "none",
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  },
+  viewBox: "0 0 24 24"
+}, /*#__PURE__*/React.createElement("rect", {
+  x: "9",
+  y: "9",
+  width: "13",
+  height: "13",
+  rx: "2"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+}));
+const Badge = ({
+  mg
+}) => /*#__PURE__*/React.createElement("span", {
+  className: "badge",
+  style: {
+    background: `${MG_COLOR[mg]}1a`,
+    color: MG_COLOR[mg]
+  }
+}, MG_LABEL[mg] || mg);
+const fmtDate = d => new Date(d).toLocaleDateString("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric"
+});
+const fmtDur = (s, e) => {
+  if (!e) return "In progress";
+  const m = Math.round((new Date(e) - new Date(s)) / 60000);
+  return m < 60 ? `${m}m` : `${Math.floor(m / 60)}h ${m % 60}m`;
+};
+const fmtScore = n => {
+  if (!n || n === 0) return "0";
+  if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}K`;
+  return Math.round(n).toLocaleString();
+};
+const greet = () => {
+  const h = new Date().getHours();
+  return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+};
+const tutLabel = (type, tension, dur) => {
+  if (type === 'none') return 'None';
+  const t = type === 'concentric' ? 'Con' : 'Ecc';
+  const te = TUT_TENSION_LABEL[tension] || '—';
+  return `${t}·${dur}s·${te}`;
+};
+function Toggle({
+  checked,
+  onChange
+}) {
+  return /*#__PURE__*/React.createElement("label", {
+    className: "toggle"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "checkbox",
+    checked: checked,
+    onChange: e => onChange(e.target.checked)
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "toggle-track"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "toggle-thumb"
+  }));
+}
+function Stepper({
+  value,
+  onChange,
+  min = 1,
+  max = 20
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "stepper"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "stepper-btn",
+    onClick: () => onChange(Math.max(min, value - 1))
+  }, "\u2212"), /*#__PURE__*/React.createElement("span", {
+    className: "stepper-val"
+  }, value), /*#__PURE__*/React.createElement("button", {
+    className: "stepper-btn",
+    onClick: () => onChange(Math.min(max, value + 1))
+  }, "+"));
+}
+function TUTSelector({
+  value,
+  onChange
+}) {
+  const {
+    tut_type,
+    tut_tension,
+    tut_duration
+  } = value;
+  const [open, setOpen] = useState(false);
+  const label = tutLabel(tut_type, tut_tension, tut_duration);
+  function set(key, val) {
+    const next = {
+      ...value,
+      [key]: val
+    };
+    if (key === 'tut_type') {
+      if (val === 'none') {
+        next.tut_tension = 'neither';
+        next.tut_duration = 1;
+      } else if (tut_type === 'none') {
+        next.tut_tension = 'controlled_negative';
+        next.tut_duration = 3;
+      }
+    }
+    onChange(next);
+  }
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
+    className: `tut-badge-btn${tut_type !== 'none' ? ' active' : ''}`,
+    onClick: () => setOpen(!open)
+  }, label, " ", open ? '▴' : '▾'), open && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 8,
+      background: 'var(--bg)',
+      border: '1px solid var(--br)',
+      borderRadius: 'var(--rs)',
+      padding: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "tut-lbl"
+  }, "Type"), /*#__PURE__*/React.createElement("div", {
+    className: "tut-grid"
+  }, ['none', 'concentric', 'eccentric'].map(t => /*#__PURE__*/React.createElement("button", {
+    key: t,
+    className: `tut-opt${tut_type === t ? ' on' : ''}`,
+    onClick: () => set('tut_type', t)
+  }, TUT_TYPE_LABEL[t]))), tut_type !== 'none' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "tut-lbl",
+    style: {
+      marginTop: 10
+    }
+  }, "Tension"), /*#__PURE__*/React.createElement("div", {
+    className: "tut-opt-4"
+  }, ['neither', 'controlled_negative', 'static_hold', 'both'].map(te => /*#__PURE__*/React.createElement("button", {
+    key: te,
+    className: `tut-opt${tut_tension === te ? ' on' : ''}`,
+    onClick: () => set('tut_tension', te)
+  }, TUT_TENSION_LABEL[te]))), /*#__PURE__*/React.createElement("div", {
+    className: "tut-lbl",
+    style: {
+      marginTop: 10
+    }
+  }, "Duration"), /*#__PURE__*/React.createElement("div", {
+    className: "tut-opt-2"
+  }, [2, 3].map(d => /*#__PURE__*/React.createElement("button", {
+    key: d,
+    className: `tut-opt${tut_duration === d ? ' on' : ''}`,
+    onClick: () => set('tut_duration', d)
+  }, d, "s")))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setOpen(false),
+    style: {
+      marginTop: 12,
+      width: '100%',
+      padding: '8px',
+      background: 'var(--s2)',
+      border: '1px solid var(--br)',
+      borderRadius: 'var(--rs)',
+      color: 'var(--ts)',
+      cursor: 'pointer',
+      fontFamily: "'DM Sans',sans-serif",
+      fontSize: 13
+    }
+  }, "Done")));
+}
+
+// ── Exercise Picker (full screen) ─────────────────────────────────────────────
+function ExercisePicker({
+  onSelect,
+  onClose,
+  excludeIds = []
+}) {
+  const [exercises, setExercises] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('all');
+  useEffect(() => {
+    db.get('exercises', 'select=*&order=name.asc').then(({
+      data
+    }) => {
+      if (data) setExercises(data);
+      setLoading(false);
+    });
+  }, []);
+  const filtered = exercises.filter(e => e.name.toLowerCase().includes(search.toLowerCase()) && (filter === 'all' || e.muscle_group === filter));
+  return /*#__PURE__*/React.createElement("div", {
+    className: "picker"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "picker-hdr"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: onClose
+  }, /*#__PURE__*/React.createElement(IChevL, null), " Cancel"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "'Bebas Neue',sans-serif",
+      fontSize: 22,
+      letterSpacing: 1
+    }
+  }, "Choose Exercise")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '0 0 0',
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "srch",
+    style: {
+      margin: '8px 16px 8px'
+    }
+  }, /*#__PURE__*/React.createElement(ISearch, null), /*#__PURE__*/React.createElement("input", {
+    placeholder: "Search...",
+    value: search,
+    onChange: e => setSearch(e.target.value),
+    autoFocus: true
+  }), search && /*#__PURE__*/React.createElement("button", {
+    onClick: () => setSearch(''),
+    style: {
+      background: 'none',
+      border: 'none',
+      color: 'var(--tm)',
+      cursor: 'pointer',
+      padding: '4px',
+      display: 'flex',
+      alignItems: 'center'
+    }
+  }, /*#__PURE__*/React.createElement(IX, null))), /*#__PURE__*/React.createElement("div", {
+    className: "fscroll"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: `fchip${filter === 'all' ? ' on' : ''}`,
+    onClick: () => setFilter('all')
+  }, "All"), MG_ALL.map(mg => /*#__PURE__*/React.createElement("button", {
+    key: mg,
+    className: `fchip${filter === mg ? ' on' : ''}`,
+    onClick: () => setFilter(mg)
+  }, MG_LABEL[mg])))), /*#__PURE__*/React.createElement("div", {
+    className: "picker-body"
+  }, loading ? /*#__PURE__*/React.createElement("div", {
+    className: "loading"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  })) : filtered.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "empty"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "empty-ttl"
+  }, "No exercises found")) : /*#__PURE__*/React.createElement("div", {
+    className: "lst",
+    style: {
+      margin: '0 16px'
+    }
+  }, filtered.map(ex => /*#__PURE__*/React.createElement("div", {
+    key: ex.id,
+    className: "li",
+    onClick: () => onSelect(ex)
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "li-name"
+  }, ex.name), ex.is_bodyweight && /*#__PURE__*/React.createElement("span", {
+    className: "bw-badge"
+  }, "BW"), excludeIds.includes(ex.id) && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 10,
+      color: 'var(--tm)'
+    }
+  }, "already added")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 4
+    }
+  }, /*#__PURE__*/React.createElement(Badge, {
+    mg: ex.muscle_group
+  }))), /*#__PURE__*/React.createElement(IChev, null))))));
+}
+
+// ── Template Detail ───────────────────────────────────────────────────────────
+function TemplateDetail({
+  template,
+  user,
+  onBack,
+  onDeleted
+}) {
+  const [exercises, setExercises] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState(null);
+  const [editState, setEditState] = useState({});
+  const [saving, setSaving] = useState(false);
+  const [tplName, setTplName] = useState(template.name);
+  const [editingName, setEditingName] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const [addForm, setAddForm] = useState(null);
+  const [err, setErr] = useState('');
+  const isGlobal = template.is_global;
+  const isMine = !isGlobal && template.user_id === db.uid;
+  useEffect(() => {
+    loadExercises();
+  }, [template.id]);
+  async function loadExercises() {
+    setLoading(true);
+    const {
+      data
+    } = await db.get('template_exercises', `select=id,sort_order,default_sets,default_reps,tut_type,tut_tension,tut_duration,exercises(id,name,muscle_group,is_bodyweight)&template_id=eq.${template.id}&order=sort_order.asc`);
+    setExercises(data || []);
+    setLoading(false);
+  }
+  function toggleExpand(te) {
+    if (expandedId === te.id) {
+      if (isMine) saveEdit(te.id);
+      setExpandedId(null);
+    } else {
+      if (expandedId && isMine) saveEdit(expandedId);
+      setExpandedId(te.id);
+      setEditState({
+        default_sets: te.default_sets,
+        default_reps: te.default_reps,
+        tut_type: te.tut_type,
+        tut_tension: te.tut_tension,
+        tut_duration: te.tut_duration
+      });
+    }
+  }
+  async function saveEdit(teId) {
+    await db.patch('template_exercises', editState, `id=eq.${teId}`);
+    setExercises(prev => prev.map(e => e.id === teId ? {
+      ...e,
+      ...editState
+    } : e));
+  }
+  async function removeExercise(teId) {
+    await db.del('template_exercises', `id=eq.${teId}`);
+    setExercises(prev => prev.filter(e => e.id !== teId));
+    if (expandedId === teId) setExpandedId(null);
+  }
+  async function saveName() {
+    if (!tplName.trim()) return;
+    await db.patch('templates', {
+      name: tplName.trim()
+    }, `id=eq.${template.id}`);
+    setEditingName(false);
+  }
+  async function forkTemplate() {
+    setSaving(true);
+    const {
+      data: newTpl
+    } = await db.post('templates', {
+      name: `${template.name} (Custom)`,
+      user_id: db.uid,
+      is_global: false
+    });
+    if (newTpl && newTpl[0]) {
+      const tid = newTpl[0].id;
+      for (const te of exercises) {
+        await db.post('template_exercises', {
+          template_id: tid,
+          exercise_id: te.exercises.id,
+          sort_order: te.sort_order,
+          default_sets: te.default_sets,
+          default_reps: te.default_reps,
+          tut_type: te.tut_type,
+          tut_tension: te.tut_tension,
+          tut_duration: te.tut_duration
+        });
+      }
+      onBack();
+    }
+    setSaving(false);
+  }
+  async function deleteTemplate() {
+    if (!window.confirm(`Delete "${template.name}"? This cannot be undone.`)) return;
+    await db.del('template_exercises', `template_id=eq.${template.id}`);
+    await db.del('templates', `id=eq.${template.id}`);
+    onDeleted();
+  }
+  function pickExercise(ex) {
+    setShowPicker(false);
+    setAddForm({
+      exercise: ex,
+      default_sets: 4,
+      default_reps: 10,
+      tut_type: 'none',
+      tut_tension: 'neither',
+      tut_duration: 1
+    });
+  }
+  async function addExercise() {
+    if (!addForm) return;
+    setSaving(true);
+    const nextOrder = exercises.length > 0 ? Math.max(...exercises.map(e => e.sort_order)) + 1 : 0;
+    const {
+      data,
+      error
+    } = await db.post('template_exercises', {
+      template_id: template.id,
+      exercise_id: addForm.exercise.id,
+      sort_order: nextOrder,
+      default_sets: addForm.default_sets,
+      default_reps: addForm.default_reps,
+      tut_type: addForm.tut_type,
+      tut_tension: addForm.tut_tension,
+      tut_duration: addForm.tut_duration
+    });
+    if (!error && data) {
+      const newTe = {
+        ...(Array.isArray(data) ? data[0] : data),
+        exercises: addForm.exercise
+      };
+      setExercises(prev => [...prev, newTe]);
+      setAddForm(null);
+    } else {
+      setErr((error === null || error === void 0 ? void 0 : error.message) || 'Failed to add exercise.');
+    }
+    setSaving(false);
+  }
+  const existingExIds = exercises.map(e => {
+    var _e$exercises;
+    return (_e$exercises = e.exercises) === null || _e$exercises === void 0 ? void 0 : _e$exercises.id;
+  }).filter(Boolean);
+  const bwNum = parseFloat(user === null || user === void 0 ? void 0 : user.body_weight);
+  const bwUnit = (user === null || user === void 0 ? void 0 : user.weight_unit) || 'lbs';
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen"
+  }, showPicker && /*#__PURE__*/React.createElement(ExercisePicker, {
+    onSelect: pickExercise,
+    onClose: () => setShowPicker(false),
+    excludeIds: existingExIds
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "hdr"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: () => {
+      if (expandedId && isMine) saveEdit(expandedId);
+      onBack();
+    }
+  }, /*#__PURE__*/React.createElement(IChevL, null), " Back"), isGlobal && /*#__PURE__*/React.createElement("span", {
+    className: "global-badge"
+  }, "Default"), isMine && /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: deleteTemplate,
+    style: {
+      color: 'var(--err)'
+    }
+  }, /*#__PURE__*/React.createElement(ITrash, null))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '0 16px 16px'
+    }
+  }, editingName ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "inp",
+    value: tplName,
+    onChange: e => setTplName(e.target.value),
+    onKeyDown: e => e.key === 'Enter' && saveName(),
+    autoFocus: true,
+    style: {
+      flex: 1
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-p",
+    onClick: saveName,
+    style: {
+      width: 'auto',
+      padding: '0 16px'
+    }
+  }, "Save")) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("h2", {
+    style: {
+      fontFamily: "'Bebas Neue',sans-serif",
+      fontSize: 24,
+      letterSpacing: 1,
+      flex: 1,
+      lineHeight: 1.2
+    }
+  }, tplName), isMine && /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: () => setEditingName(true),
+    style: {
+      fontSize: 12,
+      color: 'var(--tm)'
+    }
+  }, "Rename")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 4,
+      fontSize: 12,
+      color: 'var(--tm)'
+    }
+  }, exercises.length, " exercises")), isGlobal && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '0 16px 16px'
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-s",
+    onClick: forkTemplate,
+    disabled: saving,
+    style: {
+      gap: 8
+    }
+  }, saving ? /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  }) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(ICopy, null), "Save a Custom Copy"))), err && /*#__PURE__*/React.createElement("div", {
+    className: "alert-e",
+    style: {
+      margin: '0 16px 12px'
+    }
+  }, err), loading ? /*#__PURE__*/React.createElement("div", {
+    className: "loading"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  })) : /*#__PURE__*/React.createElement("div", {
+    className: "lst"
+  }, exercises.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "empty"
+  }, /*#__PURE__*/React.createElement(NeonDumbbell, {
+    size: 48
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "empty-ttl"
+  }, "No exercises yet"), isMine && /*#__PURE__*/React.createElement("div", {
+    className: "empty-sub"
+  }, "Tap \"Add Exercise\" below to build this template")) : exercises.map(te => {
+    const ex = te.exercises || {};
+    const isExpanded = expandedId === te.id;
+    const vals = isExpanded ? editState : te;
+    return /*#__PURE__*/React.createElement("div", {
+      key: te.id,
+      className: "ex-row"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "ex-row-main",
+      onClick: () => isMine && toggleExpand(te)
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1,
+        minWidth: 0
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6,
+        flexWrap: 'wrap'
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "li-name",
+      style: {
+        fontSize: 14
+      }
+    }, ex.name), ex.is_bodyweight && /*#__PURE__*/React.createElement("span", {
+      className: "bw-badge"
+    }, "BW")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        marginTop: 4,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6,
+        flexWrap: 'wrap'
+      }
+    }, /*#__PURE__*/React.createElement(Badge, {
+      mg: ex.muscle_group
+    }), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12,
+        color: 'var(--ts)'
+      }
+    }, vals.default_sets, "\xD7", vals.default_reps), vals.tut_type !== 'none' && /*#__PURE__*/React.createElement("span", {
+      className: "tut-badge-btn active",
+      style: {
+        cursor: 'default',
+        fontSize: 10,
+        padding: '2px 6px'
+      }
+    }, tutLabel(vals.tut_type, vals.tut_tension, vals.tut_duration)))), isMine && (isExpanded ? /*#__PURE__*/React.createElement(IChevD, null) : /*#__PURE__*/React.createElement(IChev, null))), isExpanded && isMine && /*#__PURE__*/React.createElement("div", {
+      className: "ex-row-expand"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "ex-row-controls"
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      className: "ilbl",
+      style: {
+        marginBottom: 6
+      }
+    }, "Sets"), /*#__PURE__*/React.createElement(Stepper, {
+      value: editState.default_sets,
+      onChange: v => setEditState(s => ({
+        ...s,
+        default_sets: v
+      })),
+      min: 1,
+      max: 10
+    })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      className: "ilbl",
+      style: {
+        marginBottom: 6
+      }
+    }, "Reps"), /*#__PURE__*/React.createElement(Stepper, {
+      value: editState.default_reps,
+      onChange: v => setEditState(s => ({
+        ...s,
+        default_reps: v
+      })),
+      min: 1,
+      max: 50
+    }))), ex.is_bodyweight && bwNum > 0 && /*#__PURE__*/React.createElement("div", {
+      style: {
+        marginBottom: 12
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "ilbl",
+      style: {
+        marginBottom: 6
+      }
+    }, "Body Weight %"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: 'flex',
+        gap: 6,
+        flexWrap: 'wrap'
+      }
+    }, BW_PCTS.map(p => /*#__PURE__*/React.createElement("div", {
+      key: p,
+      className: "bw-chip"
+    }, p, "% = ", Math.round(bwNum * p / 100), bwUnit)))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        marginBottom: 12
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "ilbl",
+      style: {
+        marginBottom: 6
+      }
+    }, "Time Under Tension"), /*#__PURE__*/React.createElement(TUTSelector, {
+      value: {
+        tut_type: editState.tut_type,
+        tut_tension: editState.tut_tension,
+        tut_duration: editState.tut_duration
+      },
+      onChange: v => setEditState(s => ({
+        ...s,
+        ...v
+      }))
+    })), /*#__PURE__*/React.createElement("button", {
+      onClick: () => removeExercise(te.id),
+      style: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6,
+        background: 'none',
+        border: 'none',
+        color: 'var(--err)',
+        cursor: 'pointer',
+        fontSize: 13,
+        fontFamily: "'DM Sans',sans-serif",
+        padding: '4px 0'
+      }
+    }, /*#__PURE__*/React.createElement(ITrash, null), " Remove from template")));
+  })), isMine && !addForm && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '16px 16px 0'
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-s",
+    onClick: () => setShowPicker(true)
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "16",
+    height: "16",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.5",
+    strokeLinecap: "round"
+  }, /*#__PURE__*/React.createElement("line", {
+    x1: "12",
+    y1: "5",
+    x2: "12",
+    y2: "19"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "5",
+    y1: "12",
+    x2: "19",
+    y2: "12"
+  })), "Add Exercise")), addForm && /*#__PURE__*/React.createElement("div", {
+    style: {
+      margin: '16px 16px 0',
+      background: 'var(--s1)',
+      border: '1px solid var(--acc20)',
+      borderRadius: 'var(--r)',
+      padding: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "'Bebas Neue',sans-serif",
+      fontSize: 18,
+      letterSpacing: 1,
+      marginBottom: 12
+    }
+  }, "Adding: ", addForm.exercise.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 12,
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ilbl",
+    style: {
+      marginBottom: 6
+    }
+  }, "Sets"), /*#__PURE__*/React.createElement(Stepper, {
+    value: addForm.default_sets,
+    onChange: v => setAddForm(f => ({
+      ...f,
+      default_sets: v
+    })),
+    min: 1,
+    max: 10
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ilbl",
+    style: {
+      marginBottom: 6
+    }
+  }, "Reps"), /*#__PURE__*/React.createElement(Stepper, {
+    value: addForm.default_reps,
+    onChange: v => setAddForm(f => ({
+      ...f,
+      default_reps: v
+    })),
+    min: 1,
+    max: 50
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ilbl",
+    style: {
+      marginBottom: 6
+    }
+  }, "Time Under Tension"), /*#__PURE__*/React.createElement(TUTSelector, {
+    value: {
+      tut_type: addForm.tut_type,
+      tut_tension: addForm.tut_tension,
+      tut_duration: addForm.tut_duration
+    },
+    onChange: v => setAddForm(f => ({
+      ...f,
+      ...v
+    }))
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-p",
+    onClick: addExercise,
+    disabled: saving
+  }, saving ? /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  }) : "Add"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-g",
+    onClick: () => setAddForm(null)
+  }, "Cancel"))));
+}
+
+// ── Template List ─────────────────────────────────────────────────────────────
+function Templates({
+  user,
+  embedded
+}) {
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState(null);
+  const [showNew, setShowNew] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [creating, setCreating] = useState(false);
+  useEffect(() => {
+    if (!selected) loadTemplates();
+  }, [selected]);
+  async function loadTemplates() {
+    setLoading(true);
+    const {
+      data
+    } = await db.get('templates', 'select=id,name,is_global,user_id,template_exercises(id)&order=name.asc');
+    if (data) {
+      setTemplates(data.filter(t => t.is_global || t.user_id && t.user_id === db.uid));
+    }
+    setLoading(false);
+  }
+  async function createTemplate() {
+    if (!newName.trim()) return;
+    setCreating(true);
+    const {
+      data
+    } = await db.post('templates', {
+      name: newName.trim(),
+      user_id: db.uid,
+      is_global: false
+    });
+    if (data) {
+      const tpl = Array.isArray(data) ? data[0] : data;
+      setShowNew(false);
+      setNewName('');
+      setSelected({
+        ...tpl,
+        template_exercises: []
+      });
+    }
+    setCreating(false);
+  }
+  if (selected) return /*#__PURE__*/React.createElement(TemplateDetail, {
+    template: selected,
+    user: user,
+    onBack: () => setSelected(null),
+    onDeleted: () => setSelected(null)
+  });
+  const mine = templates.filter(t => !t.is_global && t.user_id === db.uid);
+  const globals = templates.filter(t => t.is_global);
+  const filteredGlobals = globals.filter(t => t.name.toLowerCase().includes(search.toLowerCase()));
+  const filteredMine = mine.filter(t => t.name.toLowerCase().includes(search.toLowerCase()));
+  return /*#__PURE__*/React.createElement("div", {
+    style: embedded ? {
+      paddingBottom: 0
+    } : {},
+    className: embedded ? '' : 'screen'
+  }, !embedded && /*#__PURE__*/React.createElement("div", {
+    className: "hdr"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "hdr-ttl"
+  }, "Templates"), /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: () => setShowNew(true)
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "20",
+    height: "20",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round"
+  }, /*#__PURE__*/React.createElement("line", {
+    x1: "12",
+    y1: "5",
+    x2: "12",
+    y2: "19"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "5",
+    y1: "12",
+    x2: "19",
+    y2: "12"
+  })), "New")), embedded && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      padding: '8px 16px 0'
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: () => setShowNew(true),
+    style: {
+      color: 'var(--acc)',
+      fontWeight: 600,
+      fontSize: 13
+    }
+  }, "+ New Template")), /*#__PURE__*/React.createElement("div", {
+    className: "srch"
+  }, /*#__PURE__*/React.createElement(ISearch, null), /*#__PURE__*/React.createElement("input", {
+    placeholder: "Search templates...",
+    value: search,
+    onChange: e => setSearch(e.target.value)
+  }), search && /*#__PURE__*/React.createElement("button", {
+    onClick: () => setSearch(''),
+    style: {
+      background: 'none',
+      border: 'none',
+      color: 'var(--tm)',
+      cursor: 'pointer',
+      padding: '4px',
+      display: 'flex',
+      alignItems: 'center'
+    }
+  }, /*#__PURE__*/React.createElement(IX, null))), loading ? /*#__PURE__*/React.createElement("div", {
+    className: "loading"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  })) : /*#__PURE__*/React.createElement(React.Fragment, null, filteredMine.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "sec-hd"
+  }, "My Templates"), /*#__PURE__*/React.createElement("div", {
+    className: "lst"
+  }, filteredMine.map(t => {
+    var _t$template_exercises;
+    return /*#__PURE__*/React.createElement("div", {
+      key: t.id,
+      className: "li",
+      onClick: () => setSelected(t)
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      className: "li-name"
+    }, t.name), /*#__PURE__*/React.createElement("div", {
+      className: "li-sub"
+    }, ((_t$template_exercises = t.template_exercises) === null || _t$template_exercises === void 0 ? void 0 : _t$template_exercises.length) || 0, " exercises")), /*#__PURE__*/React.createElement(IChev, null));
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "sec-hd"
+  }, "Default Templates"), filteredGlobals.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "empty"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "empty-ttl"
+  }, "No templates found")) : /*#__PURE__*/React.createElement("div", {
+    className: "lst"
+  }, filteredGlobals.map(t => {
+    var _t$template_exercises2;
+    return /*#__PURE__*/React.createElement("div", {
+      key: t.id,
+      className: "li",
+      onClick: () => setSelected(t)
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1,
+        minWidth: 0
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "li-name",
+      style: {
+        paddingRight: 8
+      }
+    }, t.name), /*#__PURE__*/React.createElement("div", {
+      className: "li-sub"
+    }, ((_t$template_exercises2 = t.template_exercises) === null || _t$template_exercises2 === void 0 ? void 0 : _t$template_exercises2.length) || 0, " exercises")), /*#__PURE__*/React.createElement(IChev, null));
+  }))), showNew && /*#__PURE__*/React.createElement("div", {
+    className: "mo",
+    onClick: e => e.target === e.currentTarget && setShowNew(false)
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mo-box"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mo-ttl"
+  }, "New Template"), /*#__PURE__*/React.createElement("div", {
+    className: "igrp"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "ilbl"
+  }, "Template Name"), /*#__PURE__*/React.createElement("input", {
+    className: "inp",
+    placeholder: "e.g. Push Day",
+    value: newName,
+    onChange: e => setNewName(e.target.value),
+    onKeyDown: e => e.key === 'Enter' && createTemplate(),
+    autoFocus: true
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "divider"
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-p",
+    onClick: createTemplate,
+    disabled: creating
+  }, creating ? /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  }) : "Create Template"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-g",
+    onClick: () => {
+      setShowNew(false);
+      setNewName('');
+    }
+  }, "Cancel"))));
+}
+
+// ── Auth Screen ───────────────────────────────────────────────────────────────
+function AuthScreen({
+  onAuth
+}) {
+  const [tab, setTab] = useState("login");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [pw, setPw] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
+  const [msg, setMsg] = useState("");
+  async function submit() {
+    setErr("");
+    setMsg("");
+    if (!email.trim() || !pw) {
+      setErr("Please fill in all fields.");
+      return;
+    }
+    if (tab === "signup" && !name.trim()) {
+      setErr("Enter your name.");
+      return;
+    }
+    setLoading(true);
+    try {
+      var _d$error, _d$error2;
+      const d = tab === "login" ? await db.signIn(email, pw) : await db.signUp(email, pw, name.trim());
+      if ((_d$error = d.error) !== null && _d$error !== void 0 && _d$error.message || d.msg) setErr(((_d$error2 = d.error) === null || _d$error2 === void 0 ? void 0 : _d$error2.message) || d.msg || "Something went wrong.");else if (d.access_token) {
+        var _d$user4, _d$user5, _d$user6;
+        const m = ((_d$user4 = d.user) === null || _d$user4 === void 0 ? void 0 : _d$user4.user_metadata) || {};
+        const u = {
+          id: (_d$user5 = d.user) === null || _d$user5 === void 0 ? void 0 : _d$user5.id,
+          email: (_d$user6 = d.user) === null || _d$user6 === void 0 ? void 0 : _d$user6.email,
+          name: m.full_name || name.trim() || email.split("@")[0],
+          body_weight: m.body_weight || null,
+          weight_unit: m.weight_unit || "lbs"
+        };
+        db.saveSession(d, u);
+        onAuth(u);
+      } else if (tab === "signup") {
+        setMsg("Check your email to confirm, then log in.");
+        setTab("login");
+      } else setErr("Login failed — check your credentials.");
+    } catch (e) {
+      setErr("Network error.");
+    }
+    setLoading(false);
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "auth"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "auth-logo"
+  }, "RlyHevy"), /*#__PURE__*/React.createElement("div", {
+    className: "auth-sub"
+  }, "Track your lifts. Own your progress."), /*#__PURE__*/React.createElement("div", {
+    className: "auth-tabs"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: `auth-tab${tab === "login" ? " on" : ""}`,
+    onClick: () => {
+      setTab("login");
+      setErr("");
+      setMsg("");
+    }
+  }, "Log In"), /*#__PURE__*/React.createElement("button", {
+    className: `auth-tab${tab === "signup" ? " on" : ""}`,
+    onClick: () => {
+      setTab("signup");
+      setErr("");
+      setMsg("");
+    }
+  }, "Sign Up")), err && /*#__PURE__*/React.createElement("div", {
+    className: "alert-e"
+  }, err), msg && /*#__PURE__*/React.createElement("div", {
+    className: "alert-s"
+  }, msg), tab === "signup" && /*#__PURE__*/React.createElement("div", {
+    className: "igrp"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "ilbl"
+  }, "Your Name"), /*#__PURE__*/React.createElement("input", {
+    className: "inp",
+    type: "text",
+    placeholder: "Rob",
+    value: name,
+    onChange: e => setName(e.target.value),
+    autoComplete: "name"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "igrp"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "ilbl"
+  }, "Email"), /*#__PURE__*/React.createElement("input", {
+    className: "inp",
+    type: "email",
+    placeholder: "you@example.com",
+    value: email,
+    onChange: e => setEmail(e.target.value),
+    onKeyDown: e => e.key === "Enter" && submit(),
+    autoComplete: "email"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "igrp"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "ilbl"
+  }, "Password"), /*#__PURE__*/React.createElement("input", {
+    className: "inp",
+    type: "password",
+    placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022",
+    value: pw,
+    onChange: e => setPw(e.target.value),
+    onKeyDown: e => e.key === "Enter" && submit(),
+    autoComplete: tab === "login" ? "current-password" : "new-password"
+  })), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-p",
+    onClick: submit,
+    disabled: loading,
+    style: {
+      marginTop: 8
+    }
+  }, loading ? /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  }) : tab === "login" ? "Log In" : "Create Account"), tab === "signup" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 20,
+      fontSize: 12,
+      color: "var(--tm)",
+      lineHeight: 1.6,
+      padding: "10px 14px",
+      background: "var(--s1)",
+      borderRadius: "var(--rs)",
+      border: "1px solid var(--br)"
+    }
+  }, "\uD83D\uDCA1 Disable email confirmation in Supabase \u2192 Authentication \u2192 Settings."));
+}
+
+// ── Settings ──────────────────────────────────────────────────────────────────
+function Settings({
+  user,
+  onUpdate,
+  onBack
+}) {
+  var _user$body_weight;
+  const [name, setName] = useState(user.name || "");
+  const [bw, setBw] = useState(((_user$body_weight = user.body_weight) === null || _user$body_weight === void 0 ? void 0 : _user$body_weight.toString()) || "");
+  const [unit, setUnit] = useState(user.weight_unit || "lbs");
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [err, setErr] = useState("");
+  async function save() {
+    setSaving(true);
+    setMsg("");
+    setErr("");
+    try {
+      var _d$error3, _d$error4;
+      const d = await db.updateUser({
+        full_name: name.trim(),
+        body_weight: parseFloat(bw) || null,
+        weight_unit: unit
+      });
+      if ((_d$error3 = d.error) !== null && _d$error3 !== void 0 && _d$error3.message || d.msg) setErr(((_d$error4 = d.error) === null || _d$error4 === void 0 ? void 0 : _d$error4.message) || d.msg || "Failed to save.");else {
+        onUpdate({
+          ...user,
+          name: name.trim(),
+          body_weight: parseFloat(bw) || null,
+          weight_unit: unit
+        });
+        setMsg("Saved ✓");
+        setTimeout(() => setMsg(""), 2500);
+      }
+    } catch (e) {
+      setErr("Network error.");
+    }
+    setSaving(false);
+  }
+  const bwNum = parseFloat(bw);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "hdr"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: onBack
+  }, /*#__PURE__*/React.createElement(IChevL, null), " Back"), /*#__PURE__*/React.createElement("span", {
+    className: "hdr-ttl"
+  }, "Settings"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 60
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "sec-hd"
+  }, "Profile"), /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      margin: "0 16px 4px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "igrp",
+    style: {
+      marginBottom: 0
+    }
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "ilbl"
+  }, "Display Name"), /*#__PURE__*/React.createElement("input", {
+    className: "inp",
+    value: name,
+    onChange: e => setName(e.target.value),
+    placeholder: "Your name"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "sec-hd",
+    style: {
+      marginTop: 20
+    }
+  }, "Body Stats"), /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      margin: "0 16px 4px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "igrp",
+    style: {
+      marginBottom: 0
+    }
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "ilbl"
+  }, "Body Weight"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "inp",
+    type: "number",
+    value: bw,
+    onChange: e => setBw(e.target.value),
+    placeholder: "185",
+    style: {
+      flex: 1
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "unit-toggle"
+  }, ["lbs", "kg"].map(u => /*#__PURE__*/React.createElement("button", {
+    key: u,
+    className: `unit-btn${unit === u ? " on" : ""}`,
+    onClick: () => setUnit(u)
+  }, u))))), bwNum > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      fontWeight: 600,
+      letterSpacing: "1px",
+      textTransform: "uppercase",
+      color: "var(--tm)",
+      marginBottom: 8
+    }
+  }, "BW Options When Logging"), /*#__PURE__*/React.createElement("div", {
+    className: "bw-preview"
+  }, [25, 50, 75, 100].map(p => /*#__PURE__*/React.createElement("div", {
+    key: p,
+    className: "bw-chip"
+  }, p, "% \u2192 ", Math.round(bwNum * p / 100), " ", unit))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "16px 16px 0"
+    }
+  }, err && /*#__PURE__*/React.createElement("div", {
+    className: "alert-e"
+  }, err), msg && /*#__PURE__*/React.createElement("div", {
+    className: "alert-s"
+  }, msg), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-p",
+    onClick: save,
+    disabled: saving
+  }, saving ? /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  }) : "Save Changes"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 12
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-d",
+    onClick: async () => {
+      await db.signOut();
+      window.location.reload();
+    }
+  }, "Sign Out")));
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+function Dashboard({
+  user,
+  onNav
+}) {
+  var _activeRun$splits, _nextWorkout$template;
+  const [recent, setRecent] = useState([]);
+  const [effortScore, setEffortScore] = useState(0);
+  const [thisWeek, setThisWeek] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [activeRun, setActiveRun] = useState(null);
+  const [nextWorkout, setNextWorkout] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
+  const [details, setDetails] = useState({});
+  const [detLoading, setDetLoading] = useState(null);
+  useEffect(() => {
+    async function load() {
+      const [{
+        data: r
+      }, {
+        data: allW
+      }, {
+        data: sets
+      }, {
+        data: runs
+      }] = await Promise.all([db.get("workouts", "select=id,name,started_at,finished_at&finished_at=not.is.null&order=started_at.desc&limit=3"), db.get("workouts", "select=id,started_at&finished_at=not.is.null"), db.get("sets", "select=weight,reps,tut_duration&completed=eq.true"), db.get("split_runs", `select=*,splits(name)&user_id=eq.${db.uid}&finished_at=is.null&limit=1`)]);
+      if (r) setRecent(r);
+      if (allW) {
+        const wk = new Date();
+        wk.setDate(wk.getDate() - 7);
+        setThisWeek(allW.filter(x => new Date(x.started_at) > wk).length);
+      }
+      if (sets) {
+        const score = sets.reduce((sum, s) => sum + (parseFloat(s.weight) || 0) * (s.reps || 0) * (s.tut_duration || 1), 0);
+        setEffortScore(score);
+      }
+      if (runs && runs.length > 0) {
+        const run = runs[0];
+        const {
+          data: slots
+        } = await db.get('split_slots', `select=*,templates(name)&split_id=eq.${run.split_id}&order=week_number.asc,day_order.asc`);
+        if (slots) {
+          const ws = slots.filter(s => s.template_id);
+          setActiveRun({
+            ...run,
+            totalSlots: ws.length
+          });
+          setNextWorkout(ws[run.current_slot_index] || null);
+        }
+      }
+      setLoading(false);
+    }
+    load();
+  }, []);
+  async function toggleDetail(wid) {
+    if (expandedId === wid) {
+      setExpandedId(null);
+      return;
+    }
+    setExpandedId(wid);
+    if (details[wid]) return;
+    setDetLoading(wid);
+    const {
+      data
+    } = await db.get('workout_exercises', `select=id,sort_order,exercises(name,muscle_group),sets(id,set_number,weight,reps,completed,tut_type,tut_tension,tut_duration)&workout_id=eq.${wid}&order=sort_order.asc`);
+    if (data) setDetails(p => ({
+      ...p,
+      [wid]: data
+    }));
+    setDetLoading(null);
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "hdr"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "hdr-ttl"
+  }, "RlyHevy"), /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    title: "Settings",
+    onClick: () => onNav("settings")
+  }, /*#__PURE__*/React.createElement(IGear, null))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "4px 20px 20px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "'Bebas Neue',sans-serif",
+      fontSize: 34,
+      letterSpacing: 1,
+      lineHeight: 1
+    }
+  }, greet(), ", ", user.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--tm)",
+      marginTop: 4
+    }
+  }, new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "stat-grid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "stat-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "stat-v"
+  }, loading ? "—" : fmtScore(effortScore)), /*#__PURE__*/React.createElement("div", {
+    className: "stat-l"
+  }, "Effort Score"), /*#__PURE__*/React.createElement("div", {
+    className: "stat-hint"
+  }, "wt \xD7 reps \xD7 TUT")), /*#__PURE__*/React.createElement("div", {
+    className: "stat-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "stat-v"
+  }, loading ? "—" : thisWeek), /*#__PURE__*/React.createElement("div", {
+    className: "stat-l"
+  }, "This Week"), /*#__PURE__*/React.createElement("div", {
+    className: "stat-hint"
+  }, "workouts logged"))), activeRun && nextWorkout && /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      margin: '0 16px 12px',
+      background: 'var(--acc8)',
+      borderColor: 'var(--acc20)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      fontWeight: 600,
+      letterSpacing: '1px',
+      textTransform: 'uppercase',
+      color: 'var(--acc)',
+      marginBottom: 4
+    }
+  }, (_activeRun$splits = activeRun.splits) === null || _activeRun$splits === void 0 ? void 0 : _activeRun$splits.name, " \u2014 Active Split"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 16,
+      fontWeight: 600,
+      color: 'var(--tx)'
+    }
+  }, (_nextWorkout$template = nextWorkout.templates) === null || _nextWorkout$template === void 0 ? void 0 : _nextWorkout$template.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--tm)',
+      marginTop: 2,
+      marginBottom: 12
+    }
+  }, "Week ", nextWorkout.week_number, ", Day ", nextWorkout.day_order + 1, " \xB7 Slot ", (activeRun.current_slot_index || 0) + 1, " of ", activeRun.totalSlots), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-p",
+    onClick: () => onNav('log')
+  }, "\u25B6  Continue Split")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "0 16px 16px"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-s",
+    onClick: () => onNav("log")
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "18",
+    height: "18",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.5",
+    strokeLinecap: "round"
+  }, /*#__PURE__*/React.createElement("line", {
+    x1: "12",
+    y1: "5",
+    x2: "12",
+    y2: "19"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "5",
+    y1: "12",
+    x2: "19",
+    y2: "12"
+  })), "Free Workout")), /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      padding: 0,
+      overflow: 'hidden'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-ttl",
+    style: {
+      padding: '14px 16px 10px'
+    }
+  }, "Recent Workouts"), loading ? /*#__PURE__*/React.createElement("div", {
+    className: "loading",
+    style: {
+      padding: '16px'
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  })) : recent.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "empty",
+    style: {
+      padding: '24px 16px'
+    }
+  }, /*#__PURE__*/React.createElement(NeonDumbbell, {
+    size: 48
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "empty-ttl"
+  }, "No workouts yet"), /*#__PURE__*/React.createElement("div", {
+    className: "empty-sub"
+  }, "Build a template, then start your first session")) : recent.map(w => {
+    const det = details[w.id];
+    const expanded = expandedId === w.id;
+    const doneSets = det ? det.flatMap(e => e.sets).filter(s => s.completed) : [];
+    const score = doneSets.reduce((sum, s) => sum + (parseFloat(s.weight) || 0) * (s.reps || 0) * (s.tut_duration || 1), 0);
+    return /*#__PURE__*/React.createElement("div", {
+      key: w.id,
+      style: {
+        borderTop: '1px solid var(--br)'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: '12px 16px',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12
+      },
+      onClick: () => toggleDetail(w.id)
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "li-name"
+    }, w.name), /*#__PURE__*/React.createElement("div", {
+      className: "li-sub"
+    }, fmtDate(w.started_at), w.finished_at && ` · ${fmtDur(w.started_at, w.finished_at)}`)), detLoading === w.id ? /*#__PURE__*/React.createElement("span", {
+      className: "spin"
+    }) : expanded ? /*#__PURE__*/React.createElement(IChevD, null) : /*#__PURE__*/React.createElement(IChev, null)), expanded && det && /*#__PURE__*/React.createElement("div", {
+      style: {
+        borderTop: '1px solid var(--br)'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: 'flex',
+        borderBottom: '1px solid var(--br)'
+      }
+    }, [['Sets', doneSets.length], ['Exercises', det.length], ['Score', fmtScore(score)]].map(([l, v]) => /*#__PURE__*/React.createElement("div", {
+      key: l,
+      style: {
+        flex: 1,
+        padding: '10px 0',
+        textAlign: 'center',
+        borderRight: '1px solid var(--br)'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 15,
+        fontWeight: 700,
+        color: 'var(--acc)'
+      }
+    }, v), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10,
+        fontWeight: 600,
+        textTransform: 'uppercase',
+        letterSpacing: '1px',
+        color: 'var(--tm)',
+        marginTop: 2
+      }
+    }, l)))), det.map(ex => {
+      var _ex$exercises, _ex$exercises2;
+      const ds = ex.sets.filter(s => s.completed);
+      if (!ds.length) return null;
+      return /*#__PURE__*/React.createElement("div", {
+        key: ex.id,
+        style: {
+          padding: '10px 16px',
+          borderBottom: '1px solid var(--br)'
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          marginBottom: 5
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 13,
+          fontWeight: 600
+        }
+      }, (_ex$exercises = ex.exercises) === null || _ex$exercises === void 0 ? void 0 : _ex$exercises.name), /*#__PURE__*/React.createElement(Badge, {
+        mg: (_ex$exercises2 = ex.exercises) === null || _ex$exercises2 === void 0 ? void 0 : _ex$exercises2.muscle_group
+      })), ds.map(s => /*#__PURE__*/React.createElement("div", {
+        key: s.id,
+        style: {
+          fontSize: 12,
+          color: 'var(--ts)',
+          marginBottom: 2
+        }
+      }, "Set ", s.set_number, ": ", s.weight ? `${s.weight} ${''}` : 'BW', " \xD7 ", s.reps, " reps", s.tut_type !== 'none' && /*#__PURE__*/React.createElement("span", {
+        style: {
+          color: 'var(--acc)',
+          marginLeft: 6
+        }
+      }, tutLabel(s.tut_type, s.tut_tension, s.tut_duration)))));
+    })));
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      background: "var(--acc8)",
+      borderColor: "var(--acc20)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-ttl",
+    style: {
+      color: "var(--acc)"
+    }
+  }, "Build Your Stack"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      color: "var(--ts)",
+      lineHeight: 1.6
+    }
+  }, "Start with a ", /*#__PURE__*/React.createElement("strong", {
+    style: {
+      color: "var(--tx)"
+    }
+  }, "Template"), ", then build a ", /*#__PURE__*/React.createElement("strong", {
+    style: {
+      color: "var(--tx)"
+    }
+  }, "Split"), "."), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginTop: 12
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-s",
+    style: {
+      fontSize: 13,
+      padding: "10px 14px"
+    },
+    onClick: () => onNav("library")
+  }, "Templates \u2192"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-s",
+    style: {
+      fontSize: 13,
+      padding: "10px 14px"
+    },
+    onClick: () => onNav("library")
+  }, "Splits \u2192"))));
+}
+
+// ── Exercises ─────────────────────────────────────────────────────────────────
+function Exercises({
+  user,
+  embedded
+}) {
+  const [exercises, setExercises] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [showAdd, setShowAdd] = useState(false);
+  const [editEx, setEditEx] = useState(null); // exercise being edited
+  const [editForm, setEditForm] = useState({});
+  const [newEx, setNewEx] = useState({
+    name: "",
+    muscle_group: "chest",
+    is_bodyweight: false
+  });
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState("");
+  useEffect(() => {
+    loadEx();
+  }, []);
+  async function loadEx() {
+    setLoading(true);
+    const {
+      data
+    } = await db.get("exercises", "select=*&order=name.asc");
+    if (data) setExercises(data);
+    setLoading(false);
+  }
+  function openEdit(ex) {
+    if (ex.is_global) {
+      return;
+    } // read-only
+    setEditEx(ex);
+    setEditForm({
+      name: ex.name,
+      muscle_group: ex.muscle_group,
+      is_bodyweight: !!ex.is_bodyweight
+    });
+    setErr("");
+  }
+  async function saveEdit() {
+    if (!editForm.name.trim()) {
+      setErr("Name can't be empty.");
+      return;
+    }
+    setSaving(true);
+    setErr("");
+    const {
+      error
+    } = await db.patch("exercises", {
+      name: editForm.name.trim(),
+      muscle_group: editForm.muscle_group,
+      is_bodyweight: editForm.is_bodyweight
+    }, `id=eq.${editEx.id}`);
+    if (error) setErr(error.message || "Failed to save.");else {
+      setExercises(prev => prev.map(e => e.id === editEx.id ? {
+        ...e,
+        ...editForm,
+        name: editForm.name.trim()
+      } : e).sort((a, b) => a.name.localeCompare(b.name)));
+      setEditEx(null);
+    }
+    setSaving(false);
+  }
+  async function deleteEx() {
+    if (!window.confirm(`Delete "${editEx.name}"? It will also be removed from any templates.`)) return;
+    setSaving(true);
+    await db.del("template_exercises", `exercise_id=eq.${editEx.id}`);
+    await db.del("exercises", `id=eq.${editEx.id}`);
+    setExercises(prev => prev.filter(e => e.id !== editEx.id));
+    setEditEx(null);
+    setSaving(false);
+  }
+  async function addExercise() {
+    if (!newEx.name.trim()) {
+      setErr("Enter an exercise name.");
+      return;
+    }
+    setSaving(true);
+    setErr("");
+    const {
+      data,
+      error
+    } = await db.post("exercises", {
+      name: newEx.name.trim(),
+      muscle_group: newEx.muscle_group,
+      is_global: false,
+      created_by: db.uid,
+      is_bodyweight: newEx.is_bodyweight
+    });
+    if (error) setErr(error.message || "Failed to save.");else {
+      const items = Array.isArray(data) ? data : [data];
+      setExercises(e => [...e, ...items].sort((a, b) => a.name.localeCompare(b.name)));
+      setShowAdd(false);
+      setNewEx({
+        name: "",
+        muscle_group: "chest",
+        is_bodyweight: false
+      });
+    }
+    setSaving(false);
+  }
+  const filtered = exercises.filter(e => e.name.toLowerCase().includes(search.toLowerCase()) && (filter === "all" || e.muscle_group === filter));
+  const bwNum = parseFloat(user === null || user === void 0 ? void 0 : user.body_weight);
+  const bwUnit = (user === null || user === void 0 ? void 0 : user.weight_unit) || "lbs";
+
+  // Shared form body for add/edit
+  function ExForm({
+    form,
+    setForm,
+    isEdit
+  }) {
+    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+      className: "igrp"
+    }, /*#__PURE__*/React.createElement("label", {
+      className: "ilbl"
+    }, "Exercise Name"), /*#__PURE__*/React.createElement("input", {
+      className: "inp",
+      placeholder: "e.g. Bulgarian Split Squat",
+      value: form.name,
+      onChange: e => setForm(f => ({
+        ...f,
+        name: e.target.value
+      })),
+      autoFocus: true
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "igrp"
+    }, /*#__PURE__*/React.createElement("label", {
+      className: "ilbl"
+    }, "Muscle Group"), /*#__PURE__*/React.createElement("select", {
+      className: "sel",
+      value: form.muscle_group,
+      onChange: e => setForm(f => ({
+        ...f,
+        muscle_group: e.target.value
+      }))
+    }, MG_ALL.map(mg => /*#__PURE__*/React.createElement("option", {
+      key: mg,
+      value: mg
+    }, MG_LABEL[mg])))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "var(--s2)",
+        border: "1px solid var(--br)",
+        borderRadius: "var(--rs)",
+        padding: "14px 16px"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between"
+      }
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 14,
+        fontWeight: 500
+      }
+    }, "Bodyweight Exercise"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        color: "var(--tm)",
+        marginTop: 2
+      }
+    }, "Weight = % of your body weight")), /*#__PURE__*/React.createElement(Toggle, {
+      checked: !!form.is_bodyweight,
+      onChange: v => setForm(f => ({
+        ...f,
+        is_bodyweight: v
+      }))
+    })), form.is_bodyweight && bwNum > 0 && /*#__PURE__*/React.createElement("div", {
+      className: "bw-preview"
+    }, [25, 50, 75, 100].map(p => /*#__PURE__*/React.createElement("div", {
+      key: p,
+      className: "bw-chip"
+    }, p, "% = ", Math.round(bwNum * p / 100), " ", bwUnit))), form.is_bodyweight && !bwNum && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        color: "var(--tm)",
+        marginTop: 8
+      }
+    }, "Set your body weight in Settings to see BW options.")));
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    style: embedded ? {
+      paddingBottom: 0
+    } : {},
+    className: embedded ? '' : 'screen'
+  }, !embedded && /*#__PURE__*/React.createElement("div", {
+    className: "hdr"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "hdr-ttl"
+  }, "Exercises"), /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: () => {
+      setShowAdd(true);
+      setErr("");
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "22",
+    height: "22",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round"
+  }, /*#__PURE__*/React.createElement("line", {
+    x1: "12",
+    y1: "5",
+    x2: "12",
+    y2: "19"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "5",
+    y1: "12",
+    x2: "19",
+    y2: "12"
+  })))), embedded && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      padding: '8px 16px 0'
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: () => {
+      setShowAdd(true);
+      setErr("");
+    },
+    style: {
+      color: 'var(--acc)',
+      fontWeight: 600,
+      fontSize: 13
+    }
+  }, "+ Add Exercise")), /*#__PURE__*/React.createElement("div", {
+    className: "srch"
+  }, /*#__PURE__*/React.createElement(ISearch, null), /*#__PURE__*/React.createElement("input", {
+    placeholder: "Search exercises...",
+    value: search,
+    onChange: e => setSearch(e.target.value)
+  }), search && /*#__PURE__*/React.createElement("button", {
+    onClick: () => setSearch(""),
+    style: {
+      background: "none",
+      border: "none",
+      color: "var(--tm)",
+      cursor: "pointer",
+      padding: "4px",
+      display: "flex",
+      alignItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement(IX, null))), /*#__PURE__*/React.createElement("div", {
+    className: "fscroll"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: `fchip${filter === "all" ? " on" : ""}`,
+    onClick: () => setFilter("all")
+  }, "All"), MG_ALL.map(mg => /*#__PURE__*/React.createElement("button", {
+    key: mg,
+    className: `fchip${filter === mg ? " on" : ""}`,
+    onClick: () => setFilter(mg)
+  }, MG_LABEL[mg]))), loading ? /*#__PURE__*/React.createElement("div", {
+    className: "loading"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  })) : filtered.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "empty"
+  }, /*#__PURE__*/React.createElement(NeonSearch, {
+    size: 64
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "empty-ttl"
+  }, "No exercises found"), /*#__PURE__*/React.createElement("div", {
+    className: "empty-sub"
+  }, search ? "Try a different search" : "Tap + to add")) : /*#__PURE__*/React.createElement("div", {
+    className: "lst"
+  }, filtered.map(ex => /*#__PURE__*/React.createElement("div", {
+    key: ex.id,
+    className: "li",
+    onClick: () => openEdit(ex)
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "li-name"
+  }, ex.name), ex.is_bodyweight && /*#__PURE__*/React.createElement("span", {
+    className: "bw-badge"
+  }, "BW"), ex.is_global && /*#__PURE__*/React.createElement("span", {
+    className: "global-badge"
+  }, "Default")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 5,
+      display: 'flex',
+      alignItems: 'center',
+      gap: 6,
+      flexWrap: 'wrap'
+    }
+  }, /*#__PURE__*/React.createElement(Badge, {
+    mg: ex.muscle_group
+  }), ex.is_bodyweight && bwNum > 0 && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      color: 'var(--tm)'
+    }
+  }, [25, 50, 75, 100].map(p => `${p}%=${Math.round(bwNum * p / 100)}${bwUnit}`).join(' · ')))), !ex.is_global && /*#__PURE__*/React.createElement(IChev, null)))), editEx && /*#__PURE__*/React.createElement("div", {
+    className: "mo",
+    onClick: e => e.target === e.currentTarget && setEditEx(null)
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mo-box"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mo-ttl"
+  }, "Edit Exercise"), err && /*#__PURE__*/React.createElement("div", {
+    className: "alert-e",
+    style: {
+      fontSize: 12
+    }
+  }, err), /*#__PURE__*/React.createElement(ExForm, {
+    form: editForm,
+    setForm: setEditForm,
+    isEdit: true
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "divider"
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-p",
+    onClick: saveEdit,
+    disabled: saving
+  }, saving ? /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  }) : "Save Changes"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-d",
+    onClick: deleteEx,
+    disabled: saving
+  }, "Delete Exercise"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-g",
+    onClick: () => setEditEx(null)
+  }, "Cancel"))), showAdd && /*#__PURE__*/React.createElement("div", {
+    className: "mo",
+    onClick: e => e.target === e.currentTarget && setShowAdd(false)
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mo-box"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mo-ttl"
+  }, "Add Exercise"), err && /*#__PURE__*/React.createElement("div", {
+    className: "alert-e",
+    style: {
+      fontSize: 12
+    }
+  }, err), /*#__PURE__*/React.createElement(ExForm, {
+    form: newEx,
+    setForm: setNewEx,
+    isEdit: false
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "divider"
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-p",
+    onClick: addExercise,
+    disabled: saving
+  }, saving ? /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  }) : "Save Exercise"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-g",
+    onClick: () => setShowAdd(false)
+  }, "Cancel"))));
+}
+
+// ── Workout Starter ───────────────────────────────────────────────────────────
+// ── Template Preview / Edit (before starting workout) ─────────────────────────
+function TemplatePreview({
+  template,
+  user,
+  onConfirm,
+  onBack
+}) {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [expandedTUT, setExpandedTUT] = useState(null);
+  const bwNum = parseFloat(user === null || user === void 0 ? void 0 : user.body_weight);
+  const bwUnit = (user === null || user === void 0 ? void 0 : user.weight_unit) || 'lbs';
+  useEffect(() => {
+    db.get('template_exercises', `select=*,exercises(id,name,muscle_group,is_bodyweight)&template_id=eq.${template.id}&order=sort_order.asc`).then(({
+      data
+    }) => {
+      setRows(data || []);
+      setLoading(false);
+    });
+  }, [template.id]);
+  async function save(row, updates) {
+    const merged = {
+      ...row,
+      ...updates
+    };
+    setRows(p => p.map(r => r.id === row.id ? {
+      ...r,
+      ...updates
+    } : r));
+    await db.patch('template_exercises', {
+      default_sets: merged.default_sets,
+      default_reps: merged.default_reps,
+      tut_type: merged.tut_type,
+      tut_tension: merged.tut_tension,
+      tut_duration: merged.tut_duration
+    }, `id=eq.${row.id}`);
+  }
+  function ExRow({
+    row
+  }) {
+    var _row$exercises, _row$exercises2;
+    const open = expandedTUT === row.id;
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        borderBottom: '1px solid var(--br)'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '10px 12px',
+        gap: 8
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1,
+        minWidth: 0
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        fontWeight: 500,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+      }
+    }, (_row$exercises = row.exercises) === null || _row$exercises === void 0 ? void 0 : _row$exercises.name), /*#__PURE__*/React.createElement("div", {
+      style: {
+        marginTop: 2
+      }
+    }, /*#__PURE__*/React.createElement(Badge, {
+      mg: (_row$exercises2 = row.exercises) === null || _row$exercises2 === void 0 ? void 0 : _row$exercises2.muscle_group
+    }))), /*#__PURE__*/React.createElement("input", {
+      type: "number",
+      min: "1",
+      max: "10",
+      value: row.default_sets,
+      onChange: e => save(row, {
+        default_sets: Math.max(1, parseInt(e.target.value) || 1)
+      }),
+      style: {
+        width: 40,
+        textAlign: 'center',
+        background: 'var(--s2)',
+        border: '1px solid var(--br)',
+        borderRadius: 6,
+        color: 'var(--tx)',
+        fontFamily: "'DM Sans',sans-serif",
+        fontSize: 14,
+        fontWeight: 600,
+        padding: '7px 0',
+        outline: 'none'
+      }
+    }), /*#__PURE__*/React.createElement("input", {
+      type: "number",
+      min: "1",
+      max: "50",
+      value: row.default_reps,
+      onChange: e => save(row, {
+        default_reps: Math.max(1, parseInt(e.target.value) || 1)
+      }),
+      style: {
+        width: 48,
+        textAlign: 'center',
+        background: 'var(--s2)',
+        border: '1px solid var(--br)',
+        borderRadius: 6,
+        color: 'var(--tx)',
+        fontFamily: "'DM Sans',sans-serif",
+        fontSize: 14,
+        fontWeight: 600,
+        padding: '7px 0',
+        outline: 'none'
+      }
+    }), /*#__PURE__*/React.createElement("button", {
+      className: `tut-badge-btn${row.tut_type !== 'none' ? ' active' : ''}`,
+      onClick: () => setExpandedTUT(open ? null : row.id),
+      style: {
+        flexShrink: 0,
+        fontSize: 10,
+        padding: '4px 8px'
+      }
+    }, tutLabel(row.tut_type, row.tut_tension, row.tut_duration))), open && /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: '0 12px 12px'
+      }
+    }, /*#__PURE__*/React.createElement(TUTSelector, {
+      value: {
+        tut_type: row.tut_type,
+        tut_tension: row.tut_tension,
+        tut_duration: row.tut_duration
+      },
+      onChange: v => {
+        save(row, v);
+        setExpandedTUT(null);
+      }
+    })));
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "hdr"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: onBack
+  }, /*#__PURE__*/React.createElement(IChevL, null), " Back"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "'Bebas Neue',sans-serif",
+      fontSize: 18,
+      letterSpacing: 1,
+      flex: 1,
+      textAlign: 'center',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      padding: '0 8px'
+    }
+  }, template.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 60,
+      fontSize: 11,
+      color: 'var(--tm)',
+      textAlign: 'right'
+    }
+  }, rows.length, " exercises")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: '8px 12px',
+      background: 'var(--s2)',
+      borderTop: '1px solid var(--br)',
+      borderBottom: '1px solid var(--br)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      fontSize: 10,
+      fontWeight: 700,
+      letterSpacing: '1.5px',
+      textTransform: 'uppercase',
+      color: 'var(--tm)'
+    }
+  }, "Exercise"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 40,
+      textAlign: 'center',
+      fontSize: 10,
+      fontWeight: 700,
+      letterSpacing: '1px',
+      textTransform: 'uppercase',
+      color: 'var(--tm)'
+    }
+  }, "Sets"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 48,
+      textAlign: 'center',
+      fontSize: 10,
+      fontWeight: 700,
+      letterSpacing: '1px',
+      textTransform: 'uppercase',
+      color: 'var(--tm)',
+      marginLeft: 8
+    }
+  }, "Reps"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 64,
+      textAlign: 'center',
+      fontSize: 10,
+      fontWeight: 700,
+      letterSpacing: '1px',
+      textTransform: 'uppercase',
+      color: 'var(--tm)',
+      marginLeft: 8
+    }
+  }, "TUT")), loading ? /*#__PURE__*/React.createElement("div", {
+    className: "loading"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  })) : rows.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "empty"
+  }, /*#__PURE__*/React.createElement(NeonDumbbell, {
+    size: 48
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "empty-ttl"
+  }, "No exercises in this template")) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: 'var(--s1)'
+    }
+  }, rows.map(r => /*#__PURE__*/React.createElement(ExRow, {
+    key: r.id,
+    row: r
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '16px 16px 0'
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-p",
+    onClick: () => onConfirm(template),
+    disabled: rows.length === 0
+  }, "\u25B6  Start with This Template")));
+}
+function WorkoutStarter({
+  user,
+  onStart
+}) {
+  var _activeRun$splits2, _nextSlot$templates2, _activeRun$splits3;
+  const [loading, setLoading] = useState(true);
+  const [starting, setStarting] = useState(false);
+  const [activeRun, setActiveRun] = useState(null);
+  const [nextSlot, setNextSlot] = useState(null);
+  const [templates, setTemplates] = useState([]);
+  const [view, setView] = useState('start'); // 'start' | 'picker' | 'preview'
+  const [previewTpl, setPreviewTpl] = useState(null);
+  const [err, setErr] = useState('');
+  useEffect(() => {
+    load();
+  }, []);
+  async function load() {
+    setLoading(true);
+    const [{
+      data: runs
+    }, {
+      data: tpls
+    }] = await Promise.all([db.get('split_runs', `select=*,splits(id,name)&user_id=eq.${db.uid}&finished_at=is.null&limit=1`), db.get('templates', 'select=id,name,is_global,user_id&order=name.asc')]);
+    if (runs && runs.length > 0) {
+      const run = runs[0];
+      const {
+        data: slots
+      } = await db.get('split_slots', `select=*,templates(id,name)&split_id=eq.${run.split_id}&order=week_number.asc,day_order.asc`);
+      if (slots) {
+        const ws = slots.filter(s => s.template_id);
+        const next = ws[run.current_slot_index];
+        setActiveRun({
+          ...run,
+          workoutSlots: ws,
+          totalSlots: ws.length
+        });
+        setNextSlot(next || null);
+      }
+    }
+    if (tpls) setTemplates(tpls.filter(t => t.is_global || t.user_id === db.uid));
+    setLoading(false);
+  }
+  async function beginWorkout(templateId, slotId, splitRunId, slotIndex, totalSlots, workoutName) {
+    setErr('');
+    setStarting(true);
+    try {
+      const {
+        data: wData
+      } = await db.post('workouts', {
+        user_id: db.uid,
+        template_id: templateId,
+        split_run_id: splitRunId,
+        name: workoutName,
+        started_at: new Date().toISOString()
+      });
+      if (!wData) throw new Error('Failed to create workout');
+      const workoutId = (Array.isArray(wData) ? wData[0] : wData).id;
+      let src = [];
+      if (slotId) {
+        const {
+          data: se
+        } = await db.get('split_slot_exercises', `select=*,exercises(id,name,muscle_group,is_bodyweight)&split_slot_id=eq.${slotId}&order=sort_order.asc`);
+        if (se && se.length > 0) src = se;
+      }
+      if (src.length === 0 && templateId) {
+        const {
+          data: te
+        } = await db.get('template_exercises', `select=*,exercises(id,name,muscle_group,is_bodyweight)&template_id=eq.${templateId}&order=sort_order.asc`);
+        src = te || [];
+      }
+      let exercises = [];
+      if (src.length > 0) {
+        const {
+          data: weData
+        } = await db.post('workout_exercises', src.map((s, i) => ({
+          workout_id: workoutId,
+          exercise_id: s.exercises.id,
+          sort_order: s.sort_order || i
+        })));
+        const weList = Array.isArray(weData) ? weData : [weData];
+        const allSetRows = [];
+        for (const we of weList) {
+          const s = src.find(x => x.exercises.id === we.exercise_id);
+          if (!s) continue;
+          for (let n = 1; n <= (s.default_sets || 4); n++) allSetRows.push({
+            workout_exercise_id: we.id,
+            set_number: n,
+            weight: null,
+            reps: s.default_reps || 10,
+            completed: false,
+            tut_type: s.tut_type || 'none',
+            tut_tension: s.tut_tension || 'neither',
+            tut_duration: s.tut_duration || 1
+          });
+        }
+        const {
+          data: setsData
+        } = await db.post('sets', allSetRows);
+        const setsList = Array.isArray(setsData) ? setsData : [setsData];
+        exercises = weList.map(we => {
+          const s = src.find(x => x.exercises.id === we.exercise_id);
+          const weSets = setsList.filter(st => st.workout_exercise_id === we.id).sort((a, b) => a.set_number - b.set_number);
+          return {
+            workoutExerciseId: we.id,
+            exercise: (s === null || s === void 0 ? void 0 : s.exercises) || {},
+            sets: weSets
+          };
+        }).filter(e => e.sets.length > 0);
+      }
+      onStart({
+        workoutId,
+        workoutName,
+        splitRunId,
+        slotIndex,
+        totalSlots,
+        exercises
+      });
+    } catch (e) {
+      setErr(e.message || 'Something went wrong.');
+    }
+    setStarting(false);
+  }
+  async function startFromSplit() {
+    var _nextSlot$templates;
+    if (!nextSlot || !activeRun) return;
+    await beginWorkout(nextSlot.template_id, nextSlot.id, activeRun.id, activeRun.current_slot_index, activeRun.totalSlots, `Wk${nextSlot.week_number}·D${nextSlot.day_order + 1} — ${((_nextSlot$templates = nextSlot.templates) === null || _nextSlot$templates === void 0 ? void 0 : _nextSlot$templates.name) || 'Workout'}`);
+  }
+  async function startFreestyle() {
+    setErr('');
+    setStarting(true);
+    try {
+      const name = 'Freestyle — ' + new Date().toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric'
+      });
+      const {
+        data: wData
+      } = await db.post('workouts', {
+        user_id: db.uid,
+        template_id: null,
+        name,
+        started_at: new Date().toISOString()
+      });
+      if (!wData) throw new Error('Failed to create workout');
+      const workoutId = (Array.isArray(wData) ? wData[0] : wData).id;
+      onStart({
+        workoutId,
+        workoutName: name,
+        splitRunId: null,
+        slotIndex: null,
+        totalSlots: null,
+        exercises: []
+      });
+    } catch (e) {
+      setErr(e.message || 'Something went wrong.');
+    }
+    setStarting(false);
+  }
+  if (view === 'preview' && previewTpl) return /*#__PURE__*/React.createElement(TemplatePreview, {
+    template: previewTpl,
+    user: user,
+    onBack: () => setView('picker'),
+    onConfirm: t => beginWorkout(t.id, null, null, null, null, t.name)
+  });
+  if (view === 'picker') return /*#__PURE__*/React.createElement(SplitTemplatePicker, {
+    templates: templates,
+    onSelect: t => {
+      if (t) {
+        setPreviewTpl(t);
+        setView('preview');
+      } else setView('start');
+    },
+    onClose: () => setView('start')
+  });
+  if (loading) return /*#__PURE__*/React.createElement("div", {
+    className: "screen"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "loading"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  })));
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "hdr"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "hdr-ttl"
+  }, "Start Workout")), err && /*#__PURE__*/React.createElement("div", {
+    className: "alert-e",
+    style: {
+      margin: '0 16px 12px'
+    }
+  }, err), starting ? /*#__PURE__*/React.createElement("div", {
+    className: "empty",
+    style: {
+      height: '50vh'
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "spin",
+    style: {
+      width: 32,
+      height: 32,
+      borderWidth: 3
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "empty-ttl"
+  }, "Building your workout...")) : /*#__PURE__*/React.createElement(React.Fragment, null, activeRun && nextSlot && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "sec-hd"
+  }, "Continue Split"), /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      margin: '0 16px 12px',
+      background: 'var(--acc8)',
+      borderColor: 'var(--acc20)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      fontWeight: 600,
+      letterSpacing: '1px',
+      textTransform: 'uppercase',
+      color: 'var(--acc)',
+      marginBottom: 6
+    }
+  }, (_activeRun$splits2 = activeRun.splits) === null || _activeRun$splits2 === void 0 ? void 0 : _activeRun$splits2.name, " \u2014 Week ", nextSlot.week_number, ", Day ", nextSlot.day_order + 1), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 18,
+      fontWeight: 600,
+      color: 'var(--tx)',
+      marginBottom: 4
+    }
+  }, (_nextSlot$templates2 = nextSlot.templates) === null || _nextSlot$templates2 === void 0 ? void 0 : _nextSlot$templates2.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--tm)',
+      marginBottom: 14
+    }
+  }, "Slot ", activeRun.current_slot_index + 1, " of ", activeRun.totalSlots), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-p",
+    onClick: startFromSplit
+  }, "\u25B6  Start This Workout"))), activeRun && !nextSlot && /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      margin: '0 16px 12px',
+      background: 'var(--acc8)',
+      borderColor: 'var(--acc20)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 16,
+      fontWeight: 600,
+      color: 'var(--acc)'
+    }
+  }, "\uD83C\uDF89 Split Complete!"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: 'var(--ts)',
+      marginTop: 4
+    }
+  }, (_activeRun$splits3 = activeRun.splits) === null || _activeRun$splits3 === void 0 ? void 0 : _activeRun$splits3.name, " \u2014 all done.")), /*#__PURE__*/React.createElement("div", {
+    className: "sec-hd"
+  }, activeRun ? 'Or Free Workout' : 'Start a Workout'), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '0 16px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-s",
+    onClick: () => setView('picker')
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "16",
+    height: "16",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "3",
+    width: "7",
+    height: "7"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "14",
+    y: "3",
+    width: "7",
+    height: "7"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "3",
+    y: "14",
+    width: "7",
+    height: "7"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "14",
+    y: "14",
+    width: "7",
+    height: "7"
+  })), "Pick a Template"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-g",
+    onClick: startFreestyle
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "16",
+    height: "16",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("line", {
+    x1: "12",
+    y1: "5",
+    x2: "12",
+    y2: "19"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "5",
+    y1: "12",
+    x2: "19",
+    y2: "12"
+  })), "Freestyle (no template)"))));
+}
+
+// ── Active Workout ────────────────────────────────────────────────────────────
+function ActiveWorkout({
+  workout,
+  user,
+  onFinish
+}) {
+  const [exercises, setExercises] = useState(workout.exercises);
+  const [sets, setSets] = useState(() => {
+    const m = {};
+    for (const ex of workout.exercises) m[ex.workoutExerciseId] = ex.sets.map(s => ({
+      ...s
+    }));
+    return m;
+  });
+  const [finishing, setFinishing] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+  const [showExPicker, setShowExPicker] = useState(false);
+  const [expandedTUTSet, setExpandedTUTSet] = useState(null);
+  const [notes, setNotes] = useState('');
+  const bwNum = parseFloat(user === null || user === void 0 ? void 0 : user.body_weight);
+  const bwUnit = (user === null || user === void 0 ? void 0 : user.weight_unit) || 'lbs';
+  useEffect(() => {
+    const iv = setInterval(() => setElapsed(e => e + 1), 1000);
+    return () => clearInterval(iv);
+  }, []);
+  const fmtTime = s => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
+  const allSets = Object.values(sets).flat();
+  const doneCount = allSets.filter(s => s.completed).length;
+  const totalCount = allSets.length;
+  const progress = totalCount > 0 ? doneCount / totalCount : 0;
+  async function updateSetTUT(weId, setId, v) {
+    setSets(p => ({
+      ...p,
+      [weId]: p[weId].map(s => s.id === setId ? {
+        ...s,
+        ...v
+      } : s)
+    }));
+    await db.patch('sets', v, `id=eq.${setId}`);
+    setExpandedTUTSet(null);
+  }
+  function updateWeightLocal(weId, setId, val) {
+    setSets(p => ({
+      ...p,
+      [weId]: p[weId].map(s => s.id === setId ? {
+        ...s,
+        weight: parseFloat(val) || null
+      } : s)
+    }));
+  }
+  async function saveWeight(weId, setId) {
+    var _sets$weId;
+    const s = (_sets$weId = sets[weId]) === null || _sets$weId === void 0 ? void 0 : _sets$weId.find(s => s.id === setId);
+    if (s) await db.patch('sets', {
+      weight: s.weight
+    }, `id=eq.${setId}`);
+  }
+  async function updateReps(weId, setId, val) {
+    const r = Math.max(1, parseInt(val) || 1);
+    setSets(p => ({
+      ...p,
+      [weId]: p[weId].map(s => s.id === setId ? {
+        ...s,
+        reps: r
+      } : s)
+    }));
+    await db.patch('sets', {
+      reps: r
+    }, `id=eq.${setId}`);
+  }
+  async function toggleDone(weId, setId, cur) {
+    const updates = {
+      completed: !cur
+    };
+    const exSets = sets[weId] || [];
+    const s = exSets.find(s => s.id === setId);
+    setSets(p => ({
+      ...p,
+      [weId]: p[weId].map(s => s.id === setId ? {
+        ...s,
+        ...updates
+      } : s)
+    }));
+    if (s && s.weight) await db.patch('sets', {
+      ...updates,
+      weight: s.weight
+    }, `id=eq.${setId}`);else await db.patch('sets', updates, `id=eq.${setId}`);
+    if (!cur && s !== null && s !== void 0 && s.weight) {
+      const idx = exSets.findIndex(x => x.id === setId);
+      const toFill = exSets.slice(idx + 1).filter(ns => !ns.weight && !ns.completed);
+      if (toFill.length > 0) {
+        setSets(p => ({
+          ...p,
+          [weId]: p[weId].map(ns => toFill.find(f => f.id === ns.id) ? {
+            ...ns,
+            weight: s.weight
+          } : ns)
+        }));
+        for (const ns of toFill) await db.patch('sets', {
+          weight: s.weight
+        }, `id=eq.${ns.id}`);
+      }
+    }
+  }
+  async function addSet(weId, ex) {
+    const exSets = sets[weId] || [];
+    const lastSet = exSets[exSets.length - 1];
+    const n = exSets.length + 1;
+    const {
+      data
+    } = await db.post('sets', {
+      workout_exercise_id: weId,
+      set_number: n,
+      weight: (lastSet === null || lastSet === void 0 ? void 0 : lastSet.weight) || null,
+      reps: (lastSet === null || lastSet === void 0 ? void 0 : lastSet.reps) || 10,
+      completed: false,
+      tut_type: (lastSet === null || lastSet === void 0 ? void 0 : lastSet.tut_type) || 'none',
+      tut_tension: (lastSet === null || lastSet === void 0 ? void 0 : lastSet.tut_tension) || 'neither',
+      tut_duration: (lastSet === null || lastSet === void 0 ? void 0 : lastSet.tut_duration) || 1
+    });
+    if (data) {
+      const ns = Array.isArray(data) ? data[0] : data;
+      setSets(p => ({
+        ...p,
+        [weId]: [...p[weId], ns]
+      }));
+    }
+  }
+  async function addExercise(ex) {
+    setShowExPicker(false);
+    const sortOrder = exercises.length;
+    const {
+      data: weData
+    } = await db.post('workout_exercises', {
+      workout_id: workout.workoutId,
+      exercise_id: ex.id,
+      sort_order: sortOrder
+    });
+    if (!weData) return;
+    const we = Array.isArray(weData) ? weData[0] : weData;
+    const defaultSets = [1, 2, 3, 4].map(n => ({
+      workout_exercise_id: we.id,
+      set_number: n,
+      weight: null,
+      reps: 10,
+      completed: false,
+      tut_type: 'none',
+      tut_tension: 'neither',
+      tut_duration: 1
+    }));
+    const {
+      data: setsData
+    } = await db.post('sets', defaultSets);
+    const newSets = Array.isArray(setsData) ? setsData : [setsData];
+    setExercises(p => [...p, {
+      workoutExerciseId: we.id,
+      exercise: ex,
+      sets: newSets
+    }]);
+    setSets(p => ({
+      ...p,
+      [we.id]: newSets
+    }));
+  }
+  async function finish() {
+    if (!window.confirm('Finish this workout?')) return;
+    setFinishing(true);
+    const payload = {
+      finished_at: new Date().toISOString()
+    };
+    if (notes.trim()) payload.notes = notes.trim();
+    await db.patch('workouts', payload, `id=eq.${workout.workoutId}`);
+    if (workout.splitRunId) {
+      const next = workout.slotIndex + 1;
+      const p2 = {
+        current_slot_index: next
+      };
+      if (next >= workout.totalSlots) p2.finished_at = new Date().toISOString();
+      await db.patch('split_runs', p2, `id=eq.${workout.splitRunId}`);
+    }
+    setFinishing(false);
+    onFinish();
+  }
+  const existingExIds = exercises.map(e => {
+    var _e$exercise;
+    return (_e$exercise = e.exercise) === null || _e$exercise === void 0 ? void 0 : _e$exercise.id;
+  }).filter(Boolean);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen"
+  }, showExPicker && /*#__PURE__*/React.createElement(ExercisePicker, {
+    onSelect: addExercise,
+    onClose: () => setShowExPicker(false),
+    excludeIds: existingExIds
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "hdr"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: () => window.confirm('Quit? Completed sets are saved.') && onFinish()
+  }, /*#__PURE__*/React.createElement(IChevL, null)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: 'center',
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "'Bebas Neue',sans-serif",
+      fontSize: 19,
+      letterSpacing: 1,
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      padding: '0 8px'
+    }
+  }, workout.workoutName), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--tm)'
+    }
+  }, fmtTime(elapsed))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 48,
+      textAlign: 'right',
+      fontSize: 13,
+      color: 'var(--acc)',
+      fontWeight: 700
+    }
+  }, doneCount, "/", totalCount)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      margin: '0 16px 16px',
+      height: 4,
+      background: 'var(--br)',
+      borderRadius: 4,
+      overflow: 'hidden'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: '100%',
+      background: 'var(--acc)',
+      width: `${progress * 100}%`,
+      transition: 'width .3s',
+      borderRadius: 4
+    }
+  })), exercises.length === 0 && /*#__PURE__*/React.createElement("div", {
+    className: "empty"
+  }, /*#__PURE__*/React.createElement(NeonBarbell, {
+    size: 56
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "empty-ttl"
+  }, "No exercises yet"), /*#__PURE__*/React.createElement("div", {
+    className: "empty-sub"
+  }, "Tap \"Add Exercise\" below to start")), exercises.map(ex => {
+    const exSets = sets[ex.workoutExerciseId] || [];
+    const allDone = exSets.length > 0 && exSets.every(s => s.completed);
+    return /*#__PURE__*/React.createElement("div", {
+      key: ex.workoutExerciseId,
+      style: {
+        margin: '0 16px 16px',
+        background: 'var(--s1)',
+        border: `1px solid ${allDone ? 'var(--acc20)' : 'var(--br)'}`,
+        borderRadius: 'var(--r)',
+        overflow: 'hidden',
+        transition: 'border-color .3s'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: '12px 14px',
+        borderBottom: '1px solid var(--br)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        background: allDone ? 'var(--acc8)' : 'transparent',
+        transition: 'background .3s'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 15,
+        fontWeight: 600
+      }
+    }, ex.exercise.name), /*#__PURE__*/React.createElement("div", {
+      style: {
+        marginTop: 3
+      }
+    }, /*#__PURE__*/React.createElement(Badge, {
+      mg: ex.exercise.muscle_group
+    }))), allDone && /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 18,
+        color: 'var(--acc)'
+      }
+    }, "\u2713")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '6px 14px',
+        background: 'var(--s2)',
+        borderBottom: '1px solid var(--br)'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: 26,
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: '1px',
+        textTransform: 'uppercase',
+        color: 'var(--tm)'
+      }
+    }, "Set"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1,
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: '1px',
+        textTransform: 'uppercase',
+        color: 'var(--tm)'
+      }
+    }, "Weight ", ex.exercise.is_bodyweight ? '(BW%)' : `(${bwUnit})`), /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: 52,
+        textAlign: 'center',
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: '1px',
+        textTransform: 'uppercase',
+        color: 'var(--tm)'
+      }
+    }, "Reps"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: 60,
+        textAlign: 'center',
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: '1px',
+        textTransform: 'uppercase',
+        color: 'var(--tm)'
+      }
+    }, "TUT"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: 34,
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: '1px',
+        textTransform: 'uppercase',
+        color: 'var(--tm)',
+        textAlign: 'center'
+      }
+    }, "\u2713")), exSets.map(set => {
+      const done = set.completed;
+      return /*#__PURE__*/React.createElement(React.Fragment, {
+        key: set.id
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: 'flex',
+          alignItems: 'center',
+          padding: '10px 14px',
+          borderBottom: '1px solid var(--br)',
+          background: done ? 'rgba(255,45,85,.04)' : 'transparent',
+          transition: 'background .2s'
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          width: 26,
+          fontSize: 13,
+          fontWeight: 700,
+          color: done ? 'var(--acc)' : 'var(--tm)'
+        }
+      }, set.set_number), ex.exercise.is_bodyweight && bwNum > 0 ? /*#__PURE__*/React.createElement("div", {
+        style: {
+          flex: 1,
+          display: 'flex',
+          gap: 4,
+          flexWrap: 'wrap'
+        }
+      }, [25, 50, 75, 100].map(p => {
+        const w = Math.round(bwNum * p / 100);
+        return /*#__PURE__*/React.createElement("button", {
+          key: p,
+          onClick: () => updateWeightLocal(ex.workoutExerciseId, set.id, w),
+          style: {
+            padding: '4px 6px',
+            borderRadius: 6,
+            fontSize: 11,
+            fontWeight: 600,
+            cursor: 'pointer',
+            fontFamily: "'DM Sans',sans-serif",
+            border: '1px solid var(--br)',
+            background: set.weight === w ? 'var(--acc)' : 'var(--s2)',
+            color: set.weight === w ? '#fff' : 'var(--tm)'
+          }
+        }, p, "%");
+      })) : /*#__PURE__*/React.createElement("input", {
+        type: "number",
+        placeholder: "\u2014",
+        value: set.weight || '',
+        onChange: e => updateWeightLocal(ex.workoutExerciseId, set.id, e.target.value),
+        onBlur: () => saveWeight(ex.workoutExerciseId, set.id),
+        style: {
+          flex: 1,
+          background: 'transparent',
+          border: 'none',
+          borderBottom: '1px solid var(--br)',
+          color: done ? 'var(--acc)' : 'var(--tx)',
+          fontFamily: "'DM Sans',sans-serif",
+          fontSize: 16,
+          fontWeight: 600,
+          outline: 'none',
+          padding: '2px 4px'
+        }
+      }), /*#__PURE__*/React.createElement("input", {
+        type: "number",
+        min: "1",
+        max: "50",
+        value: set.reps,
+        onChange: e => updateReps(ex.workoutExerciseId, set.id, e.target.value),
+        style: {
+          width: 48,
+          textAlign: 'center',
+          background: 'var(--s2)',
+          border: '1px solid var(--br)',
+          borderRadius: 6,
+          color: 'var(--tx)',
+          fontFamily: "'DM Sans',sans-serif",
+          fontSize: 14,
+          fontWeight: 600,
+          padding: '6px 0',
+          outline: 'none',
+          marginLeft: 8
+        }
+      }), /*#__PURE__*/React.createElement("div", {
+        style: {
+          width: 60,
+          textAlign: 'center',
+          marginLeft: 8
+        }
+      }, /*#__PURE__*/React.createElement("button", {
+        className: `tut-badge-btn${set.tut_type !== 'none' ? ' active' : ''}`,
+        onClick: () => setExpandedTUTSet(expandedTUTSet === set.id ? null : set.id),
+        style: {
+          fontSize: 9,
+          padding: '2px 5px'
+        }
+      }, tutLabel(set.tut_type, set.tut_tension, set.tut_duration))), /*#__PURE__*/React.createElement("button", {
+        onClick: () => toggleDone(ex.workoutExerciseId, set.id, set.completed),
+        style: {
+          width: 32,
+          height: 32,
+          borderRadius: '50%',
+          border: `2px solid ${done ? 'var(--acc)' : 'var(--br)'}`,
+          background: done ? 'var(--acc)' : 'transparent',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          transition: 'all .2s',
+          marginLeft: 4
+        }
+      }, done && /*#__PURE__*/React.createElement("svg", {
+        width: "14",
+        height: "14",
+        viewBox: "0 0 24 24",
+        fill: "none",
+        stroke: "#fff",
+        strokeWidth: "3",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }, /*#__PURE__*/React.createElement("polyline", {
+        points: "20 6 9 17 4 12"
+      })))), expandedTUTSet === set.id && /*#__PURE__*/React.createElement("div", {
+        style: {
+          padding: '4px 14px 12px',
+          background: 'var(--s2)',
+          borderBottom: '1px solid var(--br)'
+        }
+      }, /*#__PURE__*/React.createElement(TUTSelector, {
+        value: {
+          tut_type: set.tut_type,
+          tut_tension: set.tut_tension,
+          tut_duration: set.tut_duration
+        },
+        onChange: v => updateSetTUT(ex.workoutExerciseId, set.id, v)
+      })));
+    }), /*#__PURE__*/React.createElement("button", {
+      onClick: () => addSet(ex.workoutExerciseId, ex),
+      style: {
+        width: '100%',
+        padding: '10px',
+        background: 'none',
+        border: 'none',
+        borderTop: '1px dashed var(--br)',
+        color: 'var(--tm)',
+        cursor: 'pointer',
+        fontSize: 12,
+        fontFamily: "'DM Sans',sans-serif",
+        fontWeight: 600
+      }
+    }, "+ Add Set"));
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '0 16px 8px'
+    }
+  }, /*#__PURE__*/React.createElement("textarea", {
+    placeholder: "Workout notes (optional)...",
+    value: notes,
+    onChange: e => setNotes(e.target.value),
+    rows: 2,
+    style: {
+      width: '100%',
+      background: 'var(--s1)',
+      border: '1px solid var(--br)',
+      borderRadius: 'var(--r)',
+      color: 'var(--tx)',
+      padding: '12px',
+      resize: 'none',
+      fontFamily: "'DM Sans',sans-serif",
+      fontSize: 14,
+      outline: 'none',
+      boxSizing: 'border-box',
+      lineHeight: 1.5
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '0 16px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-s",
+    onClick: () => setShowExPicker(true)
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "16",
+    height: "16",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.5",
+    strokeLinecap: "round"
+  }, /*#__PURE__*/React.createElement("line", {
+    x1: "12",
+    y1: "5",
+    x2: "12",
+    y2: "19"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "5",
+    y1: "12",
+    x2: "19",
+    y2: "12"
+  })), "Add Exercise"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-p",
+    onClick: finish,
+    disabled: finishing
+  }, finishing ? /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  }) : `Finish Workout · ${doneCount}/${totalCount} sets`)));
+}
+
+// ── Active Workout ────────────────────────────────────────────────────────────
+function Log({
+  user,
+  onWorkoutComplete
+}) {
+  const [view, setView] = useState('start');
+  const [workoutData, setWorkoutData] = useState(null);
+  if (view === 'active') return /*#__PURE__*/React.createElement(ActiveWorkout, {
+    workout: workoutData,
+    user: user,
+    onFinish: () => {
+      setView('start');
+      onWorkoutComplete();
+    }
+  });
+  return /*#__PURE__*/React.createElement(WorkoutStarter, {
+    user: user,
+    onStart: d => {
+      setWorkoutData(d);
+      setView('active');
+    }
+  });
+}
+
+// ── History ───────────────────────────────────────────────────────────────────
+function History() {
+  const [workouts, setWorkouts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState(null);
+  const [details, setDetails] = useState({});
+  const [detLoading, setDetLoading] = useState(null);
+  const [scores, setScores] = useState({});
+  useEffect(() => {
+    async function load() {
+      const {
+        data: ws
+      } = await db.get('workouts', `select=id,name,started_at,finished_at,notes&user_id=eq.${db.uid}&finished_at=not.is.null&order=started_at.desc&limit=60`);
+      if (!ws) {
+        setLoading(false);
+        return;
+      }
+      setWorkouts(ws);
+      // Load effort scores for all workouts
+      const ids = ws.map(w => w.id).join(',');
+      if (ids) {
+        const {
+          data: wes
+        } = await db.get('workout_exercises', `select=workout_id,sets(weight,reps,tut_duration,completed)&workout_id=in.(${ids})`);
+        if (wes) {
+          const sm = {};
+          for (const we of wes) {
+            const cs = (we.sets || []).filter(s => s.completed);
+            const sc = cs.reduce((sum, s) => sum + (parseFloat(s.weight) || 0) * (s.reps || 0) * (s.tut_duration || 1), 0);
+            sm[we.workout_id] = (sm[we.workout_id] || 0) + sc;
+          }
+          setScores(sm);
+        }
+      }
+      setLoading(false);
+    }
+    load();
+  }, []);
+  async function toggleDetail(wid) {
+    if (expandedId === wid) {
+      setExpandedId(null);
+      return;
+    }
+    setExpandedId(wid);
+    if (details[wid]) return;
+    setDetLoading(wid);
+    const {
+      data
+    } = await db.get('workout_exercises', `select=id,sort_order,exercises(name,muscle_group),sets(id,set_number,weight,reps,completed,tut_type,tut_tension,tut_duration)&workout_id=eq.${wid}&order=sort_order.asc`);
+    if (data) setDetails(p => ({
+      ...p,
+      [wid]: data
+    }));
+    setDetLoading(null);
+  }
+  async function deleteWorkout(wid, name) {
+    if (!window.confirm(`Delete "${name}"?\nThis cannot be undone.`)) return;
+    await db.del('workouts', `id=eq.${wid}`);
+    setWorkouts(p => p.filter(w => w.id !== wid));
+    if (expandedId === wid) setExpandedId(null);
+  }
+  function weekLabel(dateStr) {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diff = Math.floor((now - d) / (7 * 24 * 60 * 60 * 1000));
+    if (diff === 0) return 'This Week';
+    if (diff === 1) return 'Last Week';
+    return d.toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric'
+    });
+  }
+  const grouped = [];
+  let curWeek = null;
+  for (const w of workouts) {
+    const wl = weekLabel(w.started_at);
+    if (wl !== curWeek) {
+      grouped.push({
+        type: 'week',
+        label: wl
+      });
+      curWeek = wl;
+    }
+    grouped.push({
+      type: 'workout',
+      ...w
+    });
+  }
+  const wDur = (s, e) => {
+    if (!e) return '';
+    const m = Math.round((new Date(e) - new Date(s)) / 60000);
+    return m < 60 ? `${m}m` : `${Math.floor(m / 60)}h ${m % 60}m`;
+  };
+  const wDate = d => new Date(d).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric'
+  });
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "hdr"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "hdr-ttl"
+  }, "History")), loading ? /*#__PURE__*/React.createElement("div", {
+    className: "loading"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  })) : workouts.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "empty"
+  }, /*#__PURE__*/React.createElement(NeonChart, {
+    size: 64
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "empty-ttl"
+  }, "No workouts yet"), /*#__PURE__*/React.createElement("div", {
+    className: "empty-sub"
+  }, "Complete a workout to see it here")) : grouped.map((item, i) => {
+    if (item.type === 'week') return /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "sec-hd"
+    }, item.label);
+    const det = details[item.id];
+    const expanded = expandedId === item.id;
+    const doneSets = det ? det.flatMap(e => e.sets).filter(s => s.completed) : [];
+    const score = doneSets.reduce((sum, s) => sum + (parseFloat(s.weight) || 0) * (s.reps || 0) * (s.tut_duration || 1), 0);
+    return /*#__PURE__*/React.createElement("div", {
+      key: item.id,
+      style: {
+        margin: '0 16px 8px',
+        background: 'var(--s1)',
+        border: '1px solid var(--br)',
+        borderRadius: 'var(--r)',
+        overflow: 'hidden'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: '14px 16px',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12
+      },
+      onClick: () => toggleDetail(item.id)
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "li-name"
+    }, item.name), /*#__PURE__*/React.createElement("div", {
+      className: "li-sub"
+    }, wDate(item.started_at), item.finished_at && ` · ${wDur(item.started_at, item.finished_at)}`, scores[item.id] ? ` · ${fmtScore(scores[item.id])}` : '')), detLoading === item.id ? /*#__PURE__*/React.createElement("span", {
+      className: "spin"
+    }) : expanded ? /*#__PURE__*/React.createElement(IChevD, null) : /*#__PURE__*/React.createElement(IChev, null)), expanded && det && /*#__PURE__*/React.createElement("div", {
+      style: {
+        borderTop: '1px solid var(--br)'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: 'flex',
+        gap: 0,
+        borderBottom: '1px solid var(--br)'
+      }
+    }, [['Sets', doneSets.length], ['Exercises', det.length], ['Score', fmtScore(score)]].map(([l, v]) => /*#__PURE__*/React.createElement("div", {
+      key: l,
+      style: {
+        flex: 1,
+        padding: '10px 0',
+        textAlign: 'center',
+        borderRight: '1px solid var(--br)'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 16,
+        fontWeight: 700,
+        color: 'var(--acc)'
+      }
+    }, v), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10,
+        fontWeight: 600,
+        textTransform: 'uppercase',
+        letterSpacing: '1px',
+        color: 'var(--tm)',
+        marginTop: 2
+      }
+    }, l)))), det.map(ex => {
+      var _ex$exercises3, _ex$exercises4;
+      const ds = ex.sets.filter(s => s.completed);
+      if (!ds.length) return null;
+      return /*#__PURE__*/React.createElement("div", {
+        key: ex.id,
+        style: {
+          padding: '10px 16px',
+          borderBottom: '1px solid var(--br)'
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          marginBottom: 6
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 14,
+          fontWeight: 600
+        }
+      }, (_ex$exercises3 = ex.exercises) === null || _ex$exercises3 === void 0 ? void 0 : _ex$exercises3.name), /*#__PURE__*/React.createElement(Badge, {
+        mg: (_ex$exercises4 = ex.exercises) === null || _ex$exercises4 === void 0 ? void 0 : _ex$exercises4.muscle_group
+      })), ds.map(s => /*#__PURE__*/React.createElement("div", {
+        key: s.id,
+        style: {
+          fontSize: 12,
+          color: 'var(--ts)',
+          marginBottom: 2
+        }
+      }, "Set ", s.set_number, ": ", s.weight ? `${s.weight} ` : 'BW', " \xD7 ", s.reps, " reps", s.tut_type !== 'none' && /*#__PURE__*/React.createElement("span", {
+        style: {
+          color: 'var(--acc)',
+          marginLeft: 6
+        }
+      }, tutLabel(s.tut_type, s.tut_tension, s.tut_duration)))));
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: '10px 16px'
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: () => deleteWorkout(item.id, item.name),
+      style: {
+        width: '100%',
+        padding: '10px',
+        background: 'none',
+        border: '1px solid rgba(255,59,48,.4)',
+        borderRadius: 'var(--r)',
+        color: 'rgba(255,59,48,.8)',
+        cursor: 'pointer',
+        fontSize: 13,
+        fontFamily: "'DM Sans',sans-serif",
+        fontWeight: 600
+      }
+    }, "\uD83D\uDDD1 Delete Workout")), item.notes && /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: '10px 16px 14px',
+        borderTop: '1px solid var(--br)'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10,
+        fontWeight: 700,
+        textTransform: 'uppercase',
+        letterSpacing: '1px',
+        color: 'var(--tm)',
+        marginBottom: 4
+      }
+    }, "Notes"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        color: 'var(--ts)',
+        lineHeight: 1.5
+      }
+    }, item.notes))));
+  }));
+}
+
+// ── Progress ──────────────────────────────────────────────────────────────────
+function Progress() {
+  const [stats, setStats] = useState({
+    workouts: 0,
+    sets: 0,
+    score: 0,
+    streak: 0
+  });
+  const [activity, setActivity] = useState([]);
+  const [prs, setPrs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    async function load() {
+      const [{
+        data: ws
+      }, {
+        data: sets
+      }, {
+        data: wes
+      }] = await Promise.all([db.get('workouts', `select=id,started_at,finished_at&user_id=eq.${db.uid}&finished_at=not.is.null&order=started_at.asc`), db.get('sets', 'select=weight,reps,tut_duration,completed&completed=eq.true'), db.get('workout_exercises', 'select=id,exercise_id,exercises(name,muscle_group)')]);
+      if (ws && sets) {
+        const score = sets.reduce((sum, s) => sum + (parseFloat(s.weight) || 0) * (s.reps || 0) * (s.tut_duration || 1), 0);
+        const byDay = {};
+        for (const w of ws) {
+          const d = w.started_at.split('T')[0];
+          byDay[d] = (byDay[d] || 0) + 1;
+        }
+        const last30 = Array.from({
+          length: 30
+        }, (_, i) => {
+          const d = new Date();
+          d.setDate(d.getDate() - 29 + i);
+          return d.toISOString().split('T')[0];
+        });
+        setActivity(last30.map(d => ({
+          d,
+          n: byDay[d] || 0
+        })));
+        let streak = 0;
+        for (let i = 0; i < 30; i++) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const ds = d.toISOString().split('T')[0];
+          if (byDay[ds]) streak++;else if (i > 0) break;
+        }
+        setStats({
+          workouts: ws.length,
+          sets: sets.length,
+          score,
+          streak
+        });
+      }
+      // Compute PRs
+      if (sets && wes) {
+        const weById = {};
+        for (const we of wes) weById[we.id] = we;
+        // Get heavy sets with workout_exercise reference - need the sets query to include workout_exercise_id
+        // We'll do a targeted PR query
+        const {
+          data: prSets
+        } = await db.get('sets', 'select=weight,reps,workout_exercise_id&completed=eq.true&weight=not.is.null&order=weight.desc&limit=3000');
+        if (prSets) {
+          const prByEx = {};
+          for (const s of prSets) {
+            const we = weById[s.workout_exercise_id];
+            if (!we) continue;
+            const exId = we.exercise_id;
+            if (!prByEx[exId] || s.weight > prByEx[exId].weight) {
+              var _we$exercises, _we$exercises2;
+              prByEx[exId] = {
+                name: (_we$exercises = we.exercises) === null || _we$exercises === void 0 ? void 0 : _we$exercises.name,
+                mg: (_we$exercises2 = we.exercises) === null || _we$exercises2 === void 0 ? void 0 : _we$exercises2.muscle_group,
+                weight: s.weight,
+                reps: s.reps
+              };
+            }
+          }
+          setPrs(Object.values(prByEx).filter(p => p.weight > 0).sort((a, b) => b.weight - a.weight).slice(0, 10));
+        }
+      }
+      setLoading(false);
+    }
+    load();
+  }, []);
+  const maxN = Math.max(1, ...activity.map(a => a.n));
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "hdr"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "hdr-ttl"
+  }, "Progress")), loading ? /*#__PURE__*/React.createElement("div", {
+    className: "loading"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  })) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "stat-grid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "stat-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "stat-v"
+  }, stats.workouts), /*#__PURE__*/React.createElement("div", {
+    className: "stat-l"
+  }, "Workouts")), /*#__PURE__*/React.createElement("div", {
+    className: "stat-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "stat-v"
+  }, stats.sets.toLocaleString()), /*#__PURE__*/React.createElement("div", {
+    className: "stat-l"
+  }, "Sets Done"))), /*#__PURE__*/React.createElement("div", {
+    className: "stat-grid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "stat-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "stat-v"
+  }, fmtScore(stats.score)), /*#__PURE__*/React.createElement("div", {
+    className: "stat-l"
+  }, "Total Effort"), /*#__PURE__*/React.createElement("div", {
+    className: "stat-hint"
+  }, "wt \xD7 reps \xD7 TUT")), /*#__PURE__*/React.createElement("div", {
+    className: "stat-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "stat-v"
+  }, stats.streak), /*#__PURE__*/React.createElement("div", {
+    className: "stat-l"
+  }, "Day Streak"), /*#__PURE__*/React.createElement("div", {
+    className: "stat-hint"
+  }, "consecutive days"))), /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-ttl"
+  }, "Activity \u2014 Last 30 Days"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'flex-end',
+      gap: 3,
+      height: 64,
+      marginBottom: 8
+    }
+  }, activity.map((a, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      flex: 1,
+      height: '100%',
+      display: 'flex',
+      alignItems: 'flex-end'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: '100%',
+      background: a.n > 0 ? 'var(--acc)' : 'var(--br)',
+      borderRadius: '2px 2px 0 0',
+      height: `${a.n > 0 ? Math.max(16, a.n / maxN * 100) : 6}%`,
+      transition: 'height .2s',
+      opacity: a.n > 0 ? 1 : 0.4
+    }
+  })))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      fontSize: 10,
+      color: 'var(--tm)'
+    }
+  }, /*#__PURE__*/React.createElement("span", null, "30d ago"), /*#__PURE__*/React.createElement("span", null, "Today"))), prs.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "sec-hd"
+  }, "Personal Records"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      margin: '0 16px 16px',
+      background: 'var(--s1)',
+      border: '1px solid var(--br)',
+      borderRadius: 'var(--r)',
+      overflow: 'hidden'
+    }
+  }, prs.map((pr, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: '11px 14px',
+      borderBottom: i < prs.length - 1 ? '1px solid var(--br)' : 'none'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 600
+    }
+  }, pr.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 3
+    }
+  }, /*#__PURE__*/React.createElement(Badge, {
+    mg: pr.mg
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: 'right'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 17,
+      fontWeight: 700,
+      color: 'var(--acc)'
+    }
+  }, pr.weight, " ", /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      color: 'var(--tm)',
+      fontWeight: 400
+    }
+  }, "lbs")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: 'var(--tm)'
+    }
+  }, pr.reps, " reps")))))), stats.workouts === 0 && /*#__PURE__*/React.createElement("div", {
+    className: "empty"
+  }, /*#__PURE__*/React.createElement(NeonChart, {
+    size: 56
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "empty-ttl"
+  }, "No data yet"), /*#__PURE__*/React.createElement("div", {
+    className: "empty-sub"
+  }, "Complete workouts to see your progress here"))));
+}
+function ComingSoon({
+  title,
+  sub,
+  icon = "bolt"
+}) {
+  const icons = {
+    bolt: /*#__PURE__*/React.createElement(NeonBolt, null),
+    chart: /*#__PURE__*/React.createElement(NeonChart, null),
+    barbell: /*#__PURE__*/React.createElement(NeonBarbell, null)
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "hdr"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "hdr-ttl"
+  }, title)), /*#__PURE__*/React.createElement("div", {
+    className: "cs"
+  }, icons[icon] || /*#__PURE__*/React.createElement(NeonBolt, null), /*#__PURE__*/React.createElement("div", {
+    className: "cs-ttl",
+    style: {
+      textShadow: "0 0 20px rgba(255,45,85,.4)"
+    }
+  }, "Coming Next"), /*#__PURE__*/React.createElement("div", {
+    className: "cs-sub"
+  }, sub)));
+}
+function SplitTemplatePicker({
+  templates,
+  onSelect,
+  onClose
+}) {
+  const [search, setSearch] = useState('');
+  const filtered = templates.filter(t => t.name.toLowerCase().includes(search.toLowerCase()));
+  return /*#__PURE__*/React.createElement("div", {
+    className: "picker"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "picker-hdr"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: onClose
+  }, /*#__PURE__*/React.createElement(IChevL, null), " Cancel"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "'Bebas Neue',sans-serif",
+      fontSize: 22,
+      letterSpacing: 1
+    }
+  }, "Assign Template")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '8px 16px 0',
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "srch",
+    style: {
+      margin: '0 0 8px'
+    }
+  }, /*#__PURE__*/React.createElement(ISearch, null), /*#__PURE__*/React.createElement("input", {
+    placeholder: "Search templates...",
+    value: search,
+    onChange: e => setSearch(e.target.value),
+    autoFocus: true
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "picker-body"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "lst",
+    style: {
+      margin: '0 16px'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "li",
+    onClick: () => onSelect(null),
+    style: {
+      background: 'var(--s2)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "li-name",
+    style: {
+      color: 'var(--tm)'
+    }
+  }, "Rest Day")), filtered.map(t => /*#__PURE__*/React.createElement("div", {
+    key: t.id,
+    className: "li",
+    onClick: () => onSelect(t)
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "li-name"
+  }, t.name), t.is_global && /*#__PURE__*/React.createElement("span", {
+    className: "global-badge",
+    style: {
+      marginTop: 4,
+      display: 'inline-block'
+    }
+  }, "Default")), /*#__PURE__*/React.createElement(IChev, null))))));
+}
+
+// ── Slot Editor (spreadsheet view) ───────────────────────────────────────────
+function SlotEditor({
+  slot,
+  user,
+  onBack
+}) {
+  var _slot$templates;
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [expandedTUT, setExpandedTUT] = useState(null);
+  const bwNum = parseFloat(user === null || user === void 0 ? void 0 : user.body_weight);
+  const bwUnit = (user === null || user === void 0 ? void 0 : user.weight_unit) || 'lbs';
+  useEffect(() => {
+    loadRows();
+  }, [slot.id]);
+  async function loadRows() {
+    setLoading(true);
+    const {
+      data: ov
+    } = await db.get('split_slot_exercises', `select=*,exercises(id,name,muscle_group,is_bodyweight)&split_slot_id=eq.${slot.id}&order=sort_order.asc`);
+    if (ov && ov.length > 0) {
+      setRows(ov);
+    } else if (slot.template_id) {
+      const {
+        data: te
+      } = await db.get('template_exercises', `select=*,exercises(id,name,muscle_group,is_bodyweight)&template_id=eq.${slot.template_id}&order=sort_order.asc`);
+      if (te) setRows(te.map(t => {
+        var _t$exercises;
+        return {
+          _unsaved: true,
+          split_slot_id: slot.id,
+          exercise_id: (_t$exercises = t.exercises) === null || _t$exercises === void 0 ? void 0 : _t$exercises.id,
+          exercises: t.exercises,
+          sort_order: t.sort_order,
+          default_sets: t.default_sets,
+          default_reps: t.default_reps,
+          tut_type: t.tut_type,
+          tut_tension: t.tut_tension,
+          tut_duration: t.tut_duration
+        };
+      }));
+    }
+    setLoading(false);
+  }
+  async function saveRow(row, updates) {
+    const merged = {
+      ...row,
+      ...updates
+    };
+    setRows(p => p.map(r => r.exercise_id === row.exercise_id ? {
+      ...r,
+      ...updates
+    } : r));
+    const payload = {
+      default_sets: merged.default_sets,
+      default_reps: merged.default_reps,
+      tut_type: merged.tut_type,
+      tut_tension: merged.tut_tension,
+      tut_duration: merged.tut_duration
+    };
+    if (row._unsaved || !row.id) {
+      const {
+        data
+      } = await db.post('split_slot_exercises', {
+        split_slot_id: slot.id,
+        exercise_id: merged.exercise_id,
+        sort_order: merged.sort_order,
+        ...payload
+      });
+      if (data) {
+        const s = Array.isArray(data) ? data[0] : data;
+        setRows(p => p.map(r => r.exercise_id === row.exercise_id ? {
+          ...r,
+          ...updates,
+          id: s.id,
+          _unsaved: false
+        } : r));
+      }
+    } else {
+      await db.patch('split_slot_exercises', payload, `id=eq.${row.id}`);
+    }
+    // Sync changes back to the template
+    if (slot.template_id && merged.exercise_id) {
+      const {
+        data: te
+      } = await db.get('template_exercises', `select=id&template_id=eq.${slot.template_id}&exercise_id=eq.${merged.exercise_id}&limit=1`);
+      if (te && te.length > 0) await db.patch('template_exercises', payload, `id=eq.${te[0].id}`);
+    }
+  }
+  async function resetFromTemplate() {
+    if (!slot.template_id || !window.confirm('Reset all rows from template? Your changes will be lost.')) return;
+    await db.del('split_slot_exercises', `split_slot_id=eq.${slot.id}`);
+    setRows([]);
+    loadRows();
+  }
+  function ExRow({
+    row
+  }) {
+    var _row$exercises3, _row$exercises4, _row$exercises5;
+    const open = expandedTUT === row.exercise_id;
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        borderBottom: '1px solid var(--br)'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '10px 12px',
+        gap: 8
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1,
+        minWidth: 0
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        fontWeight: 500,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+      }
+    }, (_row$exercises3 = row.exercises) === null || _row$exercises3 === void 0 ? void 0 : _row$exercises3.name), /*#__PURE__*/React.createElement("div", {
+      style: {
+        marginTop: 2
+      }
+    }, /*#__PURE__*/React.createElement(Badge, {
+      mg: (_row$exercises4 = row.exercises) === null || _row$exercises4 === void 0 ? void 0 : _row$exercises4.muscle_group
+    }))), /*#__PURE__*/React.createElement("input", {
+      type: "number",
+      min: "1",
+      max: "10",
+      value: row.default_sets,
+      onChange: e => saveRow(row, {
+        default_sets: Math.max(1, parseInt(e.target.value) || 1)
+      }),
+      style: {
+        width: 40,
+        textAlign: 'center',
+        background: 'var(--s2)',
+        border: '1px solid var(--br)',
+        borderRadius: 6,
+        color: 'var(--tx)',
+        fontFamily: "'DM Sans',sans-serif",
+        fontSize: 14,
+        fontWeight: 600,
+        padding: '7px 0',
+        outline: 'none'
+      }
+    }), /*#__PURE__*/React.createElement("input", {
+      type: "number",
+      min: "1",
+      max: "50",
+      value: row.default_reps,
+      onChange: e => saveRow(row, {
+        default_reps: Math.max(1, parseInt(e.target.value) || 1)
+      }),
+      style: {
+        width: 48,
+        textAlign: 'center',
+        background: 'var(--s2)',
+        border: '1px solid var(--br)',
+        borderRadius: 6,
+        color: 'var(--tx)',
+        fontFamily: "'DM Sans',sans-serif",
+        fontSize: 14,
+        fontWeight: 600,
+        padding: '7px 0',
+        outline: 'none'
+      }
+    }), /*#__PURE__*/React.createElement("button", {
+      className: `tut-badge-btn${row.tut_type !== 'none' ? ' active' : ''}`,
+      onClick: () => setExpandedTUT(open ? null : row.exercise_id),
+      style: {
+        flexShrink: 0,
+        fontSize: 10,
+        padding: '4px 8px'
+      }
+    }, tutLabel(row.tut_type, row.tut_tension, row.tut_duration))), open && /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: '0 12px 12px'
+      }
+    }, /*#__PURE__*/React.createElement(TUTSelector, {
+      value: {
+        tut_type: row.tut_type,
+        tut_tension: row.tut_tension,
+        tut_duration: row.tut_duration
+      },
+      onChange: v => {
+        saveRow(row, v);
+        setExpandedTUT(null);
+      }
+    }), ((_row$exercises5 = row.exercises) === null || _row$exercises5 === void 0 ? void 0 : _row$exercises5.is_bodyweight) && bwNum > 0 && /*#__PURE__*/React.createElement("div", {
+      className: "bw-preview",
+      style: {
+        marginTop: 8
+      }
+    }, [25, 50, 75, 100].map(p => /*#__PURE__*/React.createElement("div", {
+      key: p,
+      className: "bw-chip"
+    }, p, "%=", Math.round(bwNum * p / 100), bwUnit)))));
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "hdr"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: onBack
+  }, /*#__PURE__*/React.createElement(IChevL, null), " Back"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "'Bebas Neue',sans-serif",
+      fontSize: 18,
+      letterSpacing: 1,
+      flex: 1,
+      textAlign: 'center',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      padding: '0 8px'
+    }
+  }, ((_slot$templates = slot.templates) === null || _slot$templates === void 0 ? void 0 : _slot$templates.name) || 'Edit Slot'), slot.template_id && /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: resetFromTemplate,
+    style: {
+      fontSize: 12,
+      color: 'var(--tm)'
+    }
+  }, "Reset")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: '8px 12px',
+      background: 'var(--s2)',
+      borderBottom: '1px solid var(--br)',
+      borderTop: '1px solid var(--br)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      fontSize: 10,
+      fontWeight: 700,
+      letterSpacing: '1.5px',
+      textTransform: 'uppercase',
+      color: 'var(--tm)'
+    }
+  }, "Exercise"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 40,
+      textAlign: 'center',
+      fontSize: 10,
+      fontWeight: 700,
+      letterSpacing: '1px',
+      textTransform: 'uppercase',
+      color: 'var(--tm)'
+    }
+  }, "Sets"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 48,
+      textAlign: 'center',
+      fontSize: 10,
+      fontWeight: 700,
+      letterSpacing: '1px',
+      textTransform: 'uppercase',
+      color: 'var(--tm)',
+      marginLeft: 8
+    }
+  }, "Reps"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 64,
+      textAlign: 'center',
+      fontSize: 10,
+      fontWeight: 700,
+      letterSpacing: '1px',
+      textTransform: 'uppercase',
+      color: 'var(--tm)',
+      marginLeft: 8
+    }
+  }, "TUT")), loading ? /*#__PURE__*/React.createElement("div", {
+    className: "loading"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  })) : rows.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "empty"
+  }, /*#__PURE__*/React.createElement(NeonDumbbell, {
+    size: 56
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "empty-ttl"
+  }, "No exercises"), /*#__PURE__*/React.createElement("div", {
+    className: "empty-sub"
+  }, "Assign a template to this slot first")) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: 'var(--s1)'
+    }
+  }, rows.map(row => /*#__PURE__*/React.createElement(ExRow, {
+    key: row.exercise_id,
+    row: row
+  }))));
+}
+
+// ── Split Detail ──────────────────────────────────────────────────────────────
+function SplitDetail({
+  split,
+  user,
+  onBack,
+  onDeleted
+}) {
+  var _nextSlot$templates3;
+  const [slots, setSlots] = useState([]);
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeWeek, setActiveWeek] = useState(1);
+  const [pickingSlot, setPickingSlot] = useState(null);
+  const [editingSlot, setEditingSlot] = useState(null);
+  const [splitName, setSplitName] = useState(split.name);
+  const [editingName, setEditingName] = useState(false);
+  const [activeRun, setActiveRun] = useState(null);
+  const [starting, setStarting] = useState(false);
+  useEffect(() => {
+    loadData();
+  }, []);
+  async function loadData() {
+    setLoading(true);
+    const [{
+      data: sd
+    }, {
+      data: td
+    }, {
+      data: rd
+    }] = await Promise.all([db.get('split_slots', `select=*,templates(id,name,is_global)&split_id=eq.${split.id}&order=day_order.asc`), db.get('templates', 'select=id,name,is_global,user_id&order=name.asc'), db.get('split_runs', `select=*&split_id=eq.${split.id}&finished_at=is.null&user_id=eq.${db.uid}&limit=1`)]);
+    if (sd) setSlots(sd);
+    if (td) setTemplates(td.filter(t => t.is_global || t.user_id === db.uid));
+    if (rd && rd.length > 0) setActiveRun(rd[0]);
+    setLoading(false);
+  }
+  const weekSlots = w => slots.filter(s => s.week_number === w).sort((a, b) => a.day_order - b.day_order);
+  const totalDays = slots.filter(s => s.template_id).length;
+  async function addDay() {
+    const ws = weekSlots(activeWeek);
+    const nextOrder = ws.length > 0 ? Math.max(...ws.map(s => s.day_order)) + 1 : 0;
+    const {
+      data
+    } = await db.post('split_slots', {
+      split_id: split.id,
+      week_number: activeWeek,
+      day_order: nextOrder,
+      template_id: null
+    });
+    if (data) {
+      const ns = Array.isArray(data) ? data[0] : data;
+      setSlots(p => [...p, {
+        ...ns,
+        templates: null
+      }]);
+      setPickingSlot(ns.id);
+    }
+  }
+  async function assignTemplate(slotId, tpl) {
+    await db.patch('split_slots', {
+      template_id: tpl ? tpl.id : null
+    }, `id=eq.${slotId}`);
+    setSlots(p => p.map(s => s.id === slotId ? {
+      ...s,
+      template_id: (tpl === null || tpl === void 0 ? void 0 : tpl.id) || null,
+      templates: tpl || null
+    } : s));
+    setPickingSlot(null);
+  }
+  async function removeSlot(slotId) {
+    await db.del('split_slots', `id=eq.${slotId}`);
+    setSlots(p => p.filter(s => s.id !== slotId));
+  }
+  async function copyPrevWeek() {
+    const from = activeWeek - 1;
+    const toDelete = weekSlots(activeWeek);
+    for (const s of toDelete) await db.del('split_slots', `id=eq.${s.id}`);
+    const toCopy = weekSlots(from);
+    const newSlots = [];
+    for (const s of toCopy) {
+      const {
+        data
+      } = await db.post('split_slots', {
+        split_id: split.id,
+        week_number: activeWeek,
+        day_order: s.day_order,
+        template_id: s.template_id
+      });
+      if (data) newSlots.push({
+        ...(Array.isArray(data) ? data[0] : data),
+        templates: s.templates
+      });
+    }
+    setSlots(p => [...p.filter(s => s.week_number !== activeWeek), ...newSlots]);
+  }
+  async function saveName() {
+    if (!splitName.trim()) return;
+    await db.patch('splits', {
+      name: splitName.trim()
+    }, `id=eq.${split.id}`);
+    setEditingName(false);
+  }
+  async function deleteSplit() {
+    if (!window.confirm(`Delete "${split.name}"?`)) return;
+    await db.del('split_slots', `split_id=eq.${split.id}`);
+    await db.del('split_runs', `split_id=eq.${split.id}`);
+    await db.del('splits', `id=eq.${split.id}`);
+    onDeleted();
+  }
+  async function startRun() {
+    if (activeRun) return;
+    setStarting(true);
+    const {
+      data
+    } = await db.post('split_runs', {
+      user_id: db.uid,
+      split_id: split.id,
+      current_slot_index: 0
+    });
+    if (data) setActiveRun(Array.isArray(data) ? data[0] : data);
+    setStarting(false);
+  }
+  async function stopRun() {
+    if (!activeRun || !window.confirm('Stop this split run?')) return;
+    await db.patch('split_runs', {
+      finished_at: new Date().toISOString()
+    }, `id=eq.${activeRun.id}`);
+    setActiveRun(null);
+  }
+  if (editingSlot) return /*#__PURE__*/React.createElement(SlotEditor, {
+    slot: editingSlot,
+    user: user,
+    onBack: () => setEditingSlot(null)
+  });
+  if (loading) return /*#__PURE__*/React.createElement("div", {
+    className: "screen"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "loading"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  })));
+
+  // Find next workout slot for active run
+  const allWorkoutSlots = slots.filter(s => s.template_id).sort((a, b) => {
+    if (a.week_number !== b.week_number) return a.week_number - b.week_number;
+    return a.day_order - b.day_order;
+  });
+  const nextSlot = activeRun ? allWorkoutSlots[activeRun.current_slot_index] : null;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen"
+  }, pickingSlot && /*#__PURE__*/React.createElement(SplitTemplatePicker, {
+    templates: templates,
+    onSelect: t => assignTemplate(pickingSlot, t),
+    onClose: () => setPickingSlot(null)
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "hdr"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: onBack
+  }, /*#__PURE__*/React.createElement(IChevL, null), " Back"), /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: deleteSplit,
+    style: {
+      color: 'var(--err)'
+    }
+  }, /*#__PURE__*/React.createElement(ITrash, null))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '0 16px 12px'
+    }
+  }, editingName ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "inp",
+    value: splitName,
+    onChange: e => setSplitName(e.target.value),
+    onKeyDown: e => e.key === 'Enter' && saveName(),
+    autoFocus: true,
+    style: {
+      flex: 1
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-p",
+    onClick: saveName,
+    style: {
+      width: 'auto',
+      padding: '0 16px'
+    }
+  }, "Save")) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("h2", {
+    style: {
+      fontFamily: "'Bebas Neue',sans-serif",
+      fontSize: 24,
+      letterSpacing: 1,
+      flex: 1,
+      lineHeight: 1.2
+    }
+  }, splitName), /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: () => setEditingName(true),
+    style: {
+      fontSize: 12
+    }
+  }, "Rename")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--tm)',
+      marginTop: 4
+    }
+  }, split.duration_weeks, " weeks \xB7 ", totalDays, " workout days")), activeRun ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      margin: '0 16px 16px',
+      padding: '14px 16px',
+      background: 'var(--acc8)',
+      border: '1px solid var(--acc20)',
+      borderRadius: 'var(--r)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      fontWeight: 600,
+      letterSpacing: '1px',
+      textTransform: 'uppercase',
+      color: 'var(--acc)'
+    }
+  }, "Active Run"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-g",
+    onClick: stopRun,
+    style: {
+      width: 'auto',
+      padding: '6px 12px',
+      fontSize: 12
+    }
+  }, "Stop")), nextSlot ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--tm)'
+    }
+  }, "Next up \u2014 Week ", nextSlot.week_number, ", Day ", nextSlot.day_order + 1), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 600,
+      color: 'var(--tx)',
+      marginTop: 2
+    }
+  }, ((_nextSlot$templates3 = nextSlot.templates) === null || _nextSlot$templates3 === void 0 ? void 0 : _nextSlot$templates3.name) || '—')) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      color: 'var(--acc)'
+    }
+  }, "\uD83C\uDF89 All weeks complete!")) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '0 16px 16px'
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-p",
+    onClick: startRun,
+    disabled: starting || totalDays === 0
+  }, starting ? /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  }) : '▶  Start Split Run'), totalDays === 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--tm)',
+      marginTop: 8,
+      textAlign: 'center'
+    }
+  }, "Add workout days first")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 6,
+      padding: '0 16px 12px',
+      overflowX: 'auto',
+      scrollbarWidth: 'none'
+    }
+  }, Array.from({
+    length: split.duration_weeks
+  }, (_, i) => i + 1).map(w => /*#__PURE__*/React.createElement("button", {
+    key: w,
+    onClick: () => setActiveWeek(w),
+    style: {
+      flexShrink: 0,
+      padding: '8px 18px',
+      borderRadius: 20,
+      fontFamily: "'DM Sans',sans-serif",
+      fontSize: 13,
+      fontWeight: 600,
+      cursor: 'pointer',
+      border: '1px solid var(--br)',
+      background: activeWeek === w ? 'var(--acc)' : 'var(--s1)',
+      color: activeWeek === w ? '#fff' : 'var(--tm)',
+      transition: 'all .15s'
+    }
+  }, "Week ", w, " ", /*#__PURE__*/React.createElement("span", {
+    style: {
+      opacity: .7,
+      fontSize: 11
+    }
+  }, "(", weekSlots(w).length, ")")))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      margin: '0 16px'
+    }
+  }, weekSlots(activeWeek).length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '32px',
+      textAlign: 'center',
+      color: 'var(--tm)',
+      fontSize: 14,
+      background: 'var(--s1)',
+      borderRadius: 'var(--r)',
+      border: '1px solid var(--br)'
+    }
+  }, "No days yet \u2014 tap Add Day below") : /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: 'var(--s1)',
+      border: '1px solid var(--br)',
+      borderRadius: 'var(--r)',
+      overflow: 'hidden'
+    }
+  }, weekSlots(activeWeek).map((slot, idx, arr) => /*#__PURE__*/React.createElement("div", {
+    key: slot.id,
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: '14px 16px',
+      borderBottom: idx < arr.length - 1 ? '1px solid var(--br)' : 'none',
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 24,
+      height: 24,
+      borderRadius: '50%',
+      background: 'var(--s2)',
+      border: '1px solid var(--br)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: 11,
+      fontWeight: 700,
+      color: 'var(--tm)',
+      flexShrink: 0
+    }
+  }, idx + 1), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      cursor: 'pointer',
+      minWidth: 0
+    },
+    onClick: () => slot.template_id ? setEditingSlot({
+      ...slot
+    }) : setPickingSlot(slot.id)
+  }, slot.templates ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "li-name",
+    style: {
+      fontSize: 14
+    }
+  }, slot.templates.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: 'var(--acc)',
+      marginTop: 2
+    }
+  }, "Tap to edit exercises \u2192")) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      color: 'var(--tm)',
+      fontStyle: 'italic'
+    }
+  }, "Rest Day \u2014 tap to assign")), slot.template_id && /*#__PURE__*/React.createElement("button", {
+    onClick: e => {
+      e.stopPropagation();
+      setPickingSlot(slot.id);
+    },
+    style: {
+      background: 'none',
+      border: '1px solid var(--br)',
+      borderRadius: 6,
+      cursor: 'pointer',
+      padding: '4px 8px',
+      fontSize: 11,
+      color: 'var(--tm)',
+      fontFamily: "'DM Sans',sans-serif",
+      flexShrink: 0,
+      whiteSpace: 'nowrap'
+    }
+  }, "Swap"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => removeSlot(slot.id),
+    style: {
+      background: 'none',
+      border: 'none',
+      cursor: 'pointer',
+      padding: '6px',
+      display: 'flex',
+      alignItems: 'center',
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement(ITrash, null))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 8,
+      marginTop: 10
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-s",
+    onClick: addDay,
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "16",
+    height: "16",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.5",
+    strokeLinecap: "round"
+  }, /*#__PURE__*/React.createElement("line", {
+    x1: "12",
+    y1: "5",
+    x2: "12",
+    y2: "19"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "5",
+    y1: "12",
+    x2: "19",
+    y2: "12"
+  })), "Add Day"), activeWeek > 1 && weekSlots(activeWeek - 1).length > 0 && /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-g",
+    onClick: copyPrevWeek,
+    style: {
+      flex: 1,
+      fontSize: 13
+    }
+  }, "Copy Wk ", activeWeek - 1))));
+}
+
+// ── Splits List ───────────────────────────────────────────────────────────────
+function Splits({
+  user,
+  embedded
+}) {
+  const [splits, setSplits] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState(null);
+  const [showNew, setShowNew] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newWeeks, setNewWeeks] = useState(4);
+  const [creating, setCreating] = useState(false);
+  useEffect(() => {
+    if (!selected) load();
+  }, [selected]);
+  async function load() {
+    setLoading(true);
+    const {
+      data
+    } = await db.get('splits', `select=*,split_slots(id)&user_id=eq.${db.uid}&order=created_at.desc`);
+    if (data) setSplits(data);
+    setLoading(false);
+  }
+  async function createSplit() {
+    if (!newName.trim()) return;
+    setCreating(true);
+    const {
+      data
+    } = await db.post('splits', {
+      name: newName.trim(),
+      user_id: db.uid,
+      duration_weeks: newWeeks
+    });
+    if (data) {
+      const s = Array.isArray(data) ? data[0] : data;
+      setShowNew(false);
+      setNewName('');
+      setNewWeeks(4);
+      setSelected({
+        ...s,
+        split_slots: []
+      });
+    }
+    setCreating(false);
+  }
+  if (selected) return /*#__PURE__*/React.createElement(SplitDetail, {
+    split: selected,
+    user: user,
+    onBack: () => setSelected(null),
+    onDeleted: () => setSelected(null)
+  });
+  return /*#__PURE__*/React.createElement("div", {
+    style: embedded ? {
+      paddingBottom: 0
+    } : {},
+    className: embedded ? '' : 'screen'
+  }, !embedded && /*#__PURE__*/React.createElement("div", {
+    className: "hdr"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "hdr-ttl"
+  }, "Splits"), /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: () => setShowNew(true)
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "20",
+    height: "20",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round"
+  }, /*#__PURE__*/React.createElement("line", {
+    x1: "12",
+    y1: "5",
+    x2: "12",
+    y2: "19"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "5",
+    y1: "12",
+    x2: "19",
+    y2: "12"
+  })), "New")), embedded && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      padding: '8px 16px 0'
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "hdr-btn",
+    onClick: () => setShowNew(true),
+    style: {
+      color: 'var(--acc)',
+      fontWeight: 600,
+      fontSize: 13
+    }
+  }, "+ New Split")), loading ? /*#__PURE__*/React.createElement("div", {
+    className: "loading"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  })) : splits.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "empty"
+  }, /*#__PURE__*/React.createElement(NeonBolt, {
+    size: 64
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "empty-ttl"
+  }, "No splits yet"), /*#__PURE__*/React.createElement("div", {
+    className: "empty-sub"
+  }, "A split organizes your templates into a multi-week training program"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-p",
+    style: {
+      width: 'auto',
+      padding: '12px 24px',
+      marginTop: 8
+    },
+    onClick: () => setShowNew(true)
+  }, "Create Your First Split")) : /*#__PURE__*/React.createElement("div", {
+    className: "lst"
+  }, splits.map(s => {
+    var _s$split_slots;
+    return /*#__PURE__*/React.createElement("div", {
+      key: s.id,
+      className: "li",
+      onClick: () => setSelected(s)
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      className: "li-name"
+    }, s.name), /*#__PURE__*/React.createElement("div", {
+      className: "li-sub"
+    }, s.duration_weeks, " weeks \xB7 ", ((_s$split_slots = s.split_slots) === null || _s$split_slots === void 0 ? void 0 : _s$split_slots.filter(sl => sl).length) || 0, " slots")), /*#__PURE__*/React.createElement(IChev, null));
+  })), showNew && /*#__PURE__*/React.createElement("div", {
+    className: "mo",
+    onClick: e => e.target === e.currentTarget && setShowNew(false)
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mo-box"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mo-ttl"
+  }, "New Split"), /*#__PURE__*/React.createElement("div", {
+    className: "igrp"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "ilbl"
+  }, "Split Name"), /*#__PURE__*/React.createElement("input", {
+    className: "inp",
+    placeholder: "e.g. Off-Season V1",
+    value: newName,
+    onChange: e => setNewName(e.target.value),
+    onKeyDown: e => e.key === 'Enter' && createSplit(),
+    autoFocus: true
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "igrp"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "ilbl"
+  }, "Duration"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 8
+    }
+  }, [2, 3, 4].map(w => /*#__PURE__*/React.createElement("button", {
+    key: w,
+    onClick: () => setNewWeeks(w),
+    style: {
+      flex: 1,
+      padding: '12px',
+      borderRadius: 'var(--rs)',
+      fontFamily: "'DM Sans',sans-serif",
+      fontSize: 14,
+      fontWeight: 600,
+      cursor: 'pointer',
+      border: '1px solid var(--br)',
+      background: newWeeks === w ? 'var(--acc)' : 'var(--s2)',
+      color: newWeeks === w ? '#fff' : 'var(--tm)',
+      transition: 'all .15s'
+    }
+  }, w, "W")))), /*#__PURE__*/React.createElement("div", {
+    className: "divider"
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-p",
+    onClick: createSplit,
+    disabled: creating
+  }, creating ? /*#__PURE__*/React.createElement("span", {
+    className: "spin"
+  }) : "Create Split"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-g",
+    onClick: () => {
+      setShowNew(false);
+      setNewName('');
+    }
+  }, "Cancel"))));
+}
+const ILayers = () => /*#__PURE__*/React.createElement("svg", {
+  viewBox: "0 0 24 24"
+}, /*#__PURE__*/React.createElement("polygon", {
+  points: "12 2 2 7 12 12 22 7 12 2"
+}), /*#__PURE__*/React.createElement("polyline", {
+  points: "2 17 12 22 22 17"
+}), /*#__PURE__*/React.createElement("polyline", {
+  points: "2 12 12 17 22 12"
+}));
+
+// ── Library ───────────────────────────────────────────────────────────────────
+function Library({
+  user
+}) {
+  const [tab, setTab] = useState('exercises');
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '48px 16px 12px'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      background: 'var(--s1)',
+      borderRadius: 'var(--r)',
+      padding: 4,
+      border: '1px solid var(--br)'
+    }
+  }, [['exercises', 'Exercises'], ['templates', 'Templates'], ['splits', 'Splits']].map(([id, label]) => /*#__PURE__*/React.createElement("button", {
+    key: id,
+    onClick: () => setTab(id),
+    style: {
+      flex: 1,
+      padding: '10px 4px',
+      borderRadius: 8,
+      fontFamily: "'DM Sans',sans-serif",
+      fontSize: 13,
+      fontWeight: 600,
+      cursor: 'pointer',
+      border: 'none',
+      background: tab === id ? 'var(--acc)' : 'transparent',
+      color: tab === id ? '#fff' : 'var(--tm)',
+      transition: 'all .2s'
+    }
+  }, label)))), tab === 'exercises' && /*#__PURE__*/React.createElement(Exercises, {
+    user: user,
+    embedded: true
+  }), tab === 'templates' && /*#__PURE__*/React.createElement(Templates, {
+    user: user,
+    embedded: true
+  }), tab === 'splits' && /*#__PURE__*/React.createElement(Splits, {
+    user: user,
+    embedded: true
+  }));
+}
+function BottomNav({
+  active,
+  onChange
+}) {
+  const items = [{
+    id: "dashboard",
+    label: "Home",
+    I: IHome
+  }, {
+    id: "library",
+    label: "Library",
+    I: ILayers
+  }, {
+    id: "log",
+    label: "Log",
+    I: IPlus
+  }, {
+    id: "history",
+    label: "History",
+    I: IClock
+  }, {
+    id: "progress",
+    label: "Progress",
+    I: IChart
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    className: "bnav"
+  }, items.map(({
+    id,
+    label,
+    I
+  }) => /*#__PURE__*/React.createElement("button", {
+    key: id,
+    className: `ni${active === id ? " on" : ""}`,
+    onClick: () => onChange(id)
+  }, /*#__PURE__*/React.createElement(I, null), label)));
+}
+function App() {
+  const [user, setUser] = useState(null);
+  const [screen, setScreen] = useState("dashboard");
+  const [prev, setPrev] = useState("dashboard");
+  const [checking, setChecking] = useState(true);
+  useEffect(() => {
+    db.restoreSession().then(res => {
+      if (res) {
+        var _res$d$user, _res$d$user2, _res$d$user3, _res$savedUser;
+        const m = ((_res$d$user = res.d.user) === null || _res$d$user === void 0 ? void 0 : _res$d$user.user_metadata) || {};
+        const u = {
+          id: (_res$d$user2 = res.d.user) === null || _res$d$user2 === void 0 ? void 0 : _res$d$user2.id,
+          email: (_res$d$user3 = res.d.user) === null || _res$d$user3 === void 0 ? void 0 : _res$d$user3.email,
+          name: m.full_name || ((_res$savedUser = res.savedUser) === null || _res$savedUser === void 0 ? void 0 : _res$savedUser.name),
+          body_weight: m.body_weight || null,
+          weight_unit: m.weight_unit || 'lbs'
+        };
+        db.saveSession(res.d, u);
+        setUser(u);
+      }
+      setChecking(false);
+    });
+  }, []);
+  function nav(s) {
+    setPrev(screen);
+    setScreen(s);
+  }
+  if (checking) return /*#__PURE__*/React.createElement("div", {
+    className: "wrap",
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100vh'
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "spin",
+    style: {
+      width: 32,
+      height: 32,
+      borderWidth: 3
+    }
+  }));
+  if (!user) return /*#__PURE__*/React.createElement("div", {
+    className: "wrap"
+  }, /*#__PURE__*/React.createElement(AuthScreen, {
+    onAuth: u => {
+      setUser(u);
+      setScreen("dashboard");
+    }
+  }));
+  if (screen === "settings") return /*#__PURE__*/React.createElement("div", {
+    className: "wrap"
+  }, /*#__PURE__*/React.createElement(Settings, {
+    user: user,
+    onUpdate: u => setUser(u),
+    onBack: () => setScreen(prev || "dashboard")
+  }));
+  return /*#__PURE__*/React.createElement("div", {
+    className: "wrap"
+  }, screen === "dashboard" && /*#__PURE__*/React.createElement(Dashboard, {
+    user: user,
+    onNav: nav
+  }), screen === "library" && /*#__PURE__*/React.createElement(Library, {
+    user: user
+  }), screen === "log" && /*#__PURE__*/React.createElement(Log, {
+    user: user,
+    onWorkoutComplete: () => setScreen('dashboard')
+  }), screen === "history" && /*#__PURE__*/React.createElement(History, null), screen === "progress" && /*#__PURE__*/React.createElement(Progress, null), /*#__PURE__*/React.createElement(BottomNav, {
+    active: screen,
+    onChange: nav
+  }));
+}
+ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(App, null));
+</script>
