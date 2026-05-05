@@ -314,7 +314,8 @@ const MG_COLOR = {
   glutes: "#e599f7",
   calves: "#a9e34b",
   full_body: "#ff2d55",
-  other: "#868e96"
+  other: "#868e96",
+  mobility: '#00bcd4'
 };
 const MG_LABEL = {
   chest: "Chest",
@@ -329,9 +330,11 @@ const MG_LABEL = {
   glutes: "Glutes",
   calves: "Calves",
   full_body: "Full Body",
-  other: "Other"
+  other: "Other",
+  mobility: "Mobility"
 };
 const MG_ALL = Object.keys(MG_COLOR);
+const ACCENT_COLORS = ['#ff2d55','#ff6b35','#ff9500','#ffcc00','#34c759','#00bcd4','#007aff','#5856d6','#af52de','#ff375f'];
 const TUT_TENSION_LABEL = {
   neither: "—",
   controlled_negative: "Neg",
@@ -1766,6 +1769,9 @@ function AuthScreen({
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [msg, setMsg] = useState("");
+  const [stayLoggedIn, setStayLoggedIn] = useState(() => {
+    try { return localStorage.getItem('rlyhevy_stay') !== 'false'; } catch(_) { return true; }
+  });
   async function submit() {
     setErr("");
     setMsg("");
@@ -1791,7 +1797,12 @@ function AuthScreen({
           body_weight: m.body_weight || null,
           weight_unit: m.weight_unit || "lbs"
         };
-        db.saveSession(d, u);
+        if (stayLoggedIn) {
+          try { localStorage.setItem('rlyhevy_stay', 'true'); } catch(_) {}
+          db.saveSession(d, u);
+        } else {
+          try { localStorage.setItem('rlyhevy_stay', 'false'); localStorage.removeItem('rlyhevy_session'); } catch(_) {}
+        }
         onAuth(u);
       } else if (tab === "signup") {
         setMsg("Check your email to confirm, then log in.");
@@ -1863,6 +1874,13 @@ function AuthScreen({
     onChange: e => setPw(e.target.value),
     onKeyDown: e => e.key === "Enter" && submit(),
     autoComplete: tab === "login" ? "current-password" : "new-password"
+  })), tab === "login" && /*#__PURE__*/React.createElement("div", {
+    style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '12px 0 4px' }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: { fontSize: 14, color: 'var(--ts)' }
+  }, "Stay logged in"), /*#__PURE__*/React.createElement(Toggle, {
+    checked: stayLoggedIn,
+    onChange: v => { setStayLoggedIn(v); try { localStorage.setItem('rlyhevy_stay', v ? 'true' : 'false'); } catch(_) {} }
   })), /*#__PURE__*/React.createElement("button", {
     className: "btn btn-p",
     onClick: submit,
@@ -1899,6 +1917,25 @@ function Settings({
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
+  const [accent, setAccent] = React.useState(() => {
+    try { return localStorage.getItem('rlyhevy_accent') || '#ff2d55'; } catch(_) { return '#ff2d55'; }
+  });
+  const [pwOpen, setPwOpen] = useState(false);
+  const [newPw, setNewPw] = useState('');
+  const [confirmPw, setConfirmPw] = useState('');
+  const [pwMsg, setPwMsg] = useState('');
+  const [pwErr, setPwErr] = useState('');
+  const [pwSaving, setPwSaving] = useState(false);
+  async function changePassword() {
+    setPwErr(''); setPwMsg('');
+    if (!newPw || newPw.length < 6) { setPwErr('Password must be at least 6 characters.'); return; }
+    if (newPw !== confirmPw) { setPwErr('Passwords do not match.'); return; }
+    setPwSaving(true);
+    const d = await db.updateUser({ password: newPw });
+    if (d.error || d.msg) setPwErr(d.error?.message || d.msg || 'Failed.');
+    else { setPwMsg('Password updated ✓'); setNewPw(''); setConfirmPw(''); setTimeout(() => { setPwMsg(''); setPwOpen(false); }, 2000); }
+    setPwSaving(false);
+  }
   async function save() {
     setSaving(true);
     setMsg("");
@@ -1959,6 +1996,27 @@ function Settings({
     onChange: e => setName(e.target.value),
     placeholder: "Your name"
   }))), /*#__PURE__*/React.createElement("div", {
+    className: "sec-hd",
+    style: {
+      marginTop: 20
+    }
+  }, "Appearance"), React.createElement("div", { className: "card", style: { margin: "0 16px 4px" } },
+    React.createElement("div", { style: { fontSize: 13, color: 'var(--ts)', marginBottom: 10 } }, "Accent Color"),
+    React.createElement("div", { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+      ACCENT_COLORS.map(c => React.createElement("button", {
+        key: c,
+        onClick: () => {
+          setAccent(c);
+          document.documentElement.style.setProperty('--acc', c);
+          try { localStorage.setItem('rlyhevy_accent', c); } catch(_) {}
+        },
+        style: {
+          width: 32, height: 32, borderRadius: '50%', background: c, border: accent === c ? '3px solid #fff' : '3px solid transparent',
+          cursor: 'pointer', outline: accent === c ? `3px solid ${c}` : 'none', outlineOffset: 2, padding: 0
+        }
+      }))
+    )
+  ), /*#__PURE__*/React.createElement("div", {
     className: "sec-hd",
     style: {
       marginTop: 20
@@ -2037,7 +2095,32 @@ function Settings({
       await db.signOut();
       window.location.reload();
     }
-  }, "Sign Out")));
+  }, "Sign Out")),
+  React.createElement("div", { className: "sec-hd", style: { marginTop: 20 } }, "Security"),
+  React.createElement("div", { className: "card", style: { margin: "0 16px 4px" } },
+    React.createElement("div", {
+      style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' },
+      onClick: () => { setPwOpen(o => !o); setPwErr(''); setPwMsg(''); }
+    },
+      React.createElement("span", { style: { fontSize: 14, fontWeight: 600 } }, "Change Password"),
+      React.createElement("span", { style: { color: 'var(--tm)', fontSize: 12 } }, pwOpen ? "▲" : "▼")
+    ),
+    pwOpen && React.createElement("div", { style: { marginTop: 12 } },
+      React.createElement("div", { className: "igrp" },
+        React.createElement("label", { className: "ilbl" }, "New Password"),
+        React.createElement("input", { className: "inp", type: "password", placeholder: "Min 6 characters", value: newPw, onChange: e => setNewPw(e.target.value) })
+      ),
+      React.createElement("div", { className: "igrp", style: { marginBottom: 0 } },
+        React.createElement("label", { className: "ilbl" }, "Confirm Password"),
+        React.createElement("input", { className: "inp", type: "password", placeholder: "Repeat password", value: confirmPw, onChange: e => setConfirmPw(e.target.value) })
+      ),
+      pwErr && React.createElement("div", { className: "alert-e", style: { marginTop: 8 } }, pwErr),
+      pwMsg && React.createElement("div", { className: "alert-s", style: { marginTop: 8 } }, pwMsg),
+      React.createElement("button", { className: "btn btn-p", style: { marginTop: 10 }, onClick: changePassword, disabled: pwSaving },
+        pwSaving ? React.createElement("span", { className: "spin" }) : "Update Password"
+      )
+    )
+  ));
 }
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
@@ -2420,7 +2503,8 @@ function Exercises({
   const [newEx, setNewEx] = useState({
     name: "",
     muscle_group: "chest",
-    is_bodyweight: false
+    is_bodyweight: false,
+    notes: ""
   });
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
@@ -2431,7 +2515,7 @@ function Exercises({
     setLoading(true);
     const {
       data
-    } = await db.get("exercises", "select=*&order=name.asc");
+    } = await db.get("exercises", "select=*,notes&order=name.asc");
     if (data) setExercises(data);
     setLoading(false);
   }
@@ -2443,7 +2527,8 @@ function Exercises({
     setEditForm({
       name: ex.name,
       muscle_group: ex.muscle_group,
-      is_bodyweight: !!ex.is_bodyweight
+      is_bodyweight: !!ex.is_bodyweight,
+      notes: ex.notes || ''
     });
     setErr("");
   }
@@ -2459,7 +2544,8 @@ function Exercises({
     } = await db.patch("exercises", {
       name: editForm.name.trim(),
       muscle_group: editForm.muscle_group,
-      is_bodyweight: editForm.is_bodyweight
+      is_bodyweight: editForm.is_bodyweight,
+      notes: editForm.notes || null
     }, `id=eq.${editEx.id}`);
     if (error) setErr(error.message || "Failed to save.");else {
       setExercises(prev => prev.map(e => e.id === editEx.id ? {
@@ -2495,7 +2581,8 @@ function Exercises({
       muscle_group: newEx.muscle_group,
       is_global: false,
       created_by: db.uid,
-      is_bodyweight: newEx.is_bodyweight
+      is_bodyweight: newEx.is_bodyweight,
+      notes: newEx.notes || null
     });
     if (error) setErr(error.message || "Failed to save.");else {
       const items = Array.isArray(data) ? data : [data];
@@ -2504,7 +2591,8 @@ function Exercises({
       setNewEx({
         name: "",
         muscle_group: "chest",
-        is_bodyweight: false
+        is_bodyweight: false,
+        notes: ""
       });
     }
     setSaving(false);
@@ -2587,7 +2675,18 @@ function Exercises({
         color: "var(--tm)",
         marginTop: 8
       }
-    }, "Set your body weight in Settings to see BW options.")));
+    }, "Set your body weight in Settings to see BW options.")),
+    /*#__PURE__*/React.createElement("div", { className: "igrp", style: { marginTop: 12, marginBottom: 0 } },
+      /*#__PURE__*/React.createElement("label", { className: "ilbl" }, "Notes"),
+      /*#__PURE__*/React.createElement("textarea", {
+        className: "inp",
+        placeholder: "Cues, setup tips, video links...",
+        value: form.notes || '',
+        onChange: e => setForm(f => ({ ...f, notes: e.target.value })),
+        rows: 3,
+        style: { resize: 'none', lineHeight: 1.5 }
+      })
+    ));
   }
   return /*#__PURE__*/React.createElement("div", {
     style: embedded ? {
@@ -4238,6 +4337,11 @@ function Progress() {
   const [activity, setActivity] = useState([]);
   const [prs, setPrs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [histWorkouts, setHistWorkouts] = useState([]);
+  const [histDetails, setHistDetails] = useState({});
+  const [histDetLoading, setHistDetLoading] = useState(null);
+  const [histExpanded, setHistExpanded] = useState(null);
+  const [histScores, setHistScores] = useState({});
   useEffect(() => {
     async function load() {
       const { data: ws } = await db.get('workouts', `select=id,started_at,finished_at&user_id=eq.${db.uid}&finished_at=not.is.null&order=started_at.asc`);
@@ -4299,10 +4403,66 @@ function Progress() {
         setPrs(Object.values(prByEx).filter(p => p.weight > 0).sort((a, b) => b.weight - a.weight).slice(0, 10));
       }
       setLoading(false);
+      // Load history
+      const { data: hw } = await db.get('workouts', `select=id,name,started_at,finished_at,notes&user_id=eq.${db.uid}&finished_at=not.is.null&order=started_at.desc&limit=60`);
+      if (hw) {
+        setHistWorkouts(hw);
+        const hids = hw.map(w => w.id).join(',');
+        if (hids) {
+          const { data: hwes } = await db.get('workout_exercises', `select=workout_id,sets(weight,reps,tut_duration,completed)&workout_id=in.(${hids})`);
+          if (hwes) {
+            const sm = {};
+            for (const we of hwes) {
+              const cs = (we.sets || []).filter(s => s.completed);
+              const sc = cs.reduce((sum, s) => sum + (parseFloat(s.weight) || 0) * (s.reps || 0) * (s.tut_duration || 1), 0);
+              sm[we.workout_id] = (sm[we.workout_id] || 0) + sc;
+            }
+            setHistScores(sm);
+          }
+        }
+      }
     }
     load();
   }, []);
   const maxN = Math.max(1, ...activity.map(a => a.n));
+  async function toggleHistDetail(wid) {
+    if (histExpanded === wid) { setHistExpanded(null); return; }
+    setHistExpanded(wid);
+    if (histDetails[wid]) return;
+    setHistDetLoading(wid);
+    const { data } = await db.get('workout_exercises', `select=id,sort_order,exercises(name,muscle_group),sets(id,set_number,weight,reps,completed,tut_type,tut_tension,tut_duration)&workout_id=eq.${wid}&order=sort_order.asc`);
+    if (data) setHistDetails(p => ({ ...p, [wid]: data }));
+    setHistDetLoading(null);
+  }
+  async function deleteHistWorkout(wid, name) {
+    if (!window.confirm(`Delete "${name}"?\nThis cannot be undone.`)) return;
+    const { data: wes } = await db.get('workout_exercises', `select=id&workout_id=eq.${wid}`);
+    if (wes && wes.length > 0) {
+      const weIds = wes.map(w => w.id).join(',');
+      await db.del('sets', `workout_exercise_id=in.(${weIds})`);
+    }
+    await db.del('workout_exercises', `workout_id=eq.${wid}`);
+    await db.del('workouts', `id=eq.${wid}`);
+    setHistWorkouts(p => p.filter(w => w.id !== wid));
+    setHistScores(p => { const n = {...p}; delete n[wid]; return n; });
+    if (histExpanded === wid) setHistExpanded(null);
+  }
+  function wDurP(s, e) {
+    if (!e) return '';
+    const m = Math.round((new Date(e) - new Date(s)) / 60000);
+    return m < 60 ? `${m}m` : `${Math.floor(m/60)}h ${m%60}m`;
+  }
+  function wDateP(d) {
+    return new Date(d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  }
+  function weekLabelP(dateStr) {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diff = Math.floor((now - d) / (7 * 24 * 60 * 60 * 1000));
+    if (diff === 0) return 'This Week';
+    if (diff === 1) return 'Last Week';
+    return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  }
   return /*#__PURE__*/React.createElement("div", {
     className: "screen"
   }, /*#__PURE__*/React.createElement("div", {
@@ -4435,15 +4595,62 @@ function Progress() {
       fontSize: 11,
       color: 'var(--tm)'
     }
-  }, pr.reps, " reps")))))), stats.workouts === 0 && /*#__PURE__*/React.createElement("div", {
-    className: "empty"
-  }, /*#__PURE__*/React.createElement(NeonChart, {
-    size: 56
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "empty-ttl"
-  }, "No data yet"), /*#__PURE__*/React.createElement("div", {
-    className: "empty-sub"
-  }, "Complete workouts to see your progress here"))));
+  }, pr.reps, " reps")))))),
+  React.createElement("div", { className: "sec-hd" }, "Workout History"),
+  histWorkouts.length === 0
+    ? React.createElement("div", { className: "empty" },
+        React.createElement("div", { className: "empty-ttl" }, "No workouts yet"),
+        React.createElement("div", { className: "empty-sub" }, "Complete a workout to see it here")
+      )
+    : React.createElement(React.Fragment, null,
+      (() => {
+        const grouped = [];
+        let curWeek = null;
+        for (const w of histWorkouts) {
+          const wl = weekLabelP(w.started_at);
+          if (wl !== curWeek) { grouped.push({ type: 'week', label: wl }); curWeek = wl; }
+          grouped.push({ type: 'workout', ...w });
+        }
+        return grouped.map((item, i) => {
+          if (item.type === 'week') return React.createElement("div", { key: i, className: "sec-hd" }, item.label);
+          const det = histDetails[item.id];
+          const expanded = histExpanded === item.id;
+          const doneSets = det ? det.flatMap(e => e.sets).filter(s => s.completed) : [];
+          const score = doneSets.reduce((sum, s) => sum + (parseFloat(s.weight)||0)*(s.reps||0)*(s.tut_duration||1), 0);
+          return React.createElement("div", { key: item.id, style: { margin: '0 16px 8px', background: 'var(--s1)', border: '1px solid var(--br)', borderRadius: 'var(--r)', overflow: 'hidden' } },
+            React.createElement("div", { style: { padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }, onClick: () => toggleHistDetail(item.id) },
+              React.createElement("div", { style: { flex: 1 } },
+                React.createElement("div", { className: "li-name" }, item.name),
+                React.createElement("div", { className: "li-sub" }, wDateP(item.started_at), item.finished_at && ` · ${wDurP(item.started_at, item.finished_at)}`, histScores[item.id] ? ` · ${fmtScore(histScores[item.id])}` : '')
+              ),
+              histDetLoading === item.id ? React.createElement("span", { className: "spin" }) : expanded ? React.createElement(IChevD, null) : React.createElement(IChev, null)
+            ),
+            expanded && det && React.createElement("div", { style: { borderTop: '1px solid var(--br)' } },
+              React.createElement("div", { style: { padding: '8px 16px', display: 'flex', gap: 16, flexWrap: 'wrap' } },
+                [['Sets', doneSets.length], ['Exercises', det.length], ['Score', fmtScore(score)]].map(([l, v]) =>
+                  React.createElement("div", { key: l, style: { textAlign: 'center' } },
+                    React.createElement("div", { style: { fontSize: 15, fontWeight: 700, color: 'var(--acc)' } }, v),
+                    React.createElement("div", { style: { fontSize: 10, color: 'var(--tm)', textTransform: 'uppercase', letterSpacing: '0.5px' } }, l)
+                  )
+                )
+              ),
+              det.map(ex => React.createElement("div", { key: ex.id, style: { padding: '8px 16px', borderTop: '1px solid var(--br)' } },
+                React.createElement("div", { style: { fontSize: 13, fontWeight: 600, marginBottom: 4 } }, ex.exercises?.name),
+                React.createElement("div", { style: { display: 'flex', flexWrap: 'wrap', gap: 4 } },
+                  ex.sets.filter(s => s.completed).map(s => React.createElement("span", { key: s.id, style: { background: 'var(--s2)', border: '1px solid var(--br)', borderRadius: 4, padding: '2px 6px', fontSize: 11 } },
+                    s.weight ? `${s.weight}×${s.reps}` : `${s.reps} reps`
+                  ))
+                )
+              )),
+              React.createElement("div", { style: { padding: '8px 16px 12px', display: 'flex', justifyContent: 'flex-end' } },
+                React.createElement("button", { onClick: () => deleteHistWorkout(item.id, item.name), style: { background: 'none', border: 'none', color: 'var(--err)', cursor: 'pointer', fontSize: 12, fontFamily: "'DM Sans',sans-serif" } }, "Delete Workout")
+              )
+            )
+          );
+        });
+      })()
+    ),
+  /*#__PURE__*/React.createElement("div", { style: { height: 16 } })));
 }
 function ComingSoon({
   title,
@@ -4475,75 +4682,109 @@ function ComingSoon({
 function SplitTemplatePicker({
   templates,
   onSelect,
-  onClose
+  onClose,
+  onCreated
 }) {
   const [search, setSearch] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [newTplName, setNewTplName] = useState('');
   const filtered = templates.filter(t => t.name.toLowerCase().includes(search.toLowerCase()));
-  return /*#__PURE__*/React.createElement("div", {
+  async function saveNewTemplate() {
+    const name = newTplName.trim();
+    if (!name) return;
+    const { data } = await db.post('templates', { name, user_id: db.uid, is_global: false });
+    if (data) {
+      if (onCreated) onCreated(data);
+      onSelect(data);
+    }
+  }
+  return React.createElement("div", {
     className: "picker"
-  }, /*#__PURE__*/React.createElement("div", {
+  }, React.createElement("div", {
     className: "picker-hdr"
-  }, /*#__PURE__*/React.createElement("button", {
+  }, React.createElement("button", {
     className: "hdr-btn",
     onClick: onClose
-  }, /*#__PURE__*/React.createElement(IChevL, null), " Cancel"), /*#__PURE__*/React.createElement("span", {
+  }, React.createElement(IChevL, null), " Cancel"), React.createElement("span", {
     style: {
       fontFamily: "'Bebas Neue',sans-serif",
       fontSize: 22,
       letterSpacing: 1
     }
-  }, "Assign Template")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      padding: '8px 16px 0',
-      flexShrink: 0
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "srch",
-    style: {
-      margin: '0 0 8px'
-    }
-  }, /*#__PURE__*/React.createElement(ISearch, null), /*#__PURE__*/React.createElement("input", {
-    placeholder: "Search templates...",
-    value: search,
-    onChange: e => setSearch(e.target.value),
-    autoFocus: true
-  }))), /*#__PURE__*/React.createElement("div", {
+  }, "Assign Template")),
+  creating
+    ? React.createElement("div", { style: { padding: '16px 16px 0', flexShrink: 0 } },
+        React.createElement("div", { className: "igrp" },
+          React.createElement("label", { className: "ilbl" }, "Template Name"),
+          React.createElement("input", { className: "inp", value: newTplName, onChange: e => setNewTplName(e.target.value), placeholder: "e.g. Push Day A", autoFocus: true })
+        ),
+        React.createElement("div", { style: { display: 'flex', gap: 8 } },
+          React.createElement("button", { className: "btn btn-p", style: { flex: 1 }, onClick: saveNewTemplate }, "Save"),
+          React.createElement("button", { className: "btn btn-s", style: { flex: 1 }, onClick: () => { setCreating(false); setNewTplName(''); } }, "Cancel")
+        )
+      )
+    : React.createElement("div", {
+        style: {
+          padding: '8px 16px 0',
+          flexShrink: 0
+        }
+      }, React.createElement("div", {
+        className: "srch",
+        style: {
+          margin: '0 0 8px'
+        }
+      }, React.createElement(ISearch, null), React.createElement("input", {
+        placeholder: "Search templates...",
+        value: search,
+        onChange: e => setSearch(e.target.value),
+        autoFocus: true
+      }))),
+  React.createElement("div", {
     className: "picker-body"
-  }, /*#__PURE__*/React.createElement("div", {
+  }, React.createElement("div", {
     className: "lst",
     style: {
       margin: '0 16px'
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, React.createElement("div", {
+    className: "li",
+    onClick: () => { setCreating(true); setNewTplName(''); },
+    style: { background: 'var(--s2)' }
+  }, React.createElement("div", {
+    className: "li-name",
+    style: { color: 'var(--acc)' }
+  }, "＋ New Template")),
+  React.createElement("div", {
     className: "li",
     onClick: () => onSelect(null),
     style: {
       background: 'var(--s2)'
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, React.createElement("div", {
     className: "li-name",
     style: {
       color: 'var(--tm)'
     }
-  }, "Rest Day")), filtered.map(t => /*#__PURE__*/React.createElement("div", {
+  }, "Rest Day")), filtered.map(t => React.createElement("div", {
     key: t.id,
     className: "li",
     onClick: () => onSelect(t)
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, React.createElement("div", null, React.createElement("div", {
     className: "li-name"
-  }, t.name), t.is_global && /*#__PURE__*/React.createElement("span", {
+  }, t.name), t.is_global && React.createElement("span", {
     className: "global-badge",
     style: {
       marginTop: 4,
       display: 'inline-block'
     }
-  }, "Default")), /*#__PURE__*/React.createElement(IChev, null))))));
+  }, "Default")), React.createElement(IChev, null))))));
 }
 
 // ── Slot Editor (spreadsheet view) ───────────────────────────────────────────
 function SlotEditor({
   slot,
   user,
+  dayLabel,
   onBack,
   onTemplateRenamed
 }) {
@@ -4772,7 +5013,7 @@ function SlotEditor({
     style: { fontFamily: "'Bebas Neue',sans-serif", fontSize: 18, letterSpacing: 1, flex: 1, textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', padding: '0 8px', background: 'none', border: 'none', color: 'var(--tx)', cursor: slot.template_id ? 'pointer' : 'default' },
     onClick: () => slot.template_id && setEditingName(true),
     title: slot.template_id ? 'Tap to rename' : ''
-  }, templateName || 'Edit Slot'),
+  }, templateName || dayLabel || 'Edit Slot'),
   slot.template_id && !editingName && /*#__PURE__*/React.createElement("button", {
     className: "hdr-btn", onClick: resetFromTemplate, style: { fontSize: 12, color: 'var(--tm)' }
   }, "Reset")), /*#__PURE__*/React.createElement("div", {
@@ -4931,12 +5172,16 @@ function SplitDetail({
     }, `id=eq.${activeRun.id}`);
     setActiveRun(null);
   }
-  if (editingSlot) return /*#__PURE__*/React.createElement(SlotEditor, {
-    slot: editingSlot,
-    user: user,
-    onBack: () => setEditingSlot(null),
-    onTemplateRenamed: newName => setSlots(p => p.map(s => s.id === editingSlot.id ? { ...s, templates: s.templates ? { ...s.templates, name: newName } : s.templates } : s))
-  });
+  if (editingSlot) {
+    const editSlotIdx = slots.filter(s => s.week_number === editingSlot.week_number).sort((a,b) => a.day_order - b.day_order).findIndex(s => s.id === editingSlot.id);
+    return /*#__PURE__*/React.createElement(SlotEditor, {
+      slot: editingSlot,
+      user: user,
+      dayLabel: editingSlot.templates ? editingSlot.templates.name : `Day ${editSlotIdx + 1}`,
+      onBack: () => setEditingSlot(null),
+      onTemplateRenamed: newName => setSlots(p => p.map(s => s.id === editingSlot.id ? { ...s, templates: s.templates ? { ...s.templates, name: newName } : s.templates } : s))
+    });
+  }
   if (loading) return /*#__PURE__*/React.createElement("div", {
     className: "screen"
   }, /*#__PURE__*/React.createElement("div", {
@@ -4956,7 +5201,8 @@ function SplitDetail({
   }, pickingSlot && /*#__PURE__*/React.createElement(SplitTemplatePicker, {
     templates: templates,
     onSelect: t => assignTemplate(pickingSlot, t),
-    onClose: () => setPickingSlot(null)
+    onClose: () => setPickingSlot(null),
+    onCreated: t => setTemplates(p => [...p, t])
   }), /*#__PURE__*/React.createElement("div", {
     className: "hdr"
   }, /*#__PURE__*/React.createElement("button", {
@@ -5166,9 +5412,7 @@ function SplitDetail({
       cursor: 'pointer',
       minWidth: 0
     },
-    onClick: () => slot.template_id ? setEditingSlot({
-      ...slot
-    }) : setPickingSlot(slot.id)
+    onClick: () => setEditingSlot({ ...slot })
   }, slot.templates ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     className: "li-name",
     style: {
@@ -5186,7 +5430,7 @@ function SplitDetail({
       color: 'var(--tm)',
       fontStyle: 'italic'
     }
-  }, "Rest Day \u2014 tap to assign")), slot.template_id && /*#__PURE__*/React.createElement("button", {
+  }, "Tap to add exercises \u2192")), /*#__PURE__*/React.createElement("button", {
     onClick: e => {
       e.stopPropagation();
       setPickingSlot(slot.id);
@@ -5203,7 +5447,7 @@ function SplitDetail({
       flexShrink: 0,
       whiteSpace: 'nowrap'
     }
-  }, "Swap"), /*#__PURE__*/React.createElement("button", {
+  }, slot.template_id ? "Swap" : "Template"), /*#__PURE__*/React.createElement("button", {
     onClick: () => removeSlot(slot.id),
     style: {
       background: 'none',
@@ -5451,6 +5695,150 @@ const ILayers = () => /*#__PURE__*/React.createElement("svg", {
   points: "2 12 12 17 22 12"
 }));
 
+const IMobility = () => /*#__PURE__*/React.createElement("svg", {style:{width:20,height:20,stroke:"currentColor",fill:"none",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"},viewBox:"0 0 24 24"},
+  /*#__PURE__*/React.createElement("circle",{cx:"12",cy:"4",r:"2"}),
+  /*#__PURE__*/React.createElement("line",{x1:"12",y1:"6",x2:"12",y2:"14"}),
+  /*#__PURE__*/React.createElement("line",{x1:"4",y1:"10",x2:"20",y2:"10"}),
+  /*#__PURE__*/React.createElement("line",{x1:"12",y1:"14",x2:"8",y2:"21"}),
+  /*#__PURE__*/React.createElement("line",{x1:"12",y1:"14",x2:"16",y2:"21"}));
+
+// ── Mobility ──────────────────────────────────────────────────────────────────
+function Mobility({ user }) {
+  const [exercises, setExercises] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [showAdd, setShowAdd] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [isBW, setIsBW] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState('');
+  const [editEx, setEditEx] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [editBW, setEditBW] = useState(false);
+  const [newNotes, setNewNotes] = useState('');
+  const [editNotes, setEditNotes] = useState('');
+  useEffect(() => { load(); }, []);
+  async function load() {
+    setLoading(true);
+    const { data } = await db.get('exercises', 'select=*,notes&muscle_group=eq.mobility&order=name.asc');
+    if (data) setExercises(data);
+    setLoading(false);
+  }
+  async function addExercise() {
+    if (!newName.trim()) { setErr('Enter a name.'); return; }
+    setSaving(true); setErr('');
+    const { data, error } = await db.post('exercises', { name: newName.trim(), muscle_group: 'mobility', is_global: false, created_by: db.uid, is_bodyweight: isBW, notes: newNotes.trim() || null });
+    if (error) setErr(error.message || 'Failed.');
+    else {
+      const item = Array.isArray(data) ? data[0] : data;
+      setExercises(p => [...p, item].sort((a,b) => a.name.localeCompare(b.name)));
+      setShowAdd(false); setNewName(''); setIsBW(false); setNewNotes('');
+    }
+    setSaving(false);
+  }
+  async function saveEdit() {
+    if (!editName.trim()) { setErr('Enter a name.'); return; }
+    setSaving(true); setErr('');
+    const { error } = await db.patch('exercises', { name: editName.trim(), is_bodyweight: editBW, notes: editNotes.trim() || null }, `id=eq.${editEx.id}`);
+    if (error) setErr(error.message || 'Failed.');
+    else {
+      setExercises(p => p.map(e => e.id === editEx.id ? { ...e, name: editName.trim(), is_bodyweight: editBW, notes: editNotes.trim() || null } : e).sort((a,b) => a.name.localeCompare(b.name)));
+      setEditEx(null);
+    }
+    setSaving(false);
+  }
+  async function deleteEx(ex) {
+    if (!window.confirm(`Delete "${ex.name}"?`)) return;
+    await db.del('split_slot_exercises', `exercise_id=eq.${ex.id}`);
+    await db.del('exercises', `id=eq.${ex.id}`);
+    setExercises(p => p.filter(e => e.id !== ex.id));
+  }
+  const filtered = exercises.filter(e => e.name.toLowerCase().includes(search.toLowerCase()));
+  return /*#__PURE__*/React.createElement("div", { className: "screen" },
+    /*#__PURE__*/React.createElement("div", { className: "hdr" },
+      /*#__PURE__*/React.createElement("span", { className: "hdr-ttl" }, "Mobility")),
+    /*#__PURE__*/React.createElement("div", { style: { margin: '0 16px 12px' } },
+      /*#__PURE__*/React.createElement("div", { className: "srch" },
+        /*#__PURE__*/React.createElement(ISearch, null),
+        /*#__PURE__*/React.createElement("input", { placeholder: "Search mobility exercises...", value: search, onChange: e => setSearch(e.target.value) }),
+        search && /*#__PURE__*/React.createElement("button", { onClick: () => setSearch(''), style: { background:'none',border:'none',color:'var(--tm)',cursor:'pointer',padding:'4px',display:'flex',alignItems:'center' } }, /*#__PURE__*/React.createElement(IX, null))
+      )
+    ),
+    showAdd && /*#__PURE__*/React.createElement("div", { className: "mo", onClick: e => { if (e.target === e.currentTarget) { setShowAdd(false); setErr(''); } } },
+      /*#__PURE__*/React.createElement("div", { className: "mo-box" },
+        /*#__PURE__*/React.createElement("div", { style: { display:'flex', justifyContent:'space-between', alignItems:'center' } },
+          /*#__PURE__*/React.createElement("span", { className: "mo-ttl" }, "Add Mobility Exercise"),
+          /*#__PURE__*/React.createElement("button", { className: "hdr-btn", onClick: () => { setShowAdd(false); setErr(''); } }, /*#__PURE__*/React.createElement(IX, null))
+        ),
+        /*#__PURE__*/React.createElement("div", { className: "igrp" },
+          /*#__PURE__*/React.createElement("label", { className: "ilbl" }, "Exercise Name"),
+          /*#__PURE__*/React.createElement("input", { className: "inp", placeholder: "e.g. Hip 90/90 Stretch", value: newName, onChange: e => setNewName(e.target.value), onKeyDown: e => e.key === 'Enter' && addExercise(), autoFocus: true })
+        ),
+        /*#__PURE__*/React.createElement("div", { style: { display:'flex', alignItems:'center', justifyContent:'space-between', margin:'0 0 12px' } },
+          /*#__PURE__*/React.createElement("span", { style: { fontSize:14, color:'var(--ts)' } }, "Bodyweight"),
+          /*#__PURE__*/React.createElement(Toggle, { checked: isBW, onChange: setIsBW })
+        ),
+        /*#__PURE__*/React.createElement("div", { className: "igrp", style: { marginBottom: 12 } },
+          /*#__PURE__*/React.createElement("label", { className: "ilbl" }, "Notes"),
+          /*#__PURE__*/React.createElement("textarea", { className: "inp", placeholder: "Cues, setup tips, video links...", value: newNotes, onChange: e => setNewNotes(e.target.value), rows: 3, style: { resize:'none', lineHeight:1.5 } })
+        ),
+        err && /*#__PURE__*/React.createElement("div", { className: "alert-e", style:{ marginBottom:8 } }, err),
+        /*#__PURE__*/React.createElement("button", { className: "btn btn-p", onClick: addExercise, disabled: saving },
+          saving ? /*#__PURE__*/React.createElement("span", { className: "spin" }) : "Add Exercise")
+      )
+    ),
+    editEx && /*#__PURE__*/React.createElement("div", { className: "mo", onClick: e => { if (e.target === e.currentTarget) { setEditEx(null); setErr(''); } } },
+      /*#__PURE__*/React.createElement("div", { className: "mo-box" },
+        /*#__PURE__*/React.createElement("div", { style: { display:'flex', justifyContent:'space-between', alignItems:'center' } },
+          /*#__PURE__*/React.createElement("span", { className: "mo-ttl" }, "Edit Exercise"),
+          /*#__PURE__*/React.createElement("button", { className: "hdr-btn", onClick: () => { setEditEx(null); setErr(''); } }, /*#__PURE__*/React.createElement(IX, null))
+        ),
+        /*#__PURE__*/React.createElement("div", { className: "igrp" },
+          /*#__PURE__*/React.createElement("label", { className: "ilbl" }, "Exercise Name"),
+          /*#__PURE__*/React.createElement("input", { className: "inp", value: editName, onChange: e => setEditName(e.target.value), autoFocus: true })
+        ),
+        /*#__PURE__*/React.createElement("div", { style: { display:'flex', alignItems:'center', justifyContent:'space-between', margin:'0 0 12px' } },
+          /*#__PURE__*/React.createElement("span", { style: { fontSize:14, color:'var(--ts)' } }, "Bodyweight"),
+          /*#__PURE__*/React.createElement(Toggle, { checked: editBW, onChange: setEditBW })
+        ),
+        /*#__PURE__*/React.createElement("div", { className: "igrp", style: { marginBottom: 12 } },
+          /*#__PURE__*/React.createElement("label", { className: "ilbl" }, "Notes"),
+          /*#__PURE__*/React.createElement("textarea", { className: "inp", placeholder: "Cues, setup tips, video links...", value: editNotes, onChange: e => setEditNotes(e.target.value), rows: 3, style: { resize:'none', lineHeight:1.5 } })
+        ),
+        err && /*#__PURE__*/React.createElement("div", { className: "alert-e", style:{ marginBottom:8 } }, err),
+        /*#__PURE__*/React.createElement("div", { style: { display:'flex', gap:8 } },
+          /*#__PURE__*/React.createElement("button", { className: "btn btn-p", style:{ flex:1 }, onClick: saveEdit, disabled: saving },
+            saving ? /*#__PURE__*/React.createElement("span", { className: "spin" }) : "Save"),
+          /*#__PURE__*/React.createElement("button", { className: "btn btn-d", style:{ flex:1 }, onClick: () => deleteEx(editEx) }, "Delete")
+        )
+      )
+    ),
+    loading ? /*#__PURE__*/React.createElement("div", { className: "loading" }, /*#__PURE__*/React.createElement("span", { className: "spin" }))
+    : filtered.length === 0 ? /*#__PURE__*/React.createElement("div", { className: "empty" },
+        /*#__PURE__*/React.createElement(IMobility, null),
+        /*#__PURE__*/React.createElement("div", { className: "empty-ttl" }, search ? "No results" : "No mobility exercises yet"),
+        /*#__PURE__*/React.createElement("div", { className: "empty-sub" }, search ? "Try a different search" : "Add stretches, flows, and movement drills below")
+      )
+    : /*#__PURE__*/React.createElement("div", { style: { margin:'0 16px', background:'var(--s1)', border:'1px solid var(--br)', borderRadius:'var(--r)', overflow:'hidden' } },
+        filtered.map((ex, i) => /*#__PURE__*/React.createElement("div", { key: ex.id, style: { display:'flex', alignItems:'center', padding:'13px 16px', borderBottom: i < filtered.length-1 ? '1px solid var(--br)' : 'none', cursor:'pointer' }, onClick: () => { setEditEx(ex); setEditName(ex.name); setEditBW(!!ex.is_bodyweight); setEditNotes(ex.notes || ''); setErr(''); } },
+          /*#__PURE__*/React.createElement("div", { style:{ flex:1 } },
+            /*#__PURE__*/React.createElement("div", { className: "li-name" }, ex.name),
+            ex.is_bodyweight && /*#__PURE__*/React.createElement("span", { className: "bw-badge", style:{ marginTop:2, display:'inline-block' } }, "BW")
+          ),
+          /*#__PURE__*/React.createElement(IChev, null)
+        ))
+      ),
+    /*#__PURE__*/React.createElement("div", { style:{ padding:'12px 16px' } },
+      /*#__PURE__*/React.createElement("button", { className: "btn btn-s", onClick: () => { setShowAdd(true); setErr(''); } },
+        /*#__PURE__*/React.createElement("svg", { width:"16",height:"16",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"2.5",strokeLinecap:"round" },
+          /*#__PURE__*/React.createElement("line",{x1:"12",y1:"5",x2:"12",y2:"19"}),
+          /*#__PURE__*/React.createElement("line",{x1:"5",y1:"12",x2:"19",y2:"12"})
+        ), " Add Exercise"
+      )
+    )
+  );
+}
+
 // ── Library ───────────────────────────────────────────────────────────────────
 function Library({
   user
@@ -5514,9 +5902,9 @@ function BottomNav({
     label: "Log",
     I: IPlus
   }, {
-    id: "history",
-    label: "History",
-    I: IClock
+    id: "mobility",
+    label: "Mobility",
+    I: IMobility
   }, {
     id: "progress",
     label: "Progress",
@@ -5546,6 +5934,12 @@ function App() {
     setLayoutState(m);
     try { localStorage.setItem('rlyhevy_layout', m); } catch(_) {}
   }
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem('rlyhevy_accent');
+      if (saved) document.documentElement.style.setProperty('--acc', saved);
+    } catch(_) {}
+  }, []);
   useEffect(() => {
     db.restoreSession().then(res => {
       if (res) {
@@ -5611,7 +6005,7 @@ function App() {
   }), screen === "log" && /*#__PURE__*/React.createElement(Log, {
     user: user,
     onWorkoutComplete: () => setScreen('dashboard')
-  }), screen === "history" && /*#__PURE__*/React.createElement(History, null), screen === "progress" && /*#__PURE__*/React.createElement(Progress, null), /*#__PURE__*/React.createElement(BottomNav, {
+  }), screen === "mobility" && /*#__PURE__*/React.createElement(Mobility, { user: user }), screen === "progress" && /*#__PURE__*/React.createElement(Progress, null), /*#__PURE__*/React.createElement(BottomNav, {
     active: screen,
     onChange: nav
   }));
