@@ -914,8 +914,18 @@ function TUTSelector({
         ['none', 'concentric', 'eccentric', 'hold', 'multiple'].map(t => React.createElement("button", {
           key: t,
           className: `tut-opt${tut_type === t ? ' on' : ''}`,
-          onClick: () => { onChange({ ...value, tut_type: t }); setOpen(false); }
+          onClick: () => onChange({ ...value, tut_type: t })
         }, TUT_TYPE_LABEL[t]))
+      ),
+      value.tut_type !== 'none' && React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "tut-lbl", style: { marginTop: 10 } }, "Duration"),
+        React.createElement("div", { className: "tut-opt-2" },
+          [2, 3].map(d => React.createElement("button", {
+            key: d,
+            className: `tut-opt${value.tut_duration === d ? ' on' : ''}`,
+            onClick: () => onChange({ ...value, tut_duration: d })
+          }, d, "s"))
+        )
       ),
       React.createElement("button", {
         className: "btn btn-p",
@@ -3697,8 +3707,18 @@ function ActiveWorkout({
     ['none','concentric','eccentric','hold','multiple'].map(t => /*#__PURE__*/React.createElement("button", {
       key:t,
       className:`tut-opt${tutModalSet.tut_type===t?' on':''}`,
-      onClick:()=>{ updateSetTUT(expandedTUTSet.weId, expandedTUTSet.setId, { tut_type:t, tut_tension:tutModalSet.tut_tension, tut_duration:tutModalSet.tut_duration }); setExpandedTUTSet(null); }
+      onClick:()=>updateSetTUT(expandedTUTSet.weId, expandedTUTSet.setId, { tut_type:t, tut_tension:tutModalSet.tut_tension, tut_duration:tutModalSet.tut_duration })
     }, TUT_TYPE_LABEL[t]))
+  ),
+  tutModalSet.tut_type !== 'none' && /*#__PURE__*/React.createElement(React.Fragment, null,
+    /*#__PURE__*/React.createElement("div", {className:"tut-lbl", style:{marginTop:10}}, "Duration"),
+    /*#__PURE__*/React.createElement("div", {className:"tut-opt-2"},
+      [2,3].map(d => /*#__PURE__*/React.createElement("button", {
+        key:d,
+        className:`tut-opt${tutModalSet.tut_duration===d?' on':''}`,
+        onClick:()=>updateSetTUT(expandedTUTSet.weId, expandedTUTSet.setId, {tut_type:tutModalSet.tut_type, tut_tension:tutModalSet.tut_tension, tut_duration:d})
+      }, d, "s"))
+    )
   ),
   /*#__PURE__*/React.createElement("button", {
     className:"btn btn-p", style:{marginTop:4}, onClick:()=>setExpandedTUTSet(null)
@@ -5073,8 +5093,18 @@ function SlotEditor({
       ['none','concentric','eccentric','hold','multiple'].map(t => /*#__PURE__*/React.createElement("button", {
         key: t,
         className: `tut-opt${tutModalRow.tut_type === t ? ' on' : ''}`,
-        onClick: () => { saveRow(tutModalRow, { tut_type: t, tut_tension: tutModalRow.tut_tension, tut_duration: tutModalRow.tut_duration }); setTutModal(null); }
+        onClick: () => saveRow(tutModalRow, { tut_type: t, tut_tension: tutModalRow.tut_tension, tut_duration: tutModalRow.tut_duration })
       }, TUT_TYPE_LABEL[t]))
+    ),
+    tutModalRow.tut_type !== 'none' && /*#__PURE__*/React.createElement(React.Fragment, null,
+      /*#__PURE__*/React.createElement("div", { className: "tut-lbl", style: { marginTop: 10 } }, "Duration"),
+      /*#__PURE__*/React.createElement("div", { className: "tut-opt-2" },
+        [2,3].map(d => /*#__PURE__*/React.createElement("button", {
+          key: d,
+          className: `tut-opt${tutModalRow.tut_duration === d ? ' on' : ''}`,
+          onClick: () => saveRow(tutModalRow, { tut_type: tutModalRow.tut_type, tut_tension: tutModalRow.tut_tension, tut_duration: d })
+        }, d, "s"))
+      )
     ),
     /*#__PURE__*/React.createElement("button", { className: "btn btn-p", style: { marginTop: 4 }, onClick: () => setTutModal(null) }, "Done")
   )), /*#__PURE__*/React.createElement("div", {
