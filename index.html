@@ -4,80 +4,82 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>RlyHevy</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link href="https://fonts.bunny.net/css?family=geist:100,200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#080808;--s1:#111;--s2:#1c1c1c;--br:#222;
-  --acc:#ff2d55;--acc4:rgba(255,45,85,.04);--acc8:rgba(255,45,85,.08);--acc12:rgba(255,45,85,.12);--acc20:rgba(255,45,85,.22);--acc25:rgba(255,45,85,.25);--acc40:rgba(255,45,85,.4);--acc50:rgba(255,45,85,.5);
-  --tx:#fff;--tm:#666;--ts:#aaa;
+  --bg:#000000;--s1:#0e0c08;--s2:#18140f;--br:#221d16;--divider:#14110d;
+  --acc:#c9a36a;--acc4:rgba(201,163,106,.04);--acc8:rgba(201,163,106,.08);--acc12:rgba(201,163,106,.12);--acc20:rgba(201,163,106,.22);--acc25:rgba(201,163,106,.25);--acc40:rgba(201,163,106,.4);--acc50:rgba(201,163,106,.5);
+  --tx:#f3ece0;--tm:#5a5550;--ts:#8a847b;
+  --push:#ff7a4d;--pull:#5ec8ff;--legs:#b6f24a;
   --err:#ff6b6b;--err8:rgba(255,107,107,.08);--err20:rgba(255,107,107,.2);
-  --r:12px;--rs:8px;
+  --r:18px;--rs:10px;
+  --emboss:inset 0 1px 0 rgba(255,236,200,.08),inset 0 -1px 0 rgba(0,0,0,.6),0 14px 28px rgba(0,0,0,.6),0 4px 10px rgba(0,0,0,.4);
 }
-html,body{background:#000;color:var(--tx);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html,body{background:#000;color:var(--tx);font-family:'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 #root{display:flex;justify-content:center;min-height:100vh;background:#000}
 .wrap{width:100%;max-width:420px;min-height:100vh;background:var(--bg);position:relative;overflow-x:hidden}
-.screen{padding-bottom:max(88px, calc(72px + env(safe-area-inset-bottom)));min-height:100vh}
+.screen{padding-bottom:max(120px, calc(104px + env(safe-area-inset-bottom)));min-height:100vh}
 .hdr{padding:48px 20px 8px;display:flex;align-items:center;justify-content:space-between}
-.hdr-ttl{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1.5px}
-.hdr-btn{background:none;border:none;color:var(--ts);cursor:pointer;padding:8px;display:flex;align-items:center;gap:5px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500}
+.hdr-ttl{font-size:22px;font-weight:700;letter-spacing:-0.5px;color:var(--tx)}
+.hdr-btn{background:none;border:none;color:var(--ts);cursor:pointer;padding:8px;display:flex;align-items:center;gap:5px;border-radius:10px;font-family:'Geist',system-ui,sans-serif;font-size:14px;font-weight:500}
 .hdr-btn:hover{background:var(--s2)}
-.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(8,8,8,.97);backdrop-filter:blur(20px);border-top:1px solid var(--br);display:flex;z-index:100;padding:10px 0 calc(16px + env(safe-area-inset-bottom))}
-.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;cursor:pointer;background:none;border:none;color:var(--tm);font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;transition:color .15s}
+.bnav{position:fixed;bottom:max(20px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:calc(100% - 40px);max-width:380px;background:linear-gradient(180deg,#18140f 0%,#0e0c08 100%);border:1px solid #221d16;border-radius:28px;box-shadow:inset 0 1px 0 rgba(255,236,200,.08),inset 0 -1px 0 rgba(0,0,0,.6),0 14px 28px rgba(0,0,0,.6),0 4px 10px rgba(0,0,0,.4);display:flex;z-index:100;padding:10px 14px}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;cursor:pointer;background:none;border:none;color:var(--ts);font-family:'Geist',system-ui,sans-serif;font-size:9px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;transition:color .15s}
 .ni.on{color:var(--acc)}
-.ni svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.card{background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:16px;margin:0 16px 12px}
-.card-ttl{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);margin-bottom:12px}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 20px;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:none;transition:transform .1s;width:100%}
+.ni svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.card{background:linear-gradient(180deg,#18140f 0%,#0e0c08 100%);border:1px solid #221d16;border-radius:var(--r);padding:16px;margin:0 16px 12px;box-shadow:var(--emboss)}
+.card-ttl{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);margin-bottom:12px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 20px;border-radius:var(--r);font-family:'Geist',system-ui,sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:none;transition:transform .1s;width:100%}
 .btn:active{transform:scale(.97)}
-.btn-p{background:var(--acc);color:#fff}
+.btn-p{background:linear-gradient(180deg,#d4b07a,#c9a36a);color:#0a0806;box-shadow:0 0 16px rgba(201,163,106,.3)}
 .btn-s{background:var(--s2);color:var(--tx);border:1px solid var(--br)}
 .btn-g{background:transparent;color:var(--tm);border:1px solid var(--br)}
 .btn-d{background:rgba(255,68,68,.08);color:#ff6b6b;border:1px solid rgba(255,68,68,.2)}
-.inp{width:100%;background:var(--s2);border:1px solid var(--br);border-radius:var(--rs);padding:14px 16px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s}
+.inp{width:100%;background:var(--s2);border:1px solid var(--br);border-radius:var(--rs);padding:14px 16px;color:var(--tx);font-family:'Geist',system-ui,sans-serif;font-size:15px;outline:none;transition:border-color .2s}
 .inp:focus{border-color:var(--acc)}
 .inp::placeholder{color:var(--tm)}
 .igrp{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
 .ilbl{font-size:11px;font-weight:600;letter-spacing:.5px;color:var(--tm);text-transform:uppercase}
-.sel{width:100%;background:var(--s2);border:1px solid var(--br);border-radius:var(--rs);padding:14px 16px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;appearance:none;cursor:pointer}
+.sel{width:100%;background:var(--s2);border:1px solid var(--br);border-radius:var(--rs);padding:14px 16px;color:var(--tx);font-family:'Geist',system-ui,sans-serif;font-size:15px;outline:none;appearance:none;cursor:pointer}
 .sel:focus{border-color:var(--acc)}
 .alert-e{color:var(--err);font-size:13px;padding:10px 14px;background:var(--err8);border-radius:var(--rs);margin-bottom:12px;border:1px solid var(--err20)}
 .alert-s{color:var(--acc);font-size:13px;padding:10px 14px;background:var(--acc8);border-radius:var(--rs);margin-bottom:12px;border:1px solid var(--acc20)}
 .auth{min-height:100vh;display:flex;flex-direction:column;padding:64px 24px 40px}
-.auth-logo{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:4px;color:var(--acc);line-height:1;text-shadow:0 0 20px var(--acc50),0 0 40px var(--acc25)}
+.auth-logo{font-size:52px;font-weight:800;letter-spacing:-2px;color:var(--acc);line-height:1;text-shadow:0 0 20px var(--acc50),0 0 40px var(--acc25)}
 .auth-sub{font-size:13px;color:var(--tm);margin-top:6px;margin-bottom:44px}
 .auth-tabs{display:flex;background:var(--s1);border-radius:var(--r);padding:4px;margin-bottom:20px;border:1px solid var(--br)}
-.auth-tab{flex:1;padding:10px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--tm);transition:all .2s}
-.auth-tab.on{background:var(--acc);color:#fff}
+.auth-tab{flex:1;padding:10px;border-radius:10px;font-family:'Geist',system-ui,sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--tm);transition:all .2s}
+.auth-tab.on{background:var(--acc);color:#0a0806}
 .srch{display:flex;align-items:center;background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:0 14px;margin:0 16px 12px;gap:10px}
-.srch input{flex:1;background:transparent;border:none;outline:none;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 0}
+.srch input{flex:1;background:transparent;border:none;outline:none;color:var(--tx);font-family:'Geist',system-ui,sans-serif;font-size:15px;padding:13px 0}
 .srch input::placeholder{color:var(--tm)}
 .fscroll{display:flex;gap:8px;overflow-x:auto;padding:0 16px 12px;scrollbar-width:none}
 .fscroll::-webkit-scrollbar{display:none}
-.fchip{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--br);background:var(--s1);color:var(--tm);transition:all .15s;white-space:nowrap;font-family:'DM Sans',sans-serif}
-.fchip.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.fchip{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--br);background:var(--s1);color:var(--tm);transition:all .15s;white-space:nowrap;font-family:'Geist',system-ui,sans-serif}
+.fchip.on{background:var(--acc);color:#0a0806;border-color:var(--acc)}
 .lst{margin:0 16px;background:var(--s1);border:1px solid var(--br);border-radius:var(--r);overflow:hidden}
-.li{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--br);cursor:pointer;transition:background .1s}
+.li{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--divider);cursor:pointer;transition:background .1s}
 .li:last-child{border-bottom:none}
 .li:hover{background:var(--s2)}
 .li-name{font-size:15px;font-weight:500}
 .li-sub{font-size:12px;color:var(--ts);margin-top:3px}
-.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;font-family:'DM Sans',sans-serif}
-.bw-badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;font-family:'DM Sans',sans-serif;background:var(--acc12);color:var(--acc);border:1px solid var(--acc25);letter-spacing:.5px}
-.global-badge{padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;font-family:'DM Sans',sans-serif;background:rgba(100,120,255,.1);color:#8899ff;border:1px solid rgba(100,120,255,.2);white-space:nowrap}
+.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;font-family:'Geist',system-ui,sans-serif}
+.bw-badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;font-family:'Geist',system-ui,sans-serif;background:var(--acc12);color:var(--acc);border:1px solid var(--acc25);letter-spacing:.5px}
+.global-badge{padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;font-family:'Geist',system-ui,sans-serif;background:rgba(100,120,255,.1);color:#8899ff;border:1px solid rgba(100,120,255,.2);white-space:nowrap}
 .empty{text-align:center;padding:48px 24px;display:flex;flex-direction:column;align-items:center;gap:12px}
 .empty-ttl{font-size:15px;font-weight:500;color:var(--ts)}
 .empty-sub{font-size:13px;color:var(--tm)}
 .mo{position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:flex-end}
-.mo-box{background:var(--s1);border:1px solid var(--br);border-top-left-radius:var(--r);border-top-right-radius:var(--r);padding:24px 24px calc(24px + env(safe-area-inset-bottom));width:100%;display:flex;flex-direction:column;gap:12px;max-height:92vh;overflow-y:auto;overscroll-behavior:contain}
-.mo-ttl{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
-.divider{height:1px;background:var(--br)}
+.mo-box{background:linear-gradient(180deg,#18140f 0%,#0e0c08 100%);border:1px solid var(--br);border-top-left-radius:var(--r);border-top-right-radius:var(--r);padding:24px 24px calc(24px + env(safe-area-inset-bottom));width:100%;display:flex;flex-direction:column;gap:12px;max-height:92vh;overflow-y:auto;overscroll-behavior:contain;box-shadow:0 -8px 32px rgba(0,0,0,.6)}
+.mo-ttl{font-size:18px;font-weight:700;letter-spacing:-0.5px;color:var(--tx)}
+.divider{height:1px;background:var(--divider)}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 16px 12px}
-.stat-card{background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:14px}
-.stat-v{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;color:var(--acc);text-shadow:0 0 12px var(--acc40)}
+.stat-card{background:linear-gradient(180deg,#18140f 0%,#0e0c08 100%);border:1px solid var(--br);border-radius:var(--r);padding:14px;box-shadow:var(--emboss)}
+.stat-v{font-size:28px;font-weight:200;letter-spacing:-1px;color:var(--acc);text-shadow:0 0 12px var(--acc40);font-variant-numeric:tabular-nums}
 .stat-l{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--tm);margin-top:3px}
 .stat-hint{font-size:10px;color:var(--tm);margin-top:1px;opacity:.7}
 .toggle{position:relative;width:44px;height:26px;flex-shrink:0;cursor:pointer}
@@ -88,30 +90,30 @@ html,body{background:#000;color:var(--tx);font-family:'DM Sans',sans-serif;-webk
 .toggle input:checked ~ .toggle-thumb{transform:translateX(18px)}
 .sec-hd{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);margin:16px 16px 8px}
 .unit-toggle{display:flex;background:var(--s2);border:1px solid var(--br);border-radius:var(--rs);overflow:hidden;flex-shrink:0}
-.unit-btn{padding:0 18px;background:transparent;color:var(--tm);border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;transition:all .15s;min-height:48px}
-.unit-btn.on{background:var(--acc);color:#fff}
+.unit-btn{padding:0 18px;background:transparent;color:var(--tm);border:none;cursor:pointer;font-family:'Geist',system-ui,sans-serif;font-size:14px;font-weight:600;transition:all .15s;min-height:48px}
+.unit-btn.on{background:var(--acc);color:#0a0806}
 .bw-preview{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.bw-chip{padding:5px 10px;border-radius:20px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;background:var(--acc8);color:var(--acc);border:1px solid var(--acc20)}
+.bw-chip{padding:5px 10px;border-radius:20px;font-size:12px;font-weight:600;font-family:'Geist',system-ui,sans-serif;background:var(--acc8);color:var(--acc);border:1px solid var(--acc20)}
 /* Stepper */
 .stepper{display:flex;align-items:center;background:var(--s2);border:1px solid var(--br);border-radius:var(--rs);overflow:hidden}
 .stepper-val{width:40px;text-align:center;font-size:15px;font-weight:600;color:var(--tx)}
 .stepper-btn{width:36px;height:40px;background:none;border:none;color:var(--ts);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s}
 .stepper-btn:hover{background:var(--br)}
 /* TUT selector */
-.tut-badge-btn{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid var(--br);background:var(--s2);color:var(--tm);white-space:nowrap;transition:all .15s}
+.tut-badge-btn{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Geist',system-ui,sans-serif;border:1px solid var(--br);background:var(--s2);color:var(--tm);white-space:nowrap;transition:all .15s}
 .tut-badge-btn.active{background:var(--acc8);color:var(--acc);border-color:var(--acc20)}
 .tut-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:6px}
-.tut-opt{padding:14px 6px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--br);background:var(--s1);color:var(--tm);transition:all .15s;text-align:center;font-family:'DM Sans',sans-serif}
-.tut-opt.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.tut-opt{padding:14px 6px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--br);background:var(--s1);color:var(--tm);transition:all .15s;text-align:center;font-family:'Geist',system-ui,sans-serif}
+.tut-opt.on{background:var(--acc);color:#0a0806;border-color:var(--acc)}
 .tut-opt-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px;margin-top:6px}
 .tut-opt-2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
 .tut-lbl{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--tm);margin-top:10px;margin-bottom:0}
 /* Exercise row in template */
-.ex-row{border-bottom:1px solid var(--br)}
+.ex-row{border-bottom:1px solid var(--divider)}
 .ex-row:last-child{border-bottom:none}
 .ex-row-main{display:flex;align-items:center;padding:13px 16px;cursor:pointer;transition:background .1s;gap:12px}
 .ex-row-main:hover{background:var(--s2)}
-.ex-row-expand{padding:12px 16px 16px;border-top:1px solid var(--br);background:rgba(255,255,255,.02)}
+.ex-row-expand{padding:12px 16px 16px;border-top:1px solid var(--divider);background:rgba(255,255,255,.02)}
 .ex-row-controls{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
 /* Spinner */
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -301,6 +303,18 @@ const db = {
     };
   }
 };
+function getHiddenExercises() {
+  try { return JSON.parse(localStorage.getItem(`rlyhevy_hidden_ex_${db.uid}`) || '[]'); } catch(_) { return []; }
+}
+function hideExercise(id) {
+  const hidden = getHiddenExercises();
+  if (!hidden.includes(id)) hidden.push(id);
+  try { localStorage.setItem(`rlyhevy_hidden_ex_${db.uid}`, JSON.stringify(hidden)); } catch(_) {}
+}
+function unhideExercise(id) {
+  const hidden = getHiddenExercises().filter(h => h !== id);
+  try { localStorage.setItem(`rlyhevy_hidden_ex_${db.uid}`, JSON.stringify(hidden)); } catch(_) {}
+}
 const MG_COLOR = {
   chest: "#ff6b6b",
   back: "#4dabf7",
@@ -334,7 +348,18 @@ const MG_LABEL = {
   mobility: "Mobility"
 };
 const MG_ALL = Object.keys(MG_COLOR);
-const ACCENT_COLORS = ['#ff2d55','#ff6b35','#ff9500','#ffcc00','#34c759','#00bcd4','#007aff','#5856d6','#af52de','#ff375f'];
+const ACCENT_COLORS = ['#c9a36a','#c8ff3e','#5ec8ff','#ff5a3c','#b76eff','#ff7a4d','#34c759','#ffcc00','#007aff','#ff375f'];
+function hexToHsl(hex) {
+  const r=parseInt(hex.slice(1,3),16)/255,g=parseInt(hex.slice(3,5),16)/255,b=parseInt(hex.slice(5,7),16)/255;
+  const max=Math.max(r,g,b),min=Math.min(r,g,b);let h,s,l=(max+min)/2;
+  if(max===min){h=s=0;}else{const d=max-min;s=l>.5?d/(2-max-min):d/(max+min);switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;break;}}
+  return [h*360,s*100,l*100];
+}
+function hslToHex(h,s,l) {
+  h/=360;s/=100;l/=100;let r,g,b;
+  if(s===0){r=g=b=l;}else{const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;const h2r=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<.5)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};r=h2r(p,q,h+1/3);g=h2r(p,q,h);b=h2r(p,q,h-1/3);}
+  return '#'+[r,g,b].map(x=>Math.round(x*255).toString(16).padStart(2,'0')).join('');
+}
 function applyAccent(c) {
   const r = parseInt(c.slice(1,3),16), g = parseInt(c.slice(3,5),16), b = parseInt(c.slice(5,7),16);
   const root = document.documentElement;
@@ -346,6 +371,16 @@ function applyAccent(c) {
   root.style.setProperty('--acc25', `rgba(${r},${g},${b},.25)`);
   root.style.setProperty('--acc40', `rgba(${r},${g},${b},.4)`);
   root.style.setProperty('--acc50', `rgba(${r},${g},${b},.5)`);
+  // Monochromatic muscle group shades — same hue, varied lightness
+  const [_h,_s] = hexToHsl(c);
+  const _mgKeys=['chest','back','shoulders','biceps','triceps','forearms','core','quads','hamstrings','glutes','calves','full_body','other','mobility'];
+  const _lights=[80,50,68,42,72,36,76,56,46,66,62,32,52,60];
+  const _sats=[0.85,1.0,0.95,0.9,1.0,0.8,1.0,0.9,1.0,0.8,1.0,1.0,0.45,0.75];
+  _mgKeys.forEach((mg,i)=>{ MG_COLOR[mg]=hslToHex(_h,Math.min(100,_s*_sats[i]),_lights[i]); });
+  // Dashboard shades (light / base / dark of accent)
+  root.style.setProperty('--push', hslToHex(_h,Math.min(100,_s*.85),80));
+  root.style.setProperty('--pull', c);
+  root.style.setProperty('--legs', hslToHex(_h,Math.min(100,_s),38));
   try { localStorage.setItem('rlyhevy_accent', c); } catch(_) {}
 }
 const SET_TYPES = ['working','warmup','drop','failure'];
@@ -855,7 +890,14 @@ const greet = () => {
   const h = new Date().getHours();
   return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
 };
-const tutLabel = (type) => TUT_TYPE_LABEL[type] || '—';
+const tutLabel = (type, tension, duration) => {
+  if (!type || type === 'none') return '—';
+  const d = duration || 2;
+  const codes = { eccentric_hold: 'EH', concentric_hold: 'CH', rep_release: 'RR', both: 'BT' };
+  const prefix = codes[type];
+  if (!prefix) return '—';
+  return `${prefix}${d}`;
+};
 function Toggle({
   checked,
   onChange
@@ -1046,6 +1088,42 @@ function ExercisePicker({
   }))), /*#__PURE__*/React.createElement(IChev, null))))));
 }
 
+// ── Template Exercise Row (global edit grid) ──────────────────────────────────
+function TemplateExRow({ te, onSave, tutModal, setTutModal }) {
+  const [setsVal, setSetsVal] = React.useState(String(te.default_sets ?? 3));
+  const [repsVal, setRepsVal] = React.useState(String(te.default_reps ?? 10));
+  React.useEffect(() => { setSetsVal(String(te.default_sets ?? 3)); }, [te.default_sets]);
+  React.useEffect(() => { setRepsVal(String(te.default_reps ?? 10)); }, [te.default_reps]);
+  const ex = te.exercises || {};
+  return React.createElement("div", { style: { borderBottom: '1px solid var(--br)' } },
+    React.createElement("div", {
+      style: { display: 'grid', gridTemplateColumns: '1fr 40px 48px 68px', alignItems: 'center', gap: '0 8px', padding: '10px 12px' }
+    },
+      React.createElement("div", { style: { minWidth: 0 } },
+        React.createElement("div", { style: { fontSize: 13, fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, ex.name),
+        React.createElement("div", { style: { marginTop: 2 } }, React.createElement(Badge, { mg: ex.muscle_group }))
+      ),
+      React.createElement("input", {
+        type: "number", value: setsVal,
+        onChange: e => setSetsVal(e.target.value),
+        onBlur: e => { const v = Math.max(1, parseInt(e.target.value) || 1); setSetsVal(String(v)); onSave(te, { default_sets: v }); },
+        style: { width: 40, textAlign: 'center', background: 'var(--s2)', border: '1px solid var(--br)', borderRadius: 6, color: 'var(--tx)', fontFamily: "'DM Sans',sans-serif", fontSize: 14, fontWeight: 600, padding: '7px 0', outline: 'none' }
+      }),
+      React.createElement("input", {
+        type: "number", value: repsVal,
+        onChange: e => setRepsVal(e.target.value),
+        onBlur: e => { const v = Math.max(1, parseInt(e.target.value) || 1); setRepsVal(String(v)); onSave(te, { default_reps: v }); },
+        style: { width: 48, textAlign: 'center', background: 'var(--s2)', border: '1px solid var(--br)', borderRadius: 6, color: 'var(--tx)', fontFamily: "'DM Sans',sans-serif", fontSize: 14, fontWeight: 600, padding: '7px 0', outline: 'none' }
+      }),
+      React.createElement("button", {
+        className: `tut-badge-btn${te.tut_type !== 'none' ? ' active' : ''}`,
+        onClick: () => setTutModal(tutModal === te.id ? null : te.id),
+        style: { fontSize: 10, padding: '4px 4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }
+      }, tutLabel(te.tut_type, te.tut_tension, te.tut_duration))
+    )
+  );
+}
+
 // ── Template Detail ───────────────────────────────────────────────────────────
 function TemplateDetail({
   template,
@@ -1066,8 +1144,13 @@ function TemplateDetail({
   const [showBulk, setShowBulk] = useState(false);
   const [bulkState, setBulkState] = useState({ default_sets: 3, default_reps: 10, tut_type: 'none', tut_tension: 'neither', tut_duration: 2 });
   const [bulkApplying, setBulkApplying] = useState(false);
-  const isGlobal = template.is_global;
-  const isMine = !isGlobal && template.user_id === db.uid;
+  const [showGlobalEdit, setShowGlobalEdit] = useState(false);
+  const [globalTutModal, setGlobalTutModal] = useState(null);
+  const [forkedTemplateId, setForkedTemplateId] = useState(null);
+  const forkedTemplateIdRef = React.useRef(null);
+  const effectiveTemplateId = forkedTemplateIdRef.current || template.id;
+  const isGlobal = !forkedTemplateIdRef.current && template.is_global;
+  const isMine = !!forkedTemplateIdRef.current || (!template.is_global && template.user_id === db.uid);
   useEffect(() => {
     loadExercises();
   }, [template.id]);
@@ -1114,32 +1197,34 @@ function TemplateDetail({
     }, `id=eq.${template.id}`);
     setEditingName(false);
   }
-  async function forkTemplate() {
+  async function ensureEditable(currentExercises) {
+    // Already forked or user owns it → no-op
+    if (forkedTemplateIdRef.current) return { tid: forkedTemplateIdRef.current, exes: currentExercises };
+    if (!template.is_global && template.user_id === db.uid) return { tid: template.id, exes: currentExercises };
+    // Auto-fork the global template into user account
     setSaving(true);
-    const {
-      data: newTpl
-    } = await db.post('templates', {
-      name: `${template.name} (Custom)`,
-      user_id: db.uid,
-      is_global: false
-    });
-    if (newTpl && newTpl[0]) {
-      const tid = newTpl[0].id;
-      for (const te of exercises) {
-        await db.post('template_exercises', {
-          template_id: tid,
-          exercise_id: te.exercises.id,
-          sort_order: te.sort_order,
-          default_sets: te.default_sets,
-          default_reps: te.default_reps,
-          tut_type: te.tut_type,
-          tut_tension: te.tut_tension,
-          tut_duration: te.tut_duration
-        });
-      }
-      onBack();
+    const { data: newTpl } = await db.post('templates', { name: template.name, user_id: db.uid, is_global: false });
+    if (!newTpl || !newTpl[0]) { setSaving(false); setErr('Could not save a copy. Try again.'); return null; }
+    const newId = newTpl[0].id;
+    for (const te of currentExercises) {
+      await db.post('template_exercises', {
+        template_id: newId,
+        exercise_id: te.exercises && te.exercises.id,
+        sort_order: te.sort_order,
+        default_sets: te.default_sets,
+        default_reps: te.default_reps,
+        tut_type: te.tut_type,
+        tut_tension: te.tut_tension,
+        tut_duration: te.tut_duration
+      });
     }
+    const { data: freshData } = await db.get('template_exercises', `select=id,sort_order,default_sets,default_reps,tut_type,tut_tension,tut_duration,exercises(id,name,muscle_group,is_bodyweight)&template_id=eq.${newId}&order=sort_order.asc`);
+    const freshExes = freshData || [];
+    forkedTemplateIdRef.current = newId;
+    setForkedTemplateId(newId);
+    setExercises(freshExes);
     setSaving(false);
+    return { tid: newId, exes: freshExes };
   }
   async function deleteTemplate() {
     if (!window.confirm(`Delete "${template.name}"? This cannot be undone.`)) return;
@@ -1148,13 +1233,33 @@ function TemplateDetail({
     onDeleted();
   }
   async function applyBulkUpdate() {
-    if (!window.confirm(`Apply to all ${exercises.length} exercises in this template?`)) return;
     setBulkApplying(true);
+    const result = await ensureEditable(exercises);
+    if (!result) { setBulkApplying(false); return; }
+    const { exes } = result;
     const payload = { default_sets: bulkState.default_sets, default_reps: bulkState.default_reps, tut_type: bulkState.tut_type, tut_tension: bulkState.tut_tension, tut_duration: bulkState.tut_duration };
-    await Promise.all(exercises.map(te => db.patch('template_exercises', payload, `id=eq.${te.id}`)));
-    setExercises(prev => prev.map(e => ({ ...e, ...payload })));
+    const results = await Promise.all(exes.map(te => db.patch('template_exercises', payload, `id=eq.${te.id}`)));
+    const failed = results.filter(r => r.error);
+    if (failed.length > 0) { setErr('Some exercises failed to update. Please try again.'); setBulkApplying(false); return; }
+    setExercises(exes.map(e => ({ ...e, ...payload })));
     setShowBulk(false);
     setBulkApplying(false);
+  }
+  async function saveRowGlobal(te, updates) {
+    const result = await ensureEditable(exercises);
+    if (!result) return;
+    const { exes } = result;
+    // Find matching exercise in (possibly freshly-forked) list
+    const freshTe = exes.find(e => e.exercises && te.exercises && e.exercises.id === te.exercises.id) || te;
+    const payload = {
+      default_sets: updates.default_sets ?? freshTe.default_sets,
+      default_reps: updates.default_reps ?? freshTe.default_reps,
+      tut_type: updates.tut_type ?? freshTe.tut_type,
+      tut_tension: updates.tut_tension ?? freshTe.tut_tension,
+      tut_duration: updates.tut_duration ?? freshTe.tut_duration
+    };
+    await db.patch('template_exercises', payload, `id=eq.${freshTe.id}`);
+    setExercises(prev => prev.map(e => e.id === freshTe.id ? { ...e, ...payload } : e));
   }
   function pickExercise(ex) {
     setShowPicker(false);
@@ -1175,7 +1280,7 @@ function TemplateDetail({
       data,
       error
     } = await db.post('template_exercises', {
-      template_id: template.id,
+      template_id: effectiveTemplateId,
       exercise_id: addForm.exercise.id,
       sort_order: nextOrder,
       default_sets: addForm.default_sets,
@@ -1254,6 +1359,50 @@ function TemplateDetail({
       onClick: applyBulkUpdate,
       disabled: bulkApplying
     }, bulkApplying ? /*#__PURE__*/React.createElement("span", { className: "spin" }) : "Apply to All Exercises")
+  )), showGlobalEdit && /*#__PURE__*/React.createElement("div", {
+    className: "picker"
+  }, globalTutModal && (function() {
+    const gtr = exercises.find(e => e.id === globalTutModal);
+    return gtr ? /*#__PURE__*/React.createElement("div", { className: "mo", onClick: e => { if (e.target === e.currentTarget) setGlobalTutModal(null); } },
+      /*#__PURE__*/React.createElement("div", { className: "mo-box" },
+        /*#__PURE__*/React.createElement("div", { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 } },
+          /*#__PURE__*/React.createElement("span", { className: "mo-ttl" }, "Type"),
+          /*#__PURE__*/React.createElement("button", { className: "hdr-btn", onClick: () => setGlobalTutModal(null) }, /*#__PURE__*/React.createElement(IX, null))
+        ),
+        /*#__PURE__*/React.createElement("div", { className: "tut-grid" },
+          ['eccentric_hold','concentric_hold','rep_release','both','none'].map(t => /*#__PURE__*/React.createElement("button", {
+            key: t,
+            className: `tut-opt${gtr.tut_type === t ? ' on' : ''}`,
+            onClick: () => { saveRowGlobal(gtr, { tut_type: t, tut_duration: gtr.tut_duration }); }
+          }, TUT_TYPE_LABEL[t]))
+        ),
+        gtr.tut_type !== 'none' && /*#__PURE__*/React.createElement(React.Fragment, null,
+          /*#__PURE__*/React.createElement("div", { className: "tut-lbl", style: { marginTop: 10 } }, "Duration"),
+          /*#__PURE__*/React.createElement("div", { className: "tut-opt-2" },
+            [2,3].map(d => /*#__PURE__*/React.createElement("button", {
+              key: d,
+              className: `tut-opt${gtr.tut_duration === d ? ' on' : ''}`,
+              onClick: () => saveRowGlobal(gtr, { tut_type: gtr.tut_type, tut_duration: d })
+            }, d, "s"))
+          )
+        ),
+        /*#__PURE__*/React.createElement("button", { className: "btn btn-p", style: { marginTop: 4 }, onClick: () => setGlobalTutModal(null) }, "Done")
+      )
+    ) : null;
+  }()), /*#__PURE__*/React.createElement("div", { className: "picker-hdr" },
+    /*#__PURE__*/React.createElement("button", { className: "hdr-btn", onClick: () => setShowGlobalEdit(false) }, /*#__PURE__*/React.createElement(IChevL, null), " Back"),
+    /*#__PURE__*/React.createElement("span", { style: { fontFamily: "'Bebas Neue',sans-serif", fontSize: 18, letterSpacing: 1 } }, "Global Edit")
+  ), /*#__PURE__*/React.createElement("div", {
+    style: { display: 'grid', gridTemplateColumns: '1fr 40px 48px 68px', alignItems: 'center', gap: '0 8px', padding: '8px 12px', background: 'var(--s2)', borderBottom: '1px solid var(--br)', borderTop: '1px solid var(--br)' }
+  },
+    /*#__PURE__*/React.createElement("div", { style: { fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--tm)' } }, "Exercise"),
+    /*#__PURE__*/React.createElement("div", { style: { textAlign: 'center', fontSize: 10, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--tm)' } }, "Sets"),
+    /*#__PURE__*/React.createElement("div", { style: { textAlign: 'center', fontSize: 10, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--tm)' } }, "Reps"),
+    /*#__PURE__*/React.createElement("div", { style: { textAlign: 'center', fontSize: 10, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--tm)' } }, "Type")
+  ), /*#__PURE__*/React.createElement("div", { className: "picker-body" },
+    exercises.length === 0
+      ? /*#__PURE__*/React.createElement("div", { className: "empty" }, /*#__PURE__*/React.createElement("div", { className: "empty-ttl" }, "No exercises in this template"))
+      : exercises.map(te => /*#__PURE__*/React.createElement(TemplateExRow, { key: te.id, te, onSave: saveRowGlobal, tutModal: globalTutModal, setTutModal: setGlobalTutModal }))
   )), /*#__PURE__*/React.createElement("div", {
     className: "hdr"
   }, /*#__PURE__*/React.createElement("button", {
@@ -1339,12 +1488,20 @@ function TemplateDetail({
     style: { padding: '0 16px 12px' }
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-s",
-    onClick: () => setShowBulk(true),
+    onClick: () => { if (exercises.length > 0) { const f = exercises[0]; setBulkState({ default_sets: f.default_sets, default_reps: f.default_reps, tut_type: f.tut_type || 'none', tut_tension: f.tut_tension || 'neither', tut_duration: f.tut_duration || 2 }); } setShowBulk(true); },
     style: { gap: 8 }
   }, /*#__PURE__*/React.createElement("svg", { width: "14", height: "14", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", strokeLinecap: "round" },
     /*#__PURE__*/React.createElement("path", { d: "M12 20h9" }),
     /*#__PURE__*/React.createElement("path", { d: "M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" })
-  ), "Bulk Update")), err && /*#__PURE__*/React.createElement("div", {
+  ), "Bulk Update"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-s",
+    onClick: () => setShowGlobalEdit(true),
+    style: { gap: 8, marginTop: 8 }
+  }, /*#__PURE__*/React.createElement("svg", { width: "14", height: "14", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", strokeLinecap: "round" },
+    /*#__PURE__*/React.createElement("rect", { x: "3", y: "3", width: "18", height: "18", rx: "2" }),
+    /*#__PURE__*/React.createElement("line", { x1: "3", y1: "9", x2: "21", y2: "9" }),
+    /*#__PURE__*/React.createElement("line", { x1: "9", y1: "9", x2: "9", y2: "21" })
+  ), "Global Edit")), err && /*#__PURE__*/React.createElement("div", {
     className: "alert-e",
     style: {
       margin: '0 16px 12px'
@@ -1372,7 +1529,7 @@ function TemplateDetail({
       className: "ex-row"
     }, /*#__PURE__*/React.createElement("div", {
       className: "ex-row-main",
-      onClick: () => isMine && toggleExpand(te)
+      onClick: () => toggleExpand(te)
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         flex: 1,
@@ -1414,7 +1571,7 @@ function TemplateDetail({
         fontSize: 10,
         padding: '2px 6px'
       }
-    }, tutLabel(vals.tut_type, vals.tut_tension, vals.tut_duration)))), isMine && (isExpanded ? /*#__PURE__*/React.createElement(IChevD, null) : /*#__PURE__*/React.createElement(IChev, null))), isExpanded && isMine && /*#__PURE__*/React.createElement("div", {
+    }, tutLabel(vals.tut_type, vals.tut_tension, vals.tut_duration)))), (isExpanded ? /*#__PURE__*/React.createElement(IChevD, null) : /*#__PURE__*/React.createElement(IChev, null))), isExpanded && /*#__PURE__*/React.createElement("div", {
       className: "ex-row-expand"
     }, /*#__PURE__*/React.createElement("div", {
       className: "ex-row-controls"
@@ -1970,7 +2127,7 @@ function Settings({
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
   const [accent, setAccent] = React.useState(() => {
-    try { return localStorage.getItem('rlyhevy_accent') || '#ff2d55'; } catch(_) { return '#ff2d55'; }
+    try { return localStorage.getItem('rlyhevy_accent') || '#c9a36a'; } catch(_) { return '#c9a36a'; }
   });
   const [pwOpen, setPwOpen] = useState(false);
   const [newPw, setNewPw] = useState('');
@@ -2252,291 +2409,187 @@ function Dashboard({
     }));
     setDetLoading(null);
   }
+  const dateStr = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
   return /*#__PURE__*/React.createElement("div", {
-    className: "screen"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "hdr"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "hdr-ttl"
-  }, "RlyHevy"), /*#__PURE__*/React.createElement("div", {style:{display:'flex',alignItems:'center',gap:4}}, /*#__PURE__*/React.createElement("button", {
-    className: "hdr-btn",
-    title: layout === 'mobile' ? 'Switch to Desktop' : 'Switch to Mobile',
-    onClick: () => onSetLayout(layout === 'mobile' ? 'desktop' : 'mobile'),
-    style: {fontSize:11,gap:4}
-  }, layout === 'mobile' ? /*#__PURE__*/React.createElement(IMonitor, null) : /*#__PURE__*/React.createElement(IPhone, null), " ", layout === 'mobile' ? 'Desktop' : 'Mobile'), /*#__PURE__*/React.createElement("button", {
-    className: "hdr-btn",
-    title: "Settings",
-    onClick: () => onNav("settings")
-  }, /*#__PURE__*/React.createElement(IGear, null)))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      padding: "4px 20px 20px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontFamily: "'Bebas Neue',sans-serif",
-      fontSize: 34,
-      letterSpacing: 1,
-      lineHeight: 1
-    }
-  }, greet(), ", ", user.name), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13,
-      color: "var(--tm)",
-      marginTop: 4
-    }
-  }, new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric"
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "stat-grid"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "stat-card"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "stat-v"
-  }, loading ? "—" : fmtScore(effortScore)), /*#__PURE__*/React.createElement("div", {
-    className: "stat-l"
-  }, "Effort Score"), /*#__PURE__*/React.createElement("div", {
-    className: "stat-hint"
-  }, "wt \xD7 reps \xD7 TUT")), /*#__PURE__*/React.createElement("div", {
-    className: "stat-card"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "stat-v"
-  }, loading ? "—" : thisWeek), /*#__PURE__*/React.createElement("div", {
-    className: "stat-l"
-  }, "This Week"), /*#__PURE__*/React.createElement("div", {
-    className: "stat-hint"
-  }, "workouts logged"))), activeRun && nextWorkout && /*#__PURE__*/React.createElement("div", {
-    className: "card",
-    style: {
-      margin: '0 16px 12px',
-      background: 'var(--acc8)',
-      borderColor: 'var(--acc20)'
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      fontWeight: 600,
-      letterSpacing: '1px',
-      textTransform: 'uppercase',
-      color: 'var(--acc)',
-      marginBottom: 4
-    }
-  }, (_activeRun$splits = activeRun.splits) === null || _activeRun$splits === void 0 ? void 0 : _activeRun$splits.name, " \u2014 Active Split"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 16,
-      fontWeight: 600,
-      color: 'var(--tx)'
-    }
-  }, (_nextWorkout$template = nextWorkout.templates) === null || _nextWorkout$template === void 0 ? void 0 : _nextWorkout$template.name), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: 'var(--tm)',
-      marginTop: 2,
-      marginBottom: 12
-    }
-  }, "Week ", nextWorkout.week_number, ", Day ", nextWorkout.day_order + 1, " \xB7 Slot ", (activeRun.current_slot_index || 0) + 1, " of ", activeRun.totalSlots), /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-p",
-    onClick: () => onNav('log')
-  }, "\u25B6  Continue Split")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      padding: "0 16px 16px"
-    }
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-s",
-    onClick: () => onNav("log")
-  }, /*#__PURE__*/React.createElement("svg", {
-    width: "18",
-    height: "18",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2.5",
-    strokeLinecap: "round"
-  }, /*#__PURE__*/React.createElement("line", {
-    x1: "12",
-    y1: "5",
-    x2: "12",
-    y2: "19"
-  }), /*#__PURE__*/React.createElement("line", {
-    x1: "5",
-    y1: "12",
-    x2: "19",
-    y2: "12"
-  })), "Free Workout")), /*#__PURE__*/React.createElement("div", {
-    className: "card",
-    style: {
-      padding: 0,
-      overflow: 'hidden'
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-ttl",
-    style: {
-      padding: '14px 16px 10px'
-    }
-  }, "Recent Workouts"), loading ? /*#__PURE__*/React.createElement("div", {
-    className: "loading",
-    style: {
-      padding: '16px'
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "spin"
-  })) : recent.length === 0 ? /*#__PURE__*/React.createElement("div", {
-    className: "empty",
-    style: {
-      padding: '24px 16px'
-    }
-  }, /*#__PURE__*/React.createElement(NeonDumbbell, {
-    size: 48
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "empty-ttl"
-  }, "No workouts yet"), /*#__PURE__*/React.createElement("div", {
-    className: "empty-sub"
-  }, "Build a template, then start your first session")) : recent.map(w => {
-    const det = details[w.id];
-    const expanded = expandedId === w.id;
-    const doneSets = det ? det.flatMap(e => e.sets).filter(s => s.completed) : [];
-    const score = doneSets.reduce((sum, s) => sum + (parseFloat(s.weight) || 0) * (s.reps || 0) * (s.tut_duration || 1), 0);
-    return /*#__PURE__*/React.createElement("div", {
-      key: w.id,
+    className: "screen",
+    style: { background: '#000', position: 'relative', overflow: 'hidden' }
+  },
+  /*#__PURE__*/React.createElement("div", { style: { position: 'absolute', top: 0, left: 0, width: 220, height: 220, background: 'radial-gradient(circle,rgba(255,122,77,.07),transparent 65%)', pointerEvents: 'none', zIndex: 0 } }),
+  /*#__PURE__*/React.createElement("div", { style: { position: 'absolute', top: '40%', right: 0, width: 180, height: 180, background: 'radial-gradient(circle,rgba(94,200,255,.05),transparent 65%)', pointerEvents: 'none', zIndex: 0 } }),
+  /*#__PURE__*/React.createElement("div", { style: { position: 'absolute', bottom: 100, left: '50%', transform: 'translateX(-50%)', width: 200, height: 200, background: 'radial-gradient(circle,rgba(182,242,74,.04),transparent 65%)', pointerEvents: 'none', zIndex: 0 } }),
+  /*#__PURE__*/React.createElement("div", { style: { position: 'relative', zIndex: 1 } },
+    /*#__PURE__*/React.createElement("div", {
+      style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '52px 28px 0' }
+    },
+      /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, color: 'var(--tm)' } }, dateStr),
+      /*#__PURE__*/React.createElement("div", { style: { display: 'flex', alignItems: 'center', gap: 4 } },
+        /*#__PURE__*/React.createElement("button", {
+          className: "hdr-btn",
+          title: layout === 'mobile' ? 'Desktop' : 'Mobile',
+          onClick: () => onSetLayout(layout === 'mobile' ? 'desktop' : 'mobile'),
+          style: { fontSize: 11, gap: 3, padding: 6 }
+        }, layout === 'mobile' ? /*#__PURE__*/React.createElement(IMonitor, null) : /*#__PURE__*/React.createElement(IPhone, null)),
+        /*#__PURE__*/React.createElement("button", {
+          className: "hdr-btn",
+          title: "Settings",
+          onClick: () => onNav("settings"),
+          style: { padding: 6 }
+        }, /*#__PURE__*/React.createElement(IGear, null))
+      )
+    ),
+    /*#__PURE__*/React.createElement("div", { style: { padding: '20px 28px 0' } },
+      /*#__PURE__*/React.createElement("div", { style: { fontSize: 24, fontWeight: 300, letterSpacing: '-0.5px', lineHeight: 1.18, color: 'var(--tx)' } },
+        greet(), ", ", user.name, "."
+      ),
+      /*#__PURE__*/React.createElement("div", { style: { fontSize: 24, fontWeight: 300, letterSpacing: '-0.5px', lineHeight: 1.18, color: 'var(--ts)', marginTop: 2 } },
+        "Ready to train."
+      )
+    ),
+    /*#__PURE__*/React.createElement("div", {
       style: {
-        borderTop: '1px solid var(--br)'
+        margin: '20px 20px 0',
+        background: 'linear-gradient(180deg,#18140f 0%,#0e0c08 100%)',
+        border: '1px solid #221d16',
+        borderRadius: 22,
+        padding: '18px 20px',
+        boxShadow: 'inset 0 1px 0 rgba(255,236,200,.08),inset 0 -1px 0 rgba(0,0,0,.6),0 14px 28px rgba(0,0,0,.6),0 4px 10px rgba(0,0,0,.4)',
+        position: 'relative',
+        overflow: 'hidden'
       }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        padding: '12px 16px',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12
+    },
+      /*#__PURE__*/React.createElement("div", { style: { position: 'absolute', top: 0, left: 0, width: 220, height: 220, background: 'radial-gradient(circle,rgba(255,122,77,.1),transparent 60%)', pointerEvents: 'none' } }),
+      /*#__PURE__*/React.createElement("div", { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4, position: 'relative' } },
+        /*#__PURE__*/React.createElement("span", { style: { fontSize: 10, fontWeight: 600, letterSpacing: '1.5px', color: 'var(--tm)', textTransform: 'uppercase' } }, "EFFORT · ALL TIME"),
+        /*#__PURE__*/React.createElement("span", { style: { fontSize: 11, fontWeight: 600, color: 'var(--legs)' } }, thisWeek > 0 ? thisWeek + " this week" : "")
+      ),
+      /*#__PURE__*/React.createElement("div", { style: { fontSize: 52, fontWeight: 200, letterSpacing: '-2px', color: 'var(--tx)', fontVariantNumeric: 'tabular-nums', lineHeight: 1.1, position: 'relative' } },
+        loading ? "—" : fmtScore(effortScore)
+      ),
+      /*#__PURE__*/React.createElement("div", {
+        style: { height: 7, borderRadius: 4, background: '#0a0806', boxShadow: 'inset 0 2px 4px rgba(0,0,0,.8)', marginTop: 14, overflow: 'hidden', position: 'relative' }
       },
-      onClick: () => toggleDetail(w.id)
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "li-name"
-    }, w.name), /*#__PURE__*/React.createElement("div", {
-      className: "li-sub"
-    }, fmtDate(w.started_at), w.finished_at && ` · ${fmtDur(w.started_at, w.finished_at)}`)), detLoading === w.id ? /*#__PURE__*/React.createElement("span", {
-      className: "spin"
-    }) : expanded ? /*#__PURE__*/React.createElement(IChevD, null) : /*#__PURE__*/React.createElement(IChev, null)), expanded && det && /*#__PURE__*/React.createElement("div", {
-      style: {
-        borderTop: '1px solid var(--br)'
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: 'flex',
-        borderBottom: '1px solid var(--br)'
-      }
-    }, [['Sets', doneSets.length], ['Exercises', det.length], ['Score', fmtScore(score)]].map(([l, v]) => /*#__PURE__*/React.createElement("div", {
-      key: l,
-      style: {
-        flex: 1,
-        padding: '10px 0',
-        textAlign: 'center',
-        borderRight: '1px solid var(--br)'
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 15,
-        fontWeight: 700,
-        color: 'var(--acc)'
-      }
-    }, v), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 10,
-        fontWeight: 600,
-        textTransform: 'uppercase',
-        letterSpacing: '1px',
-        color: 'var(--tm)',
-        marginTop: 2
-      }
-    }, l)))), det.map(ex => {
-      var _ex$exercises, _ex$exercises2;
-      const ds = ex.sets.filter(s => s.completed);
-      if (!ds.length) return null;
-      return /*#__PURE__*/React.createElement("div", {
-        key: ex.id,
-        style: {
-          padding: '10px 16px',
-          borderBottom: '1px solid var(--br)'
-        }
-      }, /*#__PURE__*/React.createElement("div", {
-        style: {
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          marginBottom: 5
-        }
-      }, /*#__PURE__*/React.createElement("div", {
-        style: {
-          fontSize: 13,
-          fontWeight: 600
-        }
-      }, (_ex$exercises = ex.exercises) === null || _ex$exercises === void 0 ? void 0 : _ex$exercises.name), /*#__PURE__*/React.createElement(Badge, {
-        mg: (_ex$exercises2 = ex.exercises) === null || _ex$exercises2 === void 0 ? void 0 : _ex$exercises2.muscle_group
-      })), ds.map(s => /*#__PURE__*/React.createElement("div", {
-        key: s.id,
-        style: {
-          fontSize: 12,
-          color: 'var(--ts)',
-          marginBottom: 2
-        }
-      }, "Set ", s.set_number, ": ", s.weight ? `${s.weight} ${''}` : 'BW', " \xD7 ", s.reps, " reps", s.tut_type !== 'none' && /*#__PURE__*/React.createElement("span", {
-        style: {
-          color: 'var(--acc)',
-          marginLeft: 6
-        }
-      }, tutLabel(s.tut_type, s.tut_tension, s.tut_duration)))));
-    })));
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "card",
-    style: {
-      background: "var(--acc8)",
-      borderColor: "var(--acc20)"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-ttl",
-    style: {
-      color: "var(--acc)"
-    }
-  }, "Build Your Stack"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 14,
-      color: "var(--ts)",
-      lineHeight: 1.6
-    }
-  }, "Start with a ", /*#__PURE__*/React.createElement("strong", {
-    style: {
-      color: "var(--tx)"
-    }
-  }, "Template"), ", then build a ", /*#__PURE__*/React.createElement("strong", {
-    style: {
-      color: "var(--tx)"
-    }
-  }, "Split"), "."), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 8,
-      marginTop: 12
-    }
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-s",
-    style: {
-      fontSize: 13,
-      padding: "10px 14px"
-    },
-    onClick: () => onNav("library")
-  }, "Templates \u2192"), /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-s",
-    style: {
-      fontSize: 13,
-      padding: "10px 14px"
-    },
-    onClick: () => onNav("library")
-  }, "Splits \u2192"))));
+        /*#__PURE__*/React.createElement("div", {
+          style: { height: '100%', width: Math.min(100, thisWeek * 20) + '%', background: 'linear-gradient(90deg,#ff7a4d 0%,#c9a36a 50%,#b6f24a 100%)', borderRadius: 4, boxShadow: '0 0 12px rgba(201,163,106,.7)', transition: 'width .6s ease-out' }
+        })
+      ),
+      /*#__PURE__*/React.createElement("div", { style: { fontSize: 10, color: 'var(--tm)', marginTop: 6, position: 'relative' } }, "wt × reps × TUT")
+    ),
+    /*#__PURE__*/React.createElement("div", { style: { display: 'flex', gap: 10, margin: '12px 20px 0' } },
+      /*#__PURE__*/React.createElement("div", {
+        style: { flex: 1, background: 'linear-gradient(180deg,#18140f 0%,#0e0c08 100%)', border: '1px solid #221d16', borderRadius: 18, padding: '14px 16px', boxShadow: 'var(--emboss)' }
+      },
+        /*#__PURE__*/React.createElement("div", { style: { fontSize: 26, fontWeight: 200, color: 'var(--acc)', letterSpacing: '-1px', fontVariantNumeric: 'tabular-nums', textShadow: '0 0 12px rgba(201,163,106,.4)' } }, loading ? "—" : thisWeek),
+        /*#__PURE__*/React.createElement("div", { style: { fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--tm)', marginTop: 3 } }, "This Week"),
+        /*#__PURE__*/React.createElement("div", { style: { fontSize: 10, color: 'var(--tm)', marginTop: 1 } }, "sessions")
+      ),
+      activeRun && nextWorkout
+        ? /*#__PURE__*/React.createElement("div", {
+            style: { flex: 2, background: 'linear-gradient(180deg,#18140f 0%,#0e0c08 100%)', border: '1px solid #221d16', borderRadius: 18, padding: '14px 16px', boxShadow: 'var(--emboss)', cursor: 'pointer' },
+            onClick: () => onNav('log')
+          },
+            /*#__PURE__*/React.createElement("div", { style: { fontSize: 10, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--acc)', marginBottom: 4 } },
+              (activeRun.splits && activeRun.splits.name) || 'Active Split'
+            ),
+            /*#__PURE__*/React.createElement("div", { style: { fontSize: 15, fontWeight: 600, color: 'var(--tx)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } },
+              (nextWorkout.templates && nextWorkout.templates.name) || 'Next workout'
+            ),
+            /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: 'var(--ts)', marginTop: 2 } },
+              'Wk ' + nextWorkout.week_number + ' · Day ' + (nextWorkout.day_order + 1) + ' · ' + ((activeRun.current_slot_index || 0) + 1) + '/' + activeRun.totalSlots
+            )
+          )
+        : /*#__PURE__*/React.createElement("div", {
+            style: { flex: 2, background: 'linear-gradient(180deg,#18140f 0%,#0e0c08 100%)', border: '1px solid #221d16', borderRadius: 18, padding: '14px 16px', boxShadow: 'var(--emboss)' }
+          },
+            /*#__PURE__*/React.createElement("div", { style: { fontSize: 10, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--tm)', marginBottom: 6 } }, "Build Your Stack"),
+            /*#__PURE__*/React.createElement("div", { style: { fontSize: 12, color: 'var(--ts)', lineHeight: 1.5 } }, "Add a template, then a split to track progress.")
+          )
+    ),
+    /*#__PURE__*/React.createElement("div", { style: { padding: '14px 20px 0', display: 'flex', gap: 8 } },
+      activeRun && nextWorkout && /*#__PURE__*/React.createElement("button", {
+        className: "btn btn-p",
+        style: { flex: 1, fontSize: 14, padding: '13px 16px' },
+        onClick: () => onNav('log')
+      }, "▶  Continue Split"),
+      /*#__PURE__*/React.createElement("button", {
+        className: activeRun && nextWorkout ? "btn btn-s" : "btn btn-p",
+        style: { flex: 1, fontSize: 14, padding: '13px 16px' },
+        onClick: () => onNav("log")
+      },
+        /*#__PURE__*/React.createElement("svg", { width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2.5, strokeLinecap: "round" },
+          /*#__PURE__*/React.createElement("line", { x1: 12, y1: 5, x2: 12, y2: 19 }),
+          /*#__PURE__*/React.createElement("line", { x1: 5, y1: 12, x2: 19, y2: 12 })
+        ),
+        "Free Workout"
+      )
+    ),
+    /*#__PURE__*/React.createElement("div", { style: { margin: '24px 20px 0' } },
+      /*#__PURE__*/React.createElement("div", { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 } },
+        /*#__PURE__*/React.createElement("span", { style: { fontSize: 10, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--tm)' } }, "RECENT"),
+        /*#__PURE__*/React.createElement("span", { style: { fontSize: 10, color: 'var(--ts)' } }, "tap to expand →")
+      ),
+      /*#__PURE__*/React.createElement("div", {
+        style: { background: 'linear-gradient(180deg,#18140f 0%,#0e0c08 100%)', border: '1px solid #221d16', borderRadius: 18, overflow: 'hidden', boxShadow: 'var(--emboss)' }
+      },
+        loading
+          ? /*#__PURE__*/React.createElement("div", { className: "loading", style: { padding: 20 } }, /*#__PURE__*/React.createElement("span", { className: "spin" }))
+          : recent.length === 0
+          ? /*#__PURE__*/React.createElement("div", { className: "empty", style: { padding: '24px 16px' } },
+              /*#__PURE__*/React.createElement(NeonDumbbell, { size: 40 }),
+              /*#__PURE__*/React.createElement("div", { className: "empty-ttl" }, "No workouts yet"),
+              /*#__PURE__*/React.createElement("div", { className: "empty-sub" }, "Start your first session")
+            )
+          : recent.map(function(w, i) {
+              var det = details[w.id];
+              var expanded = expandedId === w.id;
+              var doneSets = det ? det.flatMap(function(e) { return e.sets; }).filter(function(s) { return s.completed; }) : [];
+              var score = doneSets.reduce(function(sum, s) { return sum + (parseFloat(s.weight) || 0) * (s.reps || 0) * (s.tut_duration || 1); }, 0);
+              var dotColor = i === 0 ? 'var(--push)' : i === 1 ? 'var(--pull)' : 'var(--legs)';
+              return /*#__PURE__*/React.createElement("div", { key: w.id, style: { borderTop: i > 0 ? '1px solid #14110d' : 'none' } },
+                /*#__PURE__*/React.createElement("div", {
+                  style: { padding: '12px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 },
+                  onClick: function() { toggleDetail(w.id); }
+                },
+                  /*#__PURE__*/React.createElement("div", { style: { width: 6, height: 6, borderRadius: '50%', background: dotColor, boxShadow: '0 0 8px ' + dotColor, flexShrink: 0 } }),
+                  /*#__PURE__*/React.createElement("div", { style: { flex: 1, minWidth: 0 } },
+                    /*#__PURE__*/React.createElement("div", { style: { fontSize: 14, fontWeight: 500, color: 'var(--tx)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, w.name),
+                    /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: 'var(--ts)', marginTop: 2 } }, fmtDate(w.started_at), w.finished_at ? ' · ' + fmtDur(w.started_at, w.finished_at) : '')
+                  ),
+                  /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, fontWeight: 300, color: 'var(--ts)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 } },
+                    detLoading === w.id ? /*#__PURE__*/React.createElement("span", { className: "spin", style: { width: 14, height: 14 } }) : (det ? fmtScore(score) : /*#__PURE__*/React.createElement(IChev, null))
+                  )
+                ),
+                expanded && det && /*#__PURE__*/React.createElement("div", { style: { borderTop: '1px solid #14110d' } },
+                  /*#__PURE__*/React.createElement("div", { style: { display: 'flex', borderBottom: '1px solid #14110d' } },
+                    [['Sets', doneSets.length], ['Exercises', det.length], ['Score', fmtScore(score)]].map(function(pair) {
+                      var l = pair[0]; var v = pair[1];
+                      return /*#__PURE__*/React.createElement("div", { key: l, style: { flex: 1, padding: '10px 0', textAlign: 'center', borderRight: '1px solid #14110d' } },
+                        /*#__PURE__*/React.createElement("div", { style: { fontSize: 15, fontWeight: 600, color: 'var(--acc)' } }, v),
+                        /*#__PURE__*/React.createElement("div", { style: { fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--tm)', marginTop: 2 } }, l)
+                      );
+                    })
+                  ),
+                  det.map(function(ex) {
+                    var ds = ex.sets.filter(function(s) { return s.completed; });
+                    if (!ds.length) return null;
+                    return /*#__PURE__*/React.createElement("div", { key: ex.id, style: { padding: '10px 16px', borderBottom: '1px solid #14110d' } },
+                      /*#__PURE__*/React.createElement("div", { style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 } },
+                        /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, fontWeight: 600 } }, ex.exercises && ex.exercises.name),
+                        /*#__PURE__*/React.createElement(Badge, { mg: ex.exercises && ex.exercises.muscle_group })
+                      ),
+                      ds.map(function(s) {
+                        return /*#__PURE__*/React.createElement("div", { key: s.id, style: { fontSize: 12, color: 'var(--ts)', marginBottom: 2 } },
+                          "Set ", s.set_number, ": ", s.weight ? s.weight : 'BW', " × ", s.reps, " reps",
+                          s.tut_type !== 'none' && /*#__PURE__*/React.createElement("span", { style: { color: 'var(--acc)', marginLeft: 6 } }, tutLabel(s.tut_type, s.tut_tension, s.tut_duration))
+                        );
+                      })
+                    );
+                  })
+                )
+              );
+            })
+      )
+    )
+  ));
 }
 
 // ── Exercises ─────────────────────────────────────────────────────────────────
@@ -2560,6 +2613,7 @@ function Exercises({
   });
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
+  const [showHidden, setShowHidden] = useState(false);
   useEffect(() => {
     loadEx();
   }, []);
@@ -2649,7 +2703,15 @@ function Exercises({
     }
     setSaving(false);
   }
-  const filtered = exercises.filter(e => e.name.toLowerCase().includes(search.toLowerCase()) && (filter === "all" || e.muscle_group === filter));
+  const hiddenIds = getHiddenExercises();
+  const filtered = exercises.filter(e => {
+    const matchSearch = e.name.toLowerCase().includes(search.toLowerCase());
+    const matchFilter = filter === "all" || e.muscle_group === filter;
+    const isHidden = hiddenIds.includes(e.id);
+    if (!matchSearch || !matchFilter) return false;
+    if (showHidden) return true;
+    return !isHidden;
+  });
   const bwNum = parseFloat(user === null || user === void 0 ? void 0 : user.body_weight);
   const bwUnit = (user === null || user === void 0 ? void 0 : user.weight_unit) || "lbs";
 
@@ -2816,7 +2878,11 @@ function Exercises({
     key: mg,
     className: `fchip${filter === mg ? " on" : ""}`,
     onClick: () => setFilter(mg)
-  }, MG_LABEL[mg]))), loading ? /*#__PURE__*/React.createElement("div", {
+  }, MG_LABEL[mg])), hiddenIds.length > 0 && /*#__PURE__*/React.createElement("button", {
+    className: `fchip${showHidden ? " on" : ""}`,
+    onClick: () => setShowHidden(v => !v),
+    style: { marginLeft: 4 }
+  }, showHidden ? `Hide hidden (${hiddenIds.length})` : `Show hidden (${hiddenIds.length})`)), loading ? /*#__PURE__*/React.createElement("div", {
     className: "loading"
   }, /*#__PURE__*/React.createElement("span", {
     className: "spin"
@@ -2833,6 +2899,7 @@ function Exercises({
   }, filtered.map(ex => /*#__PURE__*/React.createElement("div", {
     key: ex.id,
     className: "li",
+    style: hiddenIds.includes(ex.id) ? { opacity: 0.45 } : undefined,
     onClick: () => openEdit(ex)
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -2872,6 +2939,16 @@ function Exercises({
   }, React.createElement("svg", { width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" },
     React.createElement("polyline", { points: "22 12 18 12 15 21 9 3 6 12 2 12" })
   )),
+  ex.is_global && React.createElement("button", {
+    onClick: e => {
+      e.stopPropagation();
+      const isHid = hiddenIds.includes(ex.id);
+      if (isHid) { unhideExercise(ex.id); } else { hideExercise(ex.id); }
+      setShowHidden(v => v); // force re-render
+      setExercises(prev => [...prev]); // trigger filtered recompute
+    },
+    style: { background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', color: hiddenIds.includes(ex.id) ? 'var(--acc)' : 'var(--tm)', fontSize: 11, fontWeight: 600, flexShrink: 0 }
+  }, hiddenIds.includes(ex.id) ? "Restore" : "Hide"),
   !ex.is_global && React.createElement(IChev, null)))), editEx && /*#__PURE__*/React.createElement("div", {
     className: "mo",
     onClick: e => e.target === e.currentTarget && setEditEx(null)
@@ -3284,6 +3361,7 @@ function WorkoutStarter({
           };
         }).filter(e => e.sets.length > 0);
       }
+      try { localStorage.setItem('rlyhevy_active_wid', workoutId); } catch(_) {}
       onStart({
         workoutId,
         workoutName,
@@ -3320,6 +3398,7 @@ function WorkoutStarter({
       });
       if (!wData) throw new Error('Failed to create workout');
       const workoutId = (Array.isArray(wData) ? wData[0] : wData).id;
+      try { localStorage.setItem('rlyhevy_active_wid', workoutId); } catch(_) {}
       onStart({
         workoutId,
         workoutName: name,
@@ -3522,6 +3601,11 @@ function ActiveWorkout({
   const [prevSets, setPrevSets] = useState({});
   const [supersets, setSupersets] = useState({});
   const [linkingId, setLinkingId] = useState(null);
+  const [ssPosition, setSsPosition] = useState({});
+  const [historyEx, setHistoryEx] = useState(null);
+  const [historyData, setHistoryData] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [resumeLoading, setResumeLoading] = useState(!!workout.isResume);
   const bwNum = parseFloat(user === null || user === void 0 ? void 0 : user.body_weight);
   const bwUnit = (user === null || user === void 0 ? void 0 : user.weight_unit) || 'lbs';
   useEffect(() => {
@@ -3529,8 +3613,36 @@ function ActiveWorkout({
     return () => clearInterval(iv);
   }, []);
   useEffect(() => {
+    if (!workout.isResume) return;
+    async function loadResumed() {
+      const { data: wData } = await db.get('workouts', `select=id,name,notes&id=eq.${workout.workoutId}&limit=1`);
+      if (wData && wData[0] && wData[0].notes) setNotes(wData[0].notes);
+      const { data: weData } = await db.get('workout_exercises',
+        `select=id,exercise_id,sort_order,superset_group,exercises(id,name,muscle_group,is_bodyweight),sets(id,set_number,weight,reps,completed,tut_type,tut_tension,tut_duration,set_type)&workout_id=eq.${workout.workoutId}&order=sort_order.asc`);
+      if (weData) {
+        const exList = weData.map(we => ({
+          workoutExerciseId: we.id,
+          exercise: we.exercises || {},
+          sets: (we.sets || []).sort((a, b) => a.set_number - b.set_number)
+        }));
+        setExercises(exList);
+        const m = {};
+        for (const ex of exList) m[ex.workoutExerciseId] = ex.sets;
+        setSets(m);
+        // Restore superset groups
+        const ssMap = {};
+        for (const we of weData) {
+          if (we.superset_group != null) ssMap[we.id] = we.superset_group;
+        }
+        if (Object.keys(ssMap).length > 0) setSupersets(ssMap);
+      }
+      setResumeLoading(false);
+    }
+    loadResumed();
+  }, []);
+  useEffect(() => {
     async function loadPrev() {
-      const exIds = workout.exercises.map(e => e.exercise && e.exercise.id).filter(Boolean);
+      const exIds = exercises.map(e => e.exercise && e.exercise.id).filter(Boolean);
       if (!exIds.length) return;
       const { data: recentWs } = await db.get('workouts',
         `select=id&user_id=eq.${db.uid}&finished_at=not.is.null&id=neq.${workout.workoutId}&order=started_at.desc&limit=15`);
@@ -3737,6 +3849,7 @@ function ActiveWorkout({
       finished_at: new Date().toISOString()
     };
     if (notes.trim()) payload.notes = notes.trim();
+    try { localStorage.removeItem('rlyhevy_active_wid'); } catch(_) {}
     await db.patch('workouts', payload, `id=eq.${workout.workoutId}`);
     if (workout.splitRunId) {
       const next = workout.slotIndex + 1;
@@ -3754,13 +3867,35 @@ function ActiveWorkout({
     return (_e$exercise = e.exercise) === null || _e$exercise === void 0 ? void 0 : _e$exercise.id;
   }).filter(Boolean);
   const tutModalSet = expandedTUTSet ? (sets[expandedTUTSet.weId] || []).find(s => s.id === expandedTUTSet.setId) : null;
+  if (resumeLoading) return /*#__PURE__*/React.createElement("div", { className: "screen", style: { display:'flex', alignItems:'center', justifyContent:'center', height:'100vh' } }, /*#__PURE__*/React.createElement("span", { className: "spin", style: { width:32, height:32, borderWidth:3 } }));
   return /*#__PURE__*/React.createElement("div", {
     className: "screen"
   }, showExPicker && /*#__PURE__*/React.createElement(ExercisePicker, {
     onSelect: addExercise,
     onClose: () => setShowExPicker(false),
     excludeIds: existingExIds
-  }), expandedTUTSet && tutModalSet && /*#__PURE__*/React.createElement("div", {
+  }), historyEx && /*#__PURE__*/React.createElement("div", {
+    className: "mo",
+    onClick: e => { if (e.target === e.currentTarget) setHistoryEx(null); }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mo-box"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }
+  }, /*#__PURE__*/React.createElement("span", { className:"mo-ttl" }, historyEx.name, " History"), /*#__PURE__*/React.createElement("button", {
+    className:"hdr-btn", onClick:()=>setHistoryEx(null)
+  }, /*#__PURE__*/React.createElement(IX, null))),
+  historyLoading ? /*#__PURE__*/React.createElement("div", { style:{textAlign:'center',padding:24} }, /*#__PURE__*/React.createElement("span", { className:"spin", style:{width:24,height:24,borderWidth:2} }))
+  : historyData.length === 0 ? /*#__PURE__*/React.createElement("div", { style:{color:'var(--ts)',textAlign:'center',padding:16} }, "No history yet")
+  : historyData.map((row, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: { borderTop: i > 0 ? '1px solid var(--br)' : 'none', padding:'10px 0' }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { fontSize:11, color:'var(--ts)', marginBottom:4 }
+  }, new Date(row.started_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})),
+  /*#__PURE__*/React.createElement("div", {
+    style: { fontSize:13 }
+  }, row.sets.length === 0 ? /*#__PURE__*/React.createElement("span", { style:{color:'var(--ts)'} }, "No completed sets") : row.sets.sort((a,b)=>a.set_number-b.set_number).map(s => s.weight ? `${s.weight}×${s.reps}` : `${s.reps} reps`).join(', '))))
+  )), expandedTUTSet && tutModalSet && /*#__PURE__*/React.createElement("div", {
     className: "mo",
     onClick: e => { if (e.target === e.currentTarget) setExpandedTUTSet(null); }
   }, /*#__PURE__*/React.createElement("div", {
@@ -3853,300 +3988,181 @@ function ActiveWorkout({
     className: "empty-ttl"
   }, "No exercises yet"), /*#__PURE__*/React.createElement("div", {
     className: "empty-sub"
-  }, "Tap \"Add Exercise\" below to start")), exercises.map((ex, exIdx) => {
-    const exSets = sets[ex.workoutExerciseId] || [];
-    const allDone = exSets.length > 0 && exSets.every(s => s.completed);
-    const ssGroup = supersets[ex.workoutExerciseId];
-    const isLinking = linkingId === ex.workoutExerciseId;
+  }, "Tap \"Add Exercise\" below to start")), (() => {
+    // Build superset groups map: groupNum -> [weId, ...]
     const SS_COLORS = ['#4dabf7','#69db7c','#ffd43b','#ff922b','#cc5de8'];
-    const ssColor = ssGroup ? SS_COLORS[(ssGroup - 1) % SS_COLORS.length] : null;
-    const prevEx = exIdx > 0 ? exercises[exIdx - 1] : null;
-    const showSSConnector = prevEx && ssGroup && supersets[prevEx.workoutExerciseId] === ssGroup;
-    return /*#__PURE__*/React.createElement(React.Fragment, { key: ex.workoutExerciseId },
-    showSSConnector && React.createElement("div", {
-      style: { margin: '-12px 28px 0', height: 12, borderLeft: `2px dashed ${ssColor}`, opacity: 0.6 }
-    }),
-    /*#__PURE__*/React.createElement("div", {
-      style: {
-        margin: '0 16px 16px',
-        background: 'var(--s1)',
-        border: `1px solid ${isLinking ? 'var(--acc)' : ssColor ? ssColor + '44' : allDone ? 'var(--acc20)' : 'var(--br)'}`,
-        borderLeft: ssColor ? `3px solid ${ssColor}` : undefined,
-        borderRadius: 'var(--r)',
-        overflow: 'hidden',
-        transition: 'border-color .3s',
-        opacity: linkingId && !isLinking ? 0.85 : 1
+    const SS_LETTERS = 'ABCDEFGHIJKLMNOP';
+    const ssGroupMap = {}; // groupNum -> [weId in order]
+    for (const ex of exercises) {
+      const g = supersets[ex.workoutExerciseId];
+      if (g != null) {
+        if (!ssGroupMap[g]) ssGroupMap[g] = [];
+        ssGroupMap[g].push(ex.workoutExerciseId);
       }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        padding: '12px 14px',
-        borderBottom: '1px solid var(--br)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        background: allDone ? 'var(--acc8)' : 'transparent',
-        transition: 'background .3s'
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 15,
-        fontWeight: 600
-      }
-    }, ex.exercise.name), /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginTop: 3
-      }
-    }, /*#__PURE__*/React.createElement(Badge, {
-      mg: ex.exercise.muscle_group
-    }))), allDone && /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 18,
-        color: 'var(--acc)'
-      }
-    }, "\u2713"),
-    ssGroup && React.createElement("div", {
-      style: { display: 'flex', alignItems: 'center', gap: 4 }
-    },
-      React.createElement("span", { style: { fontSize: 10, fontWeight: 700, color: ssColor, background: ssColor + '22', border: `1px solid ${ssColor}44`, borderRadius: 4, padding: '2px 5px', letterSpacing: '0.5px' } }, `SS ${ssGroup}`),
-      React.createElement("button", { onClick: () => unlinkSuperset(ex.workoutExerciseId), style: { background: 'none', border: 'none', color: 'var(--tm)', cursor: 'pointer', padding: 2, display: 'flex', fontSize: 11 } }, "\u00d7")
-    ),
-    React.createElement("button", {
-      onClick: () => linkingId ? handleSupersetTap(ex.workoutExerciseId) : handleSupersetTap(ex.workoutExerciseId),
-      style: { background: isLinking ? 'var(--acc)' : 'var(--s2)', border: `1px solid ${isLinking ? 'var(--acc)' : 'var(--br)'}`, borderRadius: 6, color: isLinking ? '#fff' : 'var(--tm)', cursor: 'pointer', padding: '3px 6px', fontSize: 10, fontWeight: 700, fontFamily: "'DM Sans',sans-serif", letterSpacing: '0.5px', flexShrink: 0 }
-    }, "SS")),
-    prevSets[ex.exercise.id] && React.createElement("div", {
-      style: { padding: '5px 14px', borderBottom: '1px solid var(--br)', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', background: 'var(--s1)' }
-    },
-      React.createElement("span", { style: { fontSize: 10, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--tm)', flexShrink: 0 } }, "Last:"),
-      React.createElement("span", { style: { fontSize: 11, color: 'var(--ts)' } },
-        prevSets[ex.exercise.id].map(s => s.weight ? `${s.weight}\xd7${s.reps}` : `${s.reps} reps`).join(' \xb7 ')
-      )
-    ),
-    /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: '6px 14px',
-        background: 'var(--s2)',
-        borderBottom: '1px solid var(--br)'
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        width: 44,
-        fontSize: 10,
-        fontWeight: 700,
-        letterSpacing: '1px',
-        textTransform: 'uppercase',
-        color: 'var(--tm)'
-      }
-    }, "Set"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1,
-        fontSize: 10,
-        fontWeight: 700,
-        letterSpacing: '1px',
-        textTransform: 'uppercase',
-        color: 'var(--tm)'
-      }
-    }, "Weight ", ex.exercise.is_bodyweight ? '(BW%)' : `(${bwUnit})`), /*#__PURE__*/React.createElement("div", {
-      style: {
-        width: 52,
-        textAlign: 'center',
-        fontSize: 10,
-        fontWeight: 700,
-        letterSpacing: '1px',
-        textTransform: 'uppercase',
-        color: 'var(--tm)'
-      }
-    }, "Reps"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        width: 60,
-        textAlign: 'center',
-        fontSize: 10,
-        fontWeight: 700,
-        letterSpacing: '1px',
-        textTransform: 'uppercase',
-        color: 'var(--tm)'
-      }
-    }, "Type"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        width: 34,
-        fontSize: 10,
-        fontWeight: 700,
-        letterSpacing: '1px',
-        textTransform: 'uppercase',
-        color: 'var(--tm)',
-        textAlign: 'center'
-      }
-    }, "\u2713")), exSets.map(set => {
+    }
+    // Assign letters to group numbers (in order of first appearance)
+    const groupNums = [];
+    for (const ex of exercises) {
+      const g = supersets[ex.workoutExerciseId];
+      if (g != null && !groupNums.includes(g)) groupNums.push(g);
+    }
+    const groupLetter = {};
+    groupNums.forEach((g, i) => { groupLetter[g] = SS_LETTERS[i] || String(g); });
+
+    function renderSetRow(ex, set) {
       const done = set.completed;
-      return /*#__PURE__*/React.createElement(React.Fragment, {
-        key: set.id
-      }, /*#__PURE__*/React.createElement("div", {
-        style: {
-          display: 'flex',
-          alignItems: 'center',
-          padding: '10px 14px',
-          borderBottom: '1px solid var(--br)',
-          background: done ? 'var(--acc4)' : 'transparent',
-          transition: 'background .2s'
-        }
+      return /*#__PURE__*/React.createElement(React.Fragment, { key: set.id },
+      /*#__PURE__*/React.createElement("div", {
+        style: { display:'flex', alignItems:'center', padding:'10px 14px', borderBottom:'1px solid var(--br)', background: done ? 'var(--acc4)' : 'transparent', transition:'background .2s' }
       }, /*#__PURE__*/React.createElement("button", {
         onClick: () => cycleSetType(ex.workoutExerciseId, set.id, set.set_type),
-        style: {
-          width: 44,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          gap: 1,
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          padding: 0
-        }
+        style: { width:44, display:'flex', flexDirection:'column', alignItems:'flex-start', gap:1, background:'none', border:'none', cursor:'pointer', padding:0 }
       },
-        React.createElement("span", {
-          style: {
-            fontSize: 9,
-            fontWeight: 700,
-            letterSpacing: '0.5px',
-            color: SET_TYPE_COLOR[set.set_type || 'working'],
-            textTransform: 'uppercase',
-            lineHeight: 1
-          }
-        }, SET_TYPE_LABEL[set.set_type || 'working']),
-        React.createElement("span", {
-          style: {
-            fontSize: 13,
-            fontWeight: 700,
-            color: done ? 'var(--acc)' : 'var(--tm)',
-            lineHeight: 1
-          }
-        }, set.set_number)
+        React.createElement("span", { style: { fontSize:9, fontWeight:700, letterSpacing:'0.5px', color:SET_TYPE_COLOR[set.set_type||'working'], textTransform:'uppercase', lineHeight:1 } }, SET_TYPE_LABEL[set.set_type||'working']),
+        React.createElement("span", { style: { fontSize:13, fontWeight:700, color: done?'var(--acc)':'var(--tm)', lineHeight:1 } }, set.set_number)
       ), ex.exercise.is_bodyweight && bwNum > 0 ? /*#__PURE__*/React.createElement("div", {
-        style: {
-          flex: 1,
-          display: 'flex',
-          gap: 4,
-          flexWrap: 'wrap'
-        }
-      }, [25, 50, 75, 100].map(p => {
-        const w = Math.round(bwNum * p / 100);
-        return /*#__PURE__*/React.createElement("button", {
-          key: p,
-          onClick: () => updateWeightLocal(ex.workoutExerciseId, set.id, w),
-          style: {
-            padding: '4px 6px',
-            borderRadius: 6,
-            fontSize: 11,
-            fontWeight: 600,
-            cursor: 'pointer',
-            fontFamily: "'DM Sans',sans-serif",
-            border: '1px solid var(--br)',
-            background: set.weight === w ? 'var(--acc)' : 'var(--s2)',
-            color: set.weight === w ? '#fff' : 'var(--tm)'
-          }
-        }, p, "%");
+        style: { flex:1, display:'flex', gap:4, flexWrap:'wrap' }
+      }, [25,50,75,100].map(p => {
+        const w = Math.round(bwNum*p/100);
+        return /*#__PURE__*/React.createElement("button", { key:p, onClick:()=>updateWeightLocal(ex.workoutExerciseId,set.id,w), style:{padding:'4px 6px',borderRadius:6,fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans',sans-serif",border:'1px solid var(--br)',background:set.weight===w?'var(--acc)':'var(--s2)',color:set.weight===w?'#fff':'var(--tm)'} }, p, "%");
       })) : /*#__PURE__*/React.createElement("input", {
-        type: "number",
-        placeholder: "\u2014",
-        value: set.weight || '',
-        onChange: e => updateWeightLocal(ex.workoutExerciseId, set.id, e.target.value),
-        onBlur: () => saveWeight(ex.workoutExerciseId, set.id),
-        style: {
-          flex: 1,
-          background: 'transparent',
-          border: 'none',
-          borderBottom: '1px solid var(--br)',
-          color: done ? 'var(--acc)' : 'var(--tx)',
-          fontFamily: "'DM Sans',sans-serif",
-          fontSize: 16,
-          fontWeight: 600,
-          outline: 'none',
-          padding: '2px 4px'
-        }
+        type:"number", placeholder:"\u2014", value:set.weight||'',
+        onChange: e=>updateWeightLocal(ex.workoutExerciseId,set.id,e.target.value),
+        onBlur:()=>saveWeight(ex.workoutExerciseId,set.id),
+        style:{flex:1,background:'transparent',border:'none',borderBottom:'1px solid var(--br)',color:done?'var(--acc)':'var(--tx)',fontFamily:"'DM Sans',sans-serif",fontSize:16,fontWeight:600,outline:'none',padding:'2px 4px'}
       }), /*#__PURE__*/React.createElement("input", {
-        type: "number",
-        min: "1",
-        max: "50",
-        value: set.reps,
-        onChange: e => updateRepsLocal(ex.workoutExerciseId, set.id, e.target.value),
-        onBlur: e => saveReps(ex.workoutExerciseId, set.id, e.target.value),
-        style: {
-          width: 48,
-          textAlign: 'center',
-          background: 'var(--s2)',
-          border: '1px solid var(--br)',
-          borderRadius: 6,
-          color: 'var(--tx)',
-          fontFamily: "'DM Sans',sans-serif",
-          fontSize: 14,
-          fontWeight: 600,
-          padding: '6px 0',
-          outline: 'none',
-          marginLeft: 8
-        }
-      }), /*#__PURE__*/React.createElement("div", {
-        style: {
-          width: 60,
-          textAlign: 'center',
-          marginLeft: 8
-        }
-      }, /*#__PURE__*/React.createElement("button", {
-        className: `tut-badge-btn${set.tut_type !== 'none' ? ' active' : ''}`,
-        onClick: () => setExpandedTUTSet(expandedTUTSet && expandedTUTSet.setId === set.id ? null : {setId: set.id, weId: ex.workoutExerciseId}),
-        style: {
-          fontSize: 9,
-          padding: '2px 5px'
-        }
-      }, tutLabel(set.tut_type, set.tut_tension, set.tut_duration))), /*#__PURE__*/React.createElement("button", {
-        onClick: () => toggleDone(ex.workoutExerciseId, set.id, set.completed),
-        style: {
-          width: 32,
-          height: 32,
-          borderRadius: '50%',
-          border: `2px solid ${done ? 'var(--acc)' : 'var(--br)'}`,
-          background: done ? 'var(--acc)' : 'transparent',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-          transition: 'all .2s',
-          marginLeft: 4
-        }
-      }, done && /*#__PURE__*/React.createElement("svg", {
-        width: "14",
-        height: "14",
-        viewBox: "0 0 24 24",
-        fill: "none",
-        stroke: "#fff",
-        strokeWidth: "3",
-        strokeLinecap: "round",
-        strokeLinejoin: "round"
-      }, /*#__PURE__*/React.createElement("polyline", {
-        points: "20 6 9 17 4 12"
-      })))));
-    }), /*#__PURE__*/React.createElement("button", {
-      onClick: () => addSet(ex.workoutExerciseId, ex),
-      style: {
-        width: '100%',
-        padding: '10px',
-        background: 'none',
-        border: 'none',
-        borderTop: '1px dashed var(--br)',
-        color: 'var(--tm)',
-        cursor: 'pointer',
-        fontSize: 12,
-        fontFamily: "'DM Sans',sans-serif",
-        fontWeight: 600
+        type:"number", min:"1", max:"50", value:set.reps,
+        onChange:e=>updateRepsLocal(ex.workoutExerciseId,set.id,e.target.value),
+        onBlur:e=>saveReps(ex.workoutExerciseId,set.id,e.target.value),
+        style:{width:48,textAlign:'center',background:'var(--s2)',border:'1px solid var(--br)',borderRadius:6,color:'var(--tx)',fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:600,padding:'6px 0',outline:'none',marginLeft:8}
+      }), /*#__PURE__*/React.createElement("div", { style:{width:60,textAlign:'center',marginLeft:8} },
+        /*#__PURE__*/React.createElement("button", {
+          className:`tut-badge-btn${set.tut_type!=='none'?' active':''}`,
+          onClick:()=>setExpandedTUTSet(expandedTUTSet&&expandedTUTSet.setId===set.id?null:{setId:set.id,weId:ex.workoutExerciseId}),
+          style:{fontSize:9,padding:'2px 5px'}
+        }, tutLabel(set.tut_type,set.tut_tension,set.tut_duration))
+      ), /*#__PURE__*/React.createElement("button", {
+        onClick:()=>toggleDone(ex.workoutExerciseId,set.id,set.completed),
+        style:{width:32,height:32,borderRadius:'50%',border:`2px solid ${done?'var(--acc)':'var(--br)'}`,background:done?'var(--acc)':'transparent',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,transition:'all .2s',marginLeft:4}
+      }, done && /*#__PURE__*/React.createElement("svg",{width:"14",height:"14",viewBox:"0 0 24 24",fill:"none",stroke:"#fff",strokeWidth:"3",strokeLinecap:"round",strokeLinejoin:"round"},
+        /*#__PURE__*/React.createElement("polyline",{points:"20 6 9 17 4 12"})))));
+    }
+
+    function renderColHeaders(ex) {
+      return /*#__PURE__*/React.createElement("div", {
+        style:{display:'flex',alignItems:'center',padding:'6px 14px',background:'var(--s2)',borderBottom:'1px solid var(--br)'}
+      }, /*#__PURE__*/React.createElement("div",{style:{width:44,fontSize:10,fontWeight:700,letterSpacing:'1px',textTransform:'uppercase',color:'var(--tm)'}},"Set"),
+      /*#__PURE__*/React.createElement("div",{style:{flex:1,fontSize:10,fontWeight:700,letterSpacing:'1px',textTransform:'uppercase',color:'var(--tm)'}},"Weight ",ex.exercise.is_bodyweight?'(BW%)': `(${bwUnit})`),
+      /*#__PURE__*/React.createElement("div",{style:{width:52,textAlign:'center',fontSize:10,fontWeight:700,letterSpacing:'1px',textTransform:'uppercase',color:'var(--tm)'}},"Reps"),
+      /*#__PURE__*/React.createElement("div",{style:{width:60,textAlign:'center',fontSize:10,fontWeight:700,letterSpacing:'1px',textTransform:'uppercase',color:'var(--tm)'}},"Type"),
+      /*#__PURE__*/React.createElement("div",{style:{width:34,fontSize:10,fontWeight:700,letterSpacing:'1px',textTransform:'uppercase',color:'var(--tm)',textAlign:'center'}},"\u2713"));
+    }
+
+    function renderExCard(ex) {
+      const exSets = sets[ex.workoutExerciseId] || [];
+      const allDone = exSets.length > 0 && exSets.every(s => s.completed);
+      const isLinking = linkingId === ex.workoutExerciseId;
+      return /*#__PURE__*/React.createElement("div", {
+        key: ex.workoutExerciseId,
+        style:{margin:'0 16px 16px',background:'var(--s1)',border:`1px solid ${isLinking?'var(--acc)':allDone?'var(--acc20)':'var(--br)'}`,borderRadius:'var(--r)',overflow:'hidden',transition:'border-color .3s',opacity:linkingId&&!isLinking?0.85:1}
+      },
+      /*#__PURE__*/React.createElement("div", {
+        style:{padding:'12px 14px',borderBottom:'1px solid var(--br)',display:'flex',alignItems:'center',gap:8,background:allDone?'var(--acc8)':'transparent',transition:'background .3s'}
+      },
+        /*#__PURE__*/React.createElement("div",{style:{flex:1}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:15,fontWeight:600,cursor:'pointer',textDecoration:'underline dotted var(--ts)'},onClick:()=>{setHistoryEx(ex.exercise);setHistoryData([]);setHistoryLoading(true);db.get('workout_exercises',`select=id,workout_id,workouts(started_at),sets(weight,reps,completed)&exercise_id=eq.${ex.exercise.id}&workouts.user_id=eq.${db.uid}&workouts.finished_at=not.is.null&order=workout_id.desc&limit=80`).then(({data})=>{if(!data){setHistoryLoading(false);return;}const byWo={};for(const we of data){if(!we.workouts||!we.workouts.started_at)continue;if(!byWo[we.workout_id])byWo[we.workout_id]={started_at:we.workouts.started_at,sets:[]};for(const s of(we.sets||[])){if(s.completed)byWo[we.workout_id].sets.push(s);}}const rows=Object.values(byWo).sort((a,b)=>new Date(b.started_at)-new Date(a.started_at)).slice(0,8);setHistoryData(rows);setHistoryLoading(false);});}}, ex.exercise.name),
+          /*#__PURE__*/React.createElement("div",{style:{marginTop:3}},/*#__PURE__*/React.createElement(Badge,{mg:ex.exercise.muscle_group}))
+        ),
+        allDone && /*#__PURE__*/React.createElement("span",{style:{fontSize:18,color:'var(--acc)'}},"\u2713"),
+        React.createElement("button",{onClick:()=>handleSupersetTap(ex.workoutExerciseId),style:{background:isLinking?'var(--acc)':'var(--s2)',border:`1px solid ${isLinking?'var(--acc)':'var(--br)'}`,borderRadius:6,color:isLinking?'#fff':'var(--tm)',cursor:'pointer',padding:'3px 6px',fontSize:10,fontWeight:700,fontFamily:"'DM Sans',sans-serif",letterSpacing:'0.5px',flexShrink:0}},"SS")
+      ),
+      prevSets[ex.exercise.id] && React.createElement("div",{style:{padding:'5px 14px',borderBottom:'1px solid var(--br)',display:'flex',alignItems:'center',gap:6,flexWrap:'wrap',background:'var(--s1)'}},
+        React.createElement("span",{style:{fontSize:10,fontWeight:700,letterSpacing:'1px',textTransform:'uppercase',color:'var(--tm)',flexShrink:0}},"Last:"),
+        React.createElement("span",{style:{fontSize:11,color:'var(--ts)'}},prevSets[ex.exercise.id].map(s=>s.weight?`${s.weight}\xd7${s.reps}`:`${s.reps} reps`).join(' \xb7 '))
+      ),
+      renderColHeaders(ex),
+      exSets.map(set => renderSetRow(ex, set)),
+      /*#__PURE__*/React.createElement("button",{onClick:()=>addSet(ex.workoutExerciseId,ex),style:{width:'100%',padding:'10px',background:'none',border:'none',borderTop:'1px dashed var(--br)',color:'var(--tm)',cursor:'pointer',fontSize:12,fontFamily:"'DM Sans',sans-serif",fontWeight:600}},"+ Add Set"));
+    }
+
+    function renderSupersetBlock(groupNum, groupWeIds) {
+      const ssColor = SS_COLORS[(groupNum - 1) % SS_COLORS.length];
+      const letter = groupLetter[groupNum];
+      const pos = ssPosition[groupNum] || { exIdx: 0, setIdx: 0 };
+      const groupExes = groupWeIds.map(wid => exercises.find(e => e.workoutExerciseId === wid)).filter(Boolean);
+      if (groupExes.length === 0) return null;
+      const maxSets = Math.max(...groupExes.map(e => (sets[e.workoutExerciseId]||[]).length));
+      const allGroupDone = groupExes.every(e => (sets[e.workoutExerciseId]||[]).every(s => s.completed));
+      const activeExIdx = Math.min(pos.exIdx, groupExes.length - 1);
+      const activeSetIdx = Math.min(pos.setIdx, maxSets - 1);
+      const activeEx = groupExes[activeExIdx];
+      const activeExSets = sets[activeEx.workoutExerciseId] || [];
+      const activeSet = activeExSets[activeSetIdx] || null;
+
+      function advanceSsPosition() {
+        setSsPosition(prev => {
+          const cur = prev[groupNum] || { exIdx: 0, setIdx: 0 };
+          let nextExIdx = cur.exIdx + 1;
+          let nextSetIdx = cur.setIdx;
+          if (nextExIdx >= groupExes.length) {
+            nextExIdx = 0;
+            nextSetIdx = cur.setIdx + 1;
+          }
+          return { ...prev, [groupNum]: { exIdx: nextExIdx, setIdx: nextSetIdx } };
+        });
       }
-    }, "+ Add Set")));
-  }), /*#__PURE__*/React.createElement("div", {
+
+      async function completeAndAdvance() {
+        if (!activeSet) return;
+        await toggleDone(activeEx.workoutExerciseId, activeSet.id, activeSet.completed);
+        advanceSsPosition();
+      }
+
+      return /*#__PURE__*/React.createElement("div", {
+        key: `ss-${groupNum}`,
+        style:{margin:'0 16px 16px',background:'var(--s1)',border:`2px solid ${ssColor}44`,borderLeft:`4px solid ${ssColor}`,borderRadius:'var(--r)',overflow:'hidden'}
+      },
+      // Superset header
+      /*#__PURE__*/React.createElement("div",{style:{padding:'10px 14px',borderBottom:'1px solid var(--br)',display:'flex',alignItems:'center',justifyContent:'space-between',background:ssColor+'11'}},
+        /*#__PURE__*/React.createElement("span",{style:{fontSize:11,fontWeight:700,letterSpacing:'1.5px',textTransform:'uppercase',color:ssColor}},`SUPERSET ${letter}`),
+        /*#__PURE__*/React.createElement("div",{style:{display:'flex',gap:6}},
+          groupExes.map(e=>/*#__PURE__*/React.createElement("button",{key:e.workoutExerciseId,onClick:()=>unlinkSuperset(e.workoutExerciseId),style:{background:'none',border:'none',color:'var(--tm)',cursor:'pointer',fontSize:11,padding:'2px 4px'}},"\u00d7 Unlink"))
+        )
+      ),
+      // Active exercise
+      allGroupDone ? /*#__PURE__*/React.createElement("div",{style:{padding:'16px 14px',textAlign:'center',color:'var(--acc)',fontWeight:700,fontSize:14}},"Superset Complete \u2713")
+      : activeSet ? /*#__PURE__*/React.createElement(React.Fragment,null,
+        /*#__PURE__*/React.createElement("div",{style:{padding:'10px 14px',borderBottom:'1px solid var(--br)',background:ssColor+'08'}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:13,fontWeight:700,color:ssColor,marginBottom:4}},`Exercise ${activeExIdx+1}/${groupExes.length}: Round ${activeSetIdx+1}`),
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:15,fontWeight:600,cursor:'pointer',textDecoration:'underline dotted var(--ts)'},onClick:()=>{setHistoryEx(activeEx.exercise);setHistoryData([]);setHistoryLoading(true);db.get('workout_exercises',`select=id,workout_id,workouts(started_at),sets(weight,reps,completed)&exercise_id=eq.${activeEx.exercise.id}&workouts.user_id=eq.${db.uid}&workouts.finished_at=not.is.null&order=workout_id.desc&limit=80`).then(({data})=>{if(!data){setHistoryLoading(false);return;}const byWo={};for(const we of data){if(!we.workouts||!we.workouts.started_at)continue;if(!byWo[we.workout_id])byWo[we.workout_id]={started_at:we.workouts.started_at,sets:[]};for(const s of(we.sets||[])){if(s.completed)byWo[we.workout_id].sets.push(s);}}const rows=Object.values(byWo).sort((a,b)=>new Date(b.started_at)-new Date(a.started_at)).slice(0,8);setHistoryData(rows);setHistoryLoading(false);});}},(activeEx.exercise||{}).name),
+          prevSets[activeEx.exercise.id] && /*#__PURE__*/React.createElement("div",{style:{fontSize:11,color:'var(--ts)',marginTop:3}},
+            "Last: ",prevSets[activeEx.exercise.id].map(s=>s.weight?`${s.weight}\xd7${s.reps}`:`${s.reps} reps`).join(' \xb7 ')
+          )
+        ),
+        renderColHeaders(activeEx),
+        renderSetRow(activeEx, activeSet),
+        /*#__PURE__*/React.createElement("button",{onClick:completeAndAdvance,style:{width:'100%',padding:'12px',background:'var(--acc)',border:'none',color:'#fff',cursor:'pointer',fontSize:13,fontWeight:700,fontFamily:"'DM Sans',sans-serif"}},
+          activeSet.completed ? "Next \u2192" : "\u2713 Complete Set & Next"
+        ),
+        // Up next preview
+        groupExes.filter((_,i)=>i!==activeExIdx).length > 0 && /*#__PURE__*/React.createElement("div",{style:{borderTop:'1px solid var(--br)',padding:'8px 14px'}},
+          /*#__PURE__*/React.createElement("div",{style:{fontSize:10,fontWeight:700,letterSpacing:'1px',textTransform:'uppercase',color:'var(--tm)',marginBottom:6}},"Up Next"),
+          groupExes.filter((_,i)=>i!==activeExIdx).map((e,i)=>/*#__PURE__*/React.createElement("div",{key:e.workoutExerciseId,style:{fontSize:13,color:'var(--ts)',paddingBottom:4,opacity:0.6}},e.exercise.name||''))
+        )
+      ) : /*#__PURE__*/React.createElement("div",{style:{padding:'12px 14px',color:'var(--ts)',fontSize:13}},"No sets to show"));
+    }
+
+    const renderedGroups = new Set();
+    return exercises.map((ex) => {
+      const ssGroup = supersets[ex.workoutExerciseId];
+      if (ssGroup != null) {
+        if (renderedGroups.has(ssGroup)) return null;
+        renderedGroups.add(ssGroup);
+        return renderSupersetBlock(ssGroup, ssGroupMap[ssGroup] || [ex.workoutExerciseId]);
+      }
+      return renderExCard(ex);
+    });
+  })(), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: '0 16px 8px'
     }
@@ -4209,10 +4225,11 @@ function ActiveWorkout({
 // ── Active Workout ────────────────────────────────────────────────────────────
 function Log({
   user,
-  onWorkoutComplete
+  onWorkoutComplete,
+  resumeWorkoutId
 }) {
-  const [view, setView] = useState('start');
-  const [workoutData, setWorkoutData] = useState(null);
+  const [view, setView] = useState(resumeWorkoutId ? 'active' : 'start');
+  const [workoutData, setWorkoutData] = useState(resumeWorkoutId ? { workoutId: resumeWorkoutId, workoutName: '', splitRunId: null, slotIndex: null, totalSlots: null, exercises: [], isResume: true } : null);
   if (view === 'active') return /*#__PURE__*/React.createElement(ActiveWorkout, {
     workout: workoutData,
     user: user,
@@ -5026,7 +5043,8 @@ function SlotEditor({
   user,
   dayLabel,
   onBack,
-  onTemplateRenamed
+  onTemplateRenamed,
+  onSlotTemplateChanged
 }) {
   var _slot$templates;
   const [rows, setRows] = useState([]);
@@ -5036,6 +5054,11 @@ function SlotEditor({
   const [tutModal, setTutModal] = useState(null);
   const [templateName, setTemplateName] = useState(slot.templates ? slot.templates.name : '');
   const [editingName, setEditingName] = useState(false);
+  const [showBulk, setShowBulk] = useState(false);
+  const [showGlobalEdit, setShowGlobalEdit] = useState(false);
+  const [bulkState, setBulkState] = useState({ default_sets: 3, default_reps: 10, tut_type: 'none', tut_tension: 'neither', tut_duration: 2 });
+  const [bulkApplying, setBulkApplying] = useState(false);
+  // No forking needed — split_slot_exercises is the override layer
   const bwNum = parseFloat(user === null || user === void 0 ? void 0 : user.body_weight);
   const bwUnit = (user === null || user === void 0 ? void 0 : user.weight_unit) || 'lbs';
   useEffect(() => {
@@ -5043,42 +5066,42 @@ function SlotEditor({
   }, [slot.id]);
   async function loadRows() {
     setLoading(true);
-    const {
-      data: ov
-    } = await db.get('split_slot_exercises', `select=*,exercises(id,name,muscle_group,is_bodyweight)&split_slot_id=eq.${slot.id}&order=sort_order.asc`);
-    if (ov && ov.length > 0) {
-      setRows(ov);
-    } else if (slot.template_id) {
-      const {
-        data: te
-      } = await db.get('template_exercises', `select=*,exercises(id,name,muscle_group,is_bodyweight)&template_id=eq.${slot.template_id}&order=sort_order.asc`);
+    if (slot.template_id) {
+      // Template-based slot: load template_exercises as baseline, split_slot_exercises as overrides
+      const [{ data: te }, { data: overrides }] = await Promise.all([
+        db.get('template_exercises', `select=*,exercises(id,name,muscle_group,is_bodyweight)&template_id=eq.${slot.template_id}&order=sort_order.asc`),
+        db.get('split_slot_exercises', `select=*&split_slot_id=eq.${slot.id}`)
+      ]);
+      const overrideMap = {};
+      if (overrides) overrides.forEach(o => { overrideMap[o.exercise_id] = o; });
       if (te) setRows(te.map(t => {
-        var _t$exercises;
+        const exId = t.exercises ? t.exercises.id : null;
+        const ov = overrideMap[exId];
         return {
-          _unsaved: true,
+          _isTemplate: true,
+          _templateExId: t.id,
+          id: ov ? ov.id : null,  // split_slot_exercises.id — writable by RLS
           split_slot_id: slot.id,
-          exercise_id: (_t$exercises = t.exercises) === null || _t$exercises === void 0 ? void 0 : _t$exercises.id,
+          exercise_id: exId,
           exercises: t.exercises,
           sort_order: t.sort_order,
-          default_sets: t.default_sets,
-          default_reps: t.default_reps,
-          tut_type: t.tut_type,
-          tut_tension: t.tut_tension,
-          tut_duration: t.tut_duration
+          default_sets: ov ? ov.default_sets : t.default_sets,
+          default_reps: ov ? ov.default_reps : t.default_reps,
+          tut_type: ov ? ov.tut_type : t.tut_type,
+          tut_tension: ov ? ov.tut_tension : t.tut_tension,
+          tut_duration: ov ? ov.tut_duration : t.tut_duration
         };
       }));
+    } else {
+      // Non-template slot: load directly from split_slot_exercises
+      const { data: ov } = await db.get('split_slot_exercises', `select=*,exercises(id,name,muscle_group,is_bodyweight)&split_slot_id=eq.${slot.id}&order=sort_order.asc`);
+      if (ov) setRows(ov);
     }
     setLoading(false);
   }
   async function saveRow(row, updates) {
-    const merged = {
-      ...row,
-      ...updates
-    };
-    setRows(p => p.map(r => r.exercise_id === row.exercise_id ? {
-      ...r,
-      ...updates
-    } : r));
+    const merged = { ...row, ...updates };
+    setRows(p => p.map(r => r.exercise_id === row.exercise_id ? { ...r, ...updates } : r));
     const payload = {
       default_sets: merged.default_sets,
       default_reps: merged.default_reps,
@@ -5086,10 +5109,26 @@ function SlotEditor({
       tut_tension: merged.tut_tension,
       tut_duration: merged.tut_duration
     };
-    if (row._unsaved || !row.id) {
-      const {
-        data
-      } = await db.post('split_slot_exercises', {
+    if (row._isTemplate) {
+      if (row.id) {
+        // Existing override in split_slot_exercises — just PATCH it
+        await db.patch('split_slot_exercises', payload, `id=eq.${row.id}`);
+      } else {
+        // No override yet — POST a new split_slot_exercises row
+        const { data } = await db.post('split_slot_exercises', {
+          split_slot_id: slot.id,
+          exercise_id: row.exercise_id,
+          sort_order: row.sort_order,
+          ...payload
+        });
+        if (data) {
+          const s = Array.isArray(data) ? data[0] : data;
+          setRows(p => p.map(r => r.exercise_id === row.exercise_id ? { ...r, ...updates, id: s.id } : r));
+        }
+      }
+      return;
+    } else if (row._unsaved || !row.id) {
+      const { data } = await db.post('split_slot_exercises', {
         split_slot_id: slot.id,
         exercise_id: merged.exercise_id,
         sort_order: merged.sort_order,
@@ -5097,52 +5136,37 @@ function SlotEditor({
       });
       if (data) {
         const s = Array.isArray(data) ? data[0] : data;
-        setRows(p => p.map(r => r.exercise_id === row.exercise_id ? {
-          ...r,
-          ...updates,
-          id: s.id,
-          _unsaved: false
-        } : r));
+        setRows(p => p.map(r => r.exercise_id === row.exercise_id ? { ...r, ...updates, id: s.id, _unsaved: false } : r));
       }
     } else {
       await db.patch('split_slot_exercises', payload, `id=eq.${row.id}`);
     }
-    // Sync changes back to the template
-    if (slot.template_id && merged.exercise_id) {
-      const {
-        data: te
-      } = await db.get('template_exercises', `select=id&template_id=eq.${slot.template_id}&exercise_id=eq.${merged.exercise_id}&limit=1`);
-      if (te && te.length > 0) await db.patch('template_exercises', payload, `id=eq.${te[0].id}`);
-    }
-  }
-  async function resetFromTemplate() {
-    if (!slot.template_id || !window.confirm('Reset all rows from template? Your changes will be lost.')) return;
-    await db.del('split_slot_exercises', `split_slot_id=eq.${slot.id}`);
-    setRows([]);
-    loadRows();
   }
   async function addExercise(ex) {
     setShowExPicker(false);
     const sortOrder = rows.length;
-    const payload = {
-      split_slot_id: slot.id,
-      exercise_id: ex.id,
-      sort_order: sortOrder,
-      default_sets: 3,
-      default_reps: 10,
-      tut_type: 'none',
-      tut_tension: 'neither',
-      tut_duration: 2
-    };
-    const { data } = await db.post('split_slot_exercises', payload);
+    const basePayload = { sort_order: sortOrder, default_sets: 3, default_reps: 10, tut_type: 'none', tut_tension: 'neither', tut_duration: 2 };
+    // Always add to split_slot_exercises (never to template_exercises) — works for both template and non-template slots
+    const { data } = await db.post('split_slot_exercises', { split_slot_id: slot.id, exercise_id: ex.id, ...basePayload });
     if (data) {
       const s = Array.isArray(data) ? data[0] : data;
-      setRows(p => [...p, { ...s, exercises: ex }]);
+      // Mark _isTemplate so the row behaves correctly if this slot has a template
+      if (slot.template_id) {
+        setRows(p => [...p, { _isTemplate: true, id: s.id, split_slot_id: slot.id, exercise_id: ex.id, exercises: ex, ...basePayload }]);
+      } else {
+        setRows(p => [...p, { ...s, exercises: ex }]);
+      }
     }
   }
   async function removeExercise(row) {
-    if (row.id) await db.del('split_slot_exercises', `id=eq.${row.id}`);
-    setRows(p => p.filter(r => r.exercise_id !== row.exercise_id || r !== row));
+    if (row._isTemplate) {
+      // Delete the split_slot_exercises override if it exists; base template exercise stays
+      if (row.id) await db.del('split_slot_exercises', `id=eq.${row.id}`);
+      // Remove from local display regardless (we treat it as hidden for this slot)
+    } else if (row.id) {
+      await db.del('split_slot_exercises', `id=eq.${row.id}`);
+    }
+    setRows(p => p.filter(r => r.exercise_id !== row.exercise_id));
   }
   async function renameTemplate(name) {
     if (!name.trim() || !slot.template_id) return;
@@ -5155,6 +5179,30 @@ function SlotEditor({
     const r = tutModal ? rows.find(r => r.exercise_id === tutModal) : null;
     if (!r) return;
     saveRow(r, v);
+  }
+  async function applySlotBulkUpdate() {
+    setBulkApplying(true);
+    const payload = { default_sets: bulkState.default_sets, default_reps: bulkState.default_reps, tut_type: bulkState.tut_type, tut_tension: bulkState.tut_tension, tut_duration: bulkState.tut_duration };
+    setRows(p => p.map(r => ({ ...r, ...payload })));
+    for (const row of rows) {
+      if (row._isTemplate) {
+        if (row.id) {
+          // Existing override — PATCH split_slot_exercises
+          await db.patch('split_slot_exercises', payload, `id=eq.${row.id}`);
+        } else {
+          // No override yet — POST to split_slot_exercises
+          const { data } = await db.post('split_slot_exercises', { split_slot_id: slot.id, exercise_id: row.exercise_id, sort_order: row.sort_order, ...payload });
+          if (data) { const s = Array.isArray(data) ? data[0] : data; setRows(p => p.map(r => r.exercise_id === s.exercise_id ? { ...r, id: s.id } : r)); }
+        }
+      } else if (row._unsaved || !row.id) {
+        const { data } = await db.post('split_slot_exercises', { split_slot_id: slot.id, exercise_id: row.exercise_id, sort_order: row.sort_order, ...payload });
+        if (data) { const s = Array.isArray(data) ? data[0] : data; setRows(p => p.map(r => r.exercise_id === s.exercise_id ? { ...r, id: s.id, _unsaved: false } : r)); }
+      } else {
+        await db.patch('split_slot_exercises', payload, `id=eq.${row.id}`);
+      }
+    }
+    setShowBulk(false);
+    setBulkApplying(false);
   }
   const tutModalRow = tutModal ? rows.find(r => r.exercise_id === tutModal) : null;
   return /*#__PURE__*/React.createElement("div", {
@@ -5189,7 +5237,86 @@ function SlotEditor({
       )
     ),
     /*#__PURE__*/React.createElement("button", { className: "btn btn-p", style: { marginTop: 4 }, onClick: () => setTutModal(null) }, "Done")
-  )), /*#__PURE__*/React.createElement("div", {
+  )), showBulk && /*#__PURE__*/React.createElement("div", {
+    className: "mo",
+    onClick: e => { if (e.target === e.currentTarget) setShowBulk(false); }
+  }, /*#__PURE__*/React.createElement("div", { className: "mo-box" },
+    /*#__PURE__*/React.createElement("div", { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 } },
+      /*#__PURE__*/React.createElement("span", { className: "mo-ttl" }, "Bulk Update"),
+      /*#__PURE__*/React.createElement("button", { className: "hdr-btn", onClick: () => setShowBulk(false) }, /*#__PURE__*/React.createElement(IX, null))
+    ),
+    /*#__PURE__*/React.createElement("div", { style: { fontSize: 12, color: 'var(--tm)', marginBottom: 16 } }, "Applies to all ", rows.length, " exercises in this slot."),
+    /*#__PURE__*/React.createElement("div", { style: { display: 'flex', gap: 16, marginBottom: 16 } },
+      /*#__PURE__*/React.createElement("div", { style: { flex: 1 } },
+        /*#__PURE__*/React.createElement("div", { className: "ilbl", style: { marginBottom: 6 } }, "Sets"),
+        /*#__PURE__*/React.createElement(Stepper, { value: bulkState.default_sets, onChange: v => setBulkState(s => ({ ...s, default_sets: v })), min: 1, max: 10 })
+      ),
+      /*#__PURE__*/React.createElement("div", { style: { flex: 1 } },
+        /*#__PURE__*/React.createElement("div", { className: "ilbl", style: { marginBottom: 6 } }, "Reps"),
+        /*#__PURE__*/React.createElement(Stepper, { value: bulkState.default_reps, onChange: v => setBulkState(s => ({ ...s, default_reps: v })), min: 1, max: 50 })
+      )
+    ),
+    /*#__PURE__*/React.createElement("div", { style: { marginBottom: 16 } },
+      /*#__PURE__*/React.createElement("div", { className: "ilbl", style: { marginBottom: 8 } }, "Type"),
+      /*#__PURE__*/React.createElement("div", { className: "tut-grid" },
+        ['eccentric_hold','concentric_hold','rep_release','both','none'].map(t => /*#__PURE__*/React.createElement("button", {
+          key: t,
+          className: `tut-opt${bulkState.tut_type === t ? ' on' : ''}`,
+          onClick: () => setBulkState(s => ({ ...s, tut_type: t }))
+        }, TUT_TYPE_LABEL[t]))
+      ),
+      bulkState.tut_type !== 'none' && /*#__PURE__*/React.createElement(React.Fragment, null,
+        /*#__PURE__*/React.createElement("div", { className: "tut-lbl", style: { marginTop: 10 } }, "Duration"),
+        /*#__PURE__*/React.createElement("div", { className: "tut-opt-2" },
+          [2, 3].map(d => /*#__PURE__*/React.createElement("button", {
+            key: d,
+            className: `tut-opt${bulkState.tut_duration === d ? ' on' : ''}`,
+            onClick: () => setBulkState(s => ({ ...s, tut_duration: d }))
+          }, d, "s"))
+        )
+      )
+    ),
+    /*#__PURE__*/React.createElement("button", {
+      className: "btn btn-p",
+      onClick: applySlotBulkUpdate,
+      disabled: bulkApplying
+    }, bulkApplying ? /*#__PURE__*/React.createElement("span", { className: "spin" }) : "Apply to All Exercises")
+  )), showGlobalEdit && /*#__PURE__*/React.createElement("div", { className: "picker" },
+    tutModal && tutModalRow && /*#__PURE__*/React.createElement("div", { className: "mo", onClick: e => { if (e.target === e.currentTarget) setTutModal(null); } },
+      /*#__PURE__*/React.createElement("div", { className: "mo-box" },
+        /*#__PURE__*/React.createElement("div", { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+          /*#__PURE__*/React.createElement("span", { className: "mo-ttl" }, "Type"),
+          /*#__PURE__*/React.createElement("button", { className: "hdr-btn", onClick: () => setTutModal(null) }, /*#__PURE__*/React.createElement(IX, null))
+        ),
+        /*#__PURE__*/React.createElement("div", { className: "tut-grid" },
+          ['eccentric_hold','concentric_hold','rep_release','both','none'].map(t => /*#__PURE__*/React.createElement("button", { key: t, className: `tut-opt${tutModalRow.tut_type === t ? ' on' : ''}`, onClick: () => saveRow(tutModalRow, { tut_type: t, tut_tension: tutModalRow.tut_tension, tut_duration: tutModalRow.tut_duration }) }, TUT_TYPE_LABEL[t]))
+        ),
+        tutModalRow.tut_type !== 'none' && /*#__PURE__*/React.createElement(React.Fragment, null,
+          /*#__PURE__*/React.createElement("div", { className: "tut-lbl", style: { marginTop: 10 } }, "Duration"),
+          /*#__PURE__*/React.createElement("div", { className: "tut-opt-2" },
+            [2,3].map(d => /*#__PURE__*/React.createElement("button", { key: d, className: `tut-opt${tutModalRow.tut_duration === d ? ' on' : ''}`, onClick: () => saveRow(tutModalRow, { tut_type: tutModalRow.tut_type, tut_tension: tutModalRow.tut_tension, tut_duration: d }) }, d, "s"))
+          )
+        ),
+        /*#__PURE__*/React.createElement("button", { className: "btn btn-p", style: { marginTop: 4 }, onClick: () => setTutModal(null) }, "Done")
+      )
+    ),
+    /*#__PURE__*/React.createElement("div", { className: "picker-hdr" },
+      /*#__PURE__*/React.createElement("button", { className: "hdr-btn", onClick: () => setShowGlobalEdit(false) }, /*#__PURE__*/React.createElement(IChevL, null), " Back"),
+      /*#__PURE__*/React.createElement("span", { style: { fontFamily: "'Bebas Neue',sans-serif", fontSize: 18, letterSpacing: 1 } }, "Global Edit")
+    ),
+    /*#__PURE__*/React.createElement("div", { style: { display: 'grid', gridTemplateColumns: '1fr 40px 48px 68px 28px', alignItems: 'center', gap: '0 8px', padding: '8px 12px', background: 'var(--s2)', borderBottom: '1px solid var(--br)', borderTop: '1px solid var(--br)' } },
+      /*#__PURE__*/React.createElement("div", { style: { fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--tm)' } }, "Exercise"),
+      /*#__PURE__*/React.createElement("div", { style: { textAlign: 'center', fontSize: 10, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--tm)' } }, "Sets"),
+      /*#__PURE__*/React.createElement("div", { style: { textAlign: 'center', fontSize: 10, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--tm)' } }, "Reps"),
+      /*#__PURE__*/React.createElement("div", { style: { textAlign: 'center', fontSize: 10, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--tm)' } }, "Type"),
+      /*#__PURE__*/React.createElement("div", null)
+    ),
+    /*#__PURE__*/React.createElement("div", { className: "picker-body" },
+      rows.length === 0
+        ? /*#__PURE__*/React.createElement("div", { className: "empty" }, /*#__PURE__*/React.createElement("div", { className: "empty-ttl" }, "No exercises in this slot"))
+        : rows.map(row => /*#__PURE__*/React.createElement(SlotExRow, { key: row.exercise_id, row, tutModal, setTutModal, saveRow, removeExercise }))
+    )
+  ), /*#__PURE__*/React.createElement("div", {
     className: "hdr"
   }, /*#__PURE__*/React.createElement("button", {
     className: "hdr-btn", onClick: onBack
@@ -5210,9 +5337,7 @@ function SlotEditor({
     onClick: () => slot.template_id && setEditingName(true),
     title: slot.template_id ? 'Tap to rename' : ''
   }, templateName || dayLabel || 'Edit Slot'),
-  slot.template_id && !editingName && /*#__PURE__*/React.createElement("button", {
-    className: "hdr-btn", onClick: resetFromTemplate, style: { fontSize: 12, color: 'var(--tm)' }
-  }, "Reset")), /*#__PURE__*/React.createElement("div", {
+  ), /*#__PURE__*/React.createElement("div", {
     style: { display: 'grid', gridTemplateColumns: '1fr 40px 48px 68px 28px', alignItems: 'center', gap: '0 8px', padding: '8px 12px', background: 'var(--s2)', borderBottom: '1px solid var(--br)', borderTop: '1px solid var(--br)' }
   }, /*#__PURE__*/React.createElement("div", { style: { fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--tm)' } }, "Exercise"),
   /*#__PURE__*/React.createElement("div", { style: { textAlign: 'center', fontSize: 10, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--tm)' } }, "Sets"),
@@ -5228,14 +5353,34 @@ function SlotEditor({
     ) : /*#__PURE__*/React.createElement("div", { style: { background: 'var(--s1)' } },
       rows.map(row => /*#__PURE__*/React.createElement(SlotExRow, { key: row.exercise_id, row, tutModal, setTutModal, saveRow, removeExercise }))
     ),
-    /*#__PURE__*/React.createElement("div", { style: { padding: '12px 16px' } },
+    /*#__PURE__*/React.createElement("div", { style: { padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 8 } },
       /*#__PURE__*/React.createElement("button", {
         className: "btn btn-s",
         onClick: () => setShowExPicker(true)
       }, /*#__PURE__*/React.createElement("svg", { width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", strokeLinecap: "round" },
         /*#__PURE__*/React.createElement("line", { x1: "12", y1: "5", x2: "12", y2: "19" }),
         /*#__PURE__*/React.createElement("line", { x1: "5", y1: "12", x2: "19", y2: "12" })
-      ), "Add Exercise")
+      ), "Add Exercise"),
+      rows.length > 0 && /*#__PURE__*/React.createElement("button", {
+        className: "btn btn-s",
+        onClick: () => {
+          if (rows.length > 0) setBulkState({ default_sets: rows[0].default_sets, default_reps: rows[0].default_reps, tut_type: rows[0].tut_type || 'none', tut_tension: rows[0].tut_tension || 'neither', tut_duration: rows[0].tut_duration || 2 });
+          setShowBulk(true);
+        },
+        style: { gap: 8 }
+      }, /*#__PURE__*/React.createElement("svg", { width: "14", height: "14", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", strokeLinecap: "round" },
+        /*#__PURE__*/React.createElement("path", { d: "M12 20h9" }),
+        /*#__PURE__*/React.createElement("path", { d: "M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" })
+      ), "Bulk Update"),
+      rows.length > 0 && /*#__PURE__*/React.createElement("button", {
+        className: "btn btn-s",
+        onClick: () => setShowGlobalEdit(true),
+        style: { gap: 8 }
+      }, /*#__PURE__*/React.createElement("svg", { width: "14", height: "14", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", strokeLinecap: "round" },
+        /*#__PURE__*/React.createElement("rect", { x: "3", y: "3", width: "18", height: "18", rx: "2" }),
+        /*#__PURE__*/React.createElement("line", { x1: "3", y1: "9", x2: "21", y2: "9" }),
+        /*#__PURE__*/React.createElement("line", { x1: "9", y1: "9", x2: "9", y2: "21" })
+      ), "Global Edit")
     )
   ));
 }
@@ -5392,7 +5537,11 @@ function SplitDetail({
       user: user,
       dayLabel: editingSlot.templates ? editingSlot.templates.name : `Day ${editSlotIdx + 1}`,
       onBack: () => setEditingSlot(null),
-      onTemplateRenamed: newName => setSlots(p => p.map(s => s.id === editingSlot.id ? { ...s, templates: s.templates ? { ...s.templates, name: newName } : s.templates } : s))
+      onTemplateRenamed: newName => setSlots(p => p.map(s => s.id === editingSlot.id ? { ...s, templates: s.templates ? { ...s.templates, name: newName } : s.templates } : s)),
+      onSlotTemplateChanged: (slotId, newTid) => {
+        setEditingSlot(prev => prev ? { ...prev, template_id: newTid, templates: { ...(prev.templates || {}), id: newTid, is_global: false } } : prev);
+        setSlots(p => p.map(s => s.id === slotId ? { ...s, template_id: newTid, templates: { ...(s.templates || {}), id: newTid, is_global: false } } : s));
+      }
     });
   }
   if (loading) return /*#__PURE__*/React.createElement("div", {
@@ -6215,43 +6364,50 @@ function BottomNav({
   active,
   onChange
 }) {
-  const items = [{
-    id: "dashboard",
-    label: "Home",
-    I: IHome
-  }, {
-    id: "library",
-    label: "Library",
-    I: ILayers
-  }, {
-    id: "log",
-    label: "Log",
-    I: IPlus
-  }, {
-    id: "mobility",
-    label: "Mobility",
-    I: IMobility
-  }, {
-    id: "progress",
-    label: "Progress",
-    I: IChart
-  }];
-  return /*#__PURE__*/React.createElement("div", {
-    className: "bnav"
-  }, items.map(({
-    id,
-    label,
-    I
-  }) => /*#__PURE__*/React.createElement("button", {
-    key: id,
-    className: `ni${active === id ? " on" : ""}`,
-    onClick: () => onChange(id)
-  }, /*#__PURE__*/React.createElement(I, null), label)));
+  const items = [
+    { id: "dashboard", label: "Home", I: IHome },
+    { id: "library", label: "Lib", I: ILayers },
+    { id: "log", label: "Log", I: IPlus },
+    { id: "mobility", label: "Move", I: IMobility },
+    { id: "progress", label: "Stats", I: IChart }
+  ];
+  return /*#__PURE__*/React.createElement("div", { className: "bnav" },
+    items.map(({ id, label, I }, idx) => {
+      const isLog = id === 'log';
+      if (isLog) {
+        return /*#__PURE__*/React.createElement("button", {
+          key: id,
+          className: 'ni',
+          onClick: () => onChange(id),
+          style: { flex: 1 }
+        },
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              width: 38, height: 38, borderRadius: '50%',
+              background: 'radial-gradient(circle at 30% 25%, #d4b07a, #c9a36a)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,.2), 0 0 16px rgba(201,163,106,.5), 0 4px 8px rgba(0,0,0,.4)',
+              color: '#0a0806'
+            }
+          },
+            /*#__PURE__*/React.createElement(I, null)
+          )
+        );
+      }
+      return /*#__PURE__*/React.createElement("button", {
+        key: id,
+        className: `ni${active === id ? " on" : ""}`,
+        onClick: () => onChange(id),
+        style: { flex: 1 }
+      }, /*#__PURE__*/React.createElement(I, null), label);
+    })
+  );
 }
 function App() {
   const [user, setUser] = useState(null);
   const [screen, setScreen] = useState("dashboard");
   const [prev, setPrev] = useState("dashboard");
+  const [restoredWorkoutId, setRestoredWorkoutId] = useState(null);
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [checking, setChecking] = useState(true);
   const [layout, setLayoutState] = useState(() => {
@@ -6264,7 +6420,7 @@ function App() {
   React.useEffect(() => {
     try {
       const saved = localStorage.getItem('rlyhevy_accent');
-      if (saved) applyAccent(saved);
+      applyAccent(saved || '#c9a36a');
     } catch(_) {}
   }, []);
   useEffect(() => {
@@ -6281,6 +6437,20 @@ function App() {
         };
         db.saveSession(res.d, u);
         setUser(u);
+        // Check for in-progress workout
+        try {
+          const wid = localStorage.getItem('rlyhevy_active_wid');
+          if (wid) {
+            db.get('workouts', `select=id,finished_at&id=eq.${wid}&user_id=eq.${db.uid}&limit=1`).then(({ data }) => {
+              if (data && data[0] && !data[0].finished_at) {
+                setRestoredWorkoutId(wid);
+                setScreen('log');
+              } else {
+                try { localStorage.removeItem('rlyhevy_active_wid'); } catch(_) {}
+              }
+            });
+          }
+        } catch(_) {}
       }
       setChecking(false);
     });
@@ -6336,7 +6506,8 @@ function App() {
     onBack: () => setSelectedExercise(null)
   }), screen === "log" && /*#__PURE__*/React.createElement(Log, {
     user: user,
-    onWorkoutComplete: () => setScreen('dashboard')
+    resumeWorkoutId: restoredWorkoutId,
+    onWorkoutComplete: () => { setRestoredWorkoutId(null); setScreen('dashboard'); }
   }), screen === "mobility" && /*#__PURE__*/React.createElement(Mobility, { user: user }), screen === "progress" && /*#__PURE__*/React.createElement(Progress, null), /*#__PURE__*/React.createElement(BottomNav, {
     active: screen,
     onChange: nav
