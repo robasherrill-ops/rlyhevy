@@ -84,6 +84,7 @@ User profile data (name, body_weight, weight_unit) is stored in **Supabase Auth 
 - `ALTER TABLE template_exercises ALTER COLUMN tut_tension TYPE text USING tut_tension::text;`
 - `ALTER TABLE split_slot_exercises ALTER COLUMN tut_type TYPE text USING tut_type::text;`
 - `ALTER TABLE split_slot_exercises ALTER COLUMN tut_tension TYPE text USING tut_tension::text;`
+- `ALTER TABLE exercises ADD COLUMN IF NOT EXISTS default_bw_percent integer;`
 
 > `split_slots.day_order` already exists and is used for per-week slot ordering.
 

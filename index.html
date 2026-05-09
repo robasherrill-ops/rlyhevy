@@ -975,12 +975,19 @@ function TUTSelector({
 function ExercisePicker({
   onSelect,
   onClose,
-  excludeIds = []
+  excludeIds = [],
+  user = null
 }) {
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
+  const [creating, setCreating] = useState(false);
+  const [createForm, setCreateForm] = useState({ name: '', muscle_group: 'chest', is_bodyweight: false, default_bw_percent: null });
+  const [createSaving, setCreateSaving] = useState(false);
+  const [createErr, setCreateErr] = useState('');
+  const bwNum = parseFloat(user && user.body_weight);
+  const bwUnit = (user && user.weight_unit) || 'lbs';
   useEffect(() => {
     db.get('exercises', 'select=*&order=name.asc').then(({
       data
@@ -989,7 +996,71 @@ function ExercisePicker({
       setLoading(false);
     });
   }, []);
+  async function saveNew() {
+    if (!createForm.name.trim()) { setCreateErr('Enter a name.'); return; }
+    setCreateSaving(true);
+    setCreateErr('');
+    const { data, error } = await db.post('exercises', {
+      name: createForm.name.trim(), muscle_group: createForm.muscle_group,
+      is_global: false, created_by: db.uid,
+      is_bodyweight: createForm.is_bodyweight, default_bw_percent: createForm.default_bw_percent || null, notes: null
+    });
+    if (error) { setCreateErr(error.message || 'Failed to save.'); setCreateSaving(false); return; }
+    const newEx = Array.isArray(data) ? data[0] : data;
+    setExercises(prev => [...prev, newEx].sort((a, b) => a.name.localeCompare(b.name)));
+    onSelect(newEx);
+  }
   const filtered = exercises.filter(e => e.name.toLowerCase().includes(search.toLowerCase()) && (filter === 'all' || e.muscle_group === filter));
+  if (creating) {
+    return React.createElement("div", { className: "picker" },
+      React.createElement("div", { className: "picker-hdr" },
+        React.createElement("button", { className: "hdr-btn", onClick: () => { setCreating(false); setCreateErr(''); setCreateForm({ name: '', muscle_group: 'chest', is_bodyweight: false, default_bw_percent: null }); } },
+          React.createElement(IChevL, null), " Back"),
+        React.createElement("span", { style: { fontFamily: "'Bebas Neue',sans-serif", fontSize: 22, letterSpacing: 1 } }, "New Exercise")
+      ),
+      React.createElement("div", { className: "picker-body", style: { padding: '16px' } },
+        createErr && React.createElement("div", { style: { color: '#e05a5a', fontSize: 13, marginBottom: 12, padding: '8px 12px', background: '#e05a5a18', borderRadius: 8 } }, createErr),
+        React.createElement("div", { className: "igrp" },
+          React.createElement("label", { className: "ilbl" }, "Exercise Name"),
+          React.createElement("input", { className: "inp", placeholder: "e.g. Bulgarian Split Squat", value: createForm.name, onChange: e => setCreateForm(f => ({ ...f, name: e.target.value })), autoFocus: true })
+        ),
+        React.createElement("div", { className: "igrp" },
+          React.createElement("label", { className: "ilbl" }, "Muscle Group"),
+          React.createElement("select", { className: "sel", value: createForm.muscle_group, onChange: e => setCreateForm(f => ({ ...f, muscle_group: e.target.value })) },
+            MG_ALL.map(mg => React.createElement("option", { key: mg, value: mg }, MG_LABEL[mg]))
+          )
+        ),
+        React.createElement("div", { style: { background: "var(--s2)", border: "1px solid var(--br)", borderRadius: "var(--rs)", padding: "14px 16px", marginBottom: 16 } },
+          React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
+            React.createElement("div", null,
+              React.createElement("div", { style: { fontSize: 14, fontWeight: 500 } }, "Bodyweight Exercise"),
+              React.createElement("div", { style: { fontSize: 12, color: "var(--tm)", marginTop: 2 } }, "Weight = % of your body weight")
+            ),
+            React.createElement(Toggle, { checked: !!createForm.is_bodyweight, onChange: v => setCreateForm(f => ({ ...f, is_bodyweight: v, default_bw_percent: null })) })
+          ),
+          createForm.is_bodyweight && React.createElement("div", { style: { marginTop: 12 } },
+            React.createElement("div", { style: { fontSize: 11, fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', color: 'var(--tm)', marginBottom: 8 } }, "Default Weight"),
+            React.createElement("div", { style: { display: 'flex', gap: 6 } },
+              [25, 50, 75, 100].map(p => {
+                const sel = createForm.default_bw_percent === p;
+                const label = bwNum > 0 ? p + '% · ' + Math.round(bwNum * p / 100) + bwUnit : p + '%';
+                return React.createElement("button", {
+                  key: p, type: "button",
+                  onClick: () => setCreateForm(f => ({ ...f, default_bw_percent: sel ? null : p })),
+                  style: { flex: 1, padding: '8px 0', borderRadius: 8, border: '1px solid ' + (sel ? 'var(--acc)' : 'var(--br)'), background: sel ? 'var(--acc20)' : 'var(--s1)', color: sel ? 'var(--acc)' : 'var(--ts)', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }
+                }, label);
+              })
+            ),
+            !bwNum && React.createElement("div", { style: { fontSize: 11, color: 'var(--tm)', marginTop: 6 } }, "Set body weight in Settings to preview loads.")
+          )
+        ),
+        React.createElement("button", {
+          className: "btn btn-p", onClick: saveNew, disabled: createSaving,
+          style: { width: '100%' }
+        }, createSaving ? "Saving..." : "Create & Add to Workout")
+      )
+    );
+  }
   return /*#__PURE__*/React.createElement("div", {
     className: "picker"
   }, /*#__PURE__*/React.createElement("div", {
@@ -997,13 +1068,15 @@ function ExercisePicker({
   }, /*#__PURE__*/React.createElement("button", {
     className: "hdr-btn",
     onClick: onClose
-  }, /*#__PURE__*/React.createElement(IChevL, null), " Cancel"), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontFamily: "'Bebas Neue',sans-serif",
-      fontSize: 22,
-      letterSpacing: 1
-    }
-  }, "Choose Exercise")), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(IChevL, null), " Cancel"),
+  React.createElement("span", {
+    style: { fontFamily: "'Bebas Neue',sans-serif", fontSize: 22, letterSpacing: 1 }
+  }, "Choose Exercise"),
+  React.createElement("button", {
+    className: "hdr-btn",
+    onClick: () => setCreating(true),
+    style: { color: 'var(--acc)', fontWeight: 600, fontSize: 13 }
+  }, "＋ New")), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: '0 0 0',
       flexShrink: 0
@@ -2939,7 +3012,7 @@ function Exercises({ user, embedded, onViewProgress }) {
   const [showAdd, setShowAdd] = useState(false);
   const [editEx, setEditEx] = useState(null);
   const [editForm, setEditForm] = useState({});
-  const [newEx, setNewEx] = useState({ name: "", muscle_group: "chest", is_bodyweight: false, notes: "" });
+  const [newEx, setNewEx] = useState({ name: "", muscle_group: "chest", is_bodyweight: false, default_bw_percent: null, notes: "" });
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
   const [selectMode, setSelectMode] = useState(false);
@@ -2959,7 +3032,7 @@ function Exercises({ user, embedded, onViewProgress }) {
 
   function openEdit(ex) {
     setEditEx(ex);
-    setEditForm({ name: ex.name, muscle_group: ex.muscle_group, is_bodyweight: !!ex.is_bodyweight, notes: ex.notes || '' });
+    setEditForm({ name: ex.name, muscle_group: ex.muscle_group, is_bodyweight: !!ex.is_bodyweight, default_bw_percent: ex.default_bw_percent || null, notes: ex.notes || '' });
     setErr("");
     setConfirmDel(false);
   }
@@ -2970,7 +3043,7 @@ function Exercises({ user, embedded, onViewProgress }) {
     setErr("");
     const { error } = await db.patch("exercises", {
       name: editForm.name.trim(), muscle_group: editForm.muscle_group,
-      is_bodyweight: editForm.is_bodyweight, notes: editForm.notes || null
+      is_bodyweight: editForm.is_bodyweight, default_bw_percent: editForm.default_bw_percent || null, notes: editForm.notes || null
     }, `id=eq.${editEx.id}`);
     if (error) setErr(error.message || "Failed to save.");
     else {
@@ -3010,14 +3083,14 @@ function Exercises({ user, embedded, onViewProgress }) {
     setErr("");
     const { data, error } = await db.post("exercises", {
       name: newEx.name.trim(), muscle_group: newEx.muscle_group,
-      is_global: false, created_by: db.uid, is_bodyweight: newEx.is_bodyweight, notes: newEx.notes || null
+      is_global: false, created_by: db.uid, is_bodyweight: newEx.is_bodyweight, default_bw_percent: newEx.default_bw_percent || null, notes: newEx.notes || null
     });
     if (error) setErr(error.message || "Failed to save.");
     else {
       const items = Array.isArray(data) ? data : [data];
       setExercises(e => [...e, ...items].sort((a, b) => a.name.localeCompare(b.name)));
       setShowAdd(false);
-      setNewEx({ name: "", muscle_group: "chest", is_bodyweight: false, notes: "" });
+      setNewEx({ name: "", muscle_group: "chest", is_bodyweight: false, default_bw_percent: null, notes: "" });
     }
     setSaving(false);
   }
@@ -3055,11 +3128,20 @@ function Exercises({ user, embedded, onViewProgress }) {
           ),
           React.createElement(Toggle, { checked: !!form.is_bodyweight, onChange: v => setForm(f => ({ ...f, is_bodyweight: v })) })
         ),
-        form.is_bodyweight && bwNum > 0 && React.createElement("div", { className: "bw-preview" },
-          [25, 50, 75, 100].map(p => React.createElement("div", { key: p, className: "bw-chip" }, p, "% = ", Math.round(bwNum * p / 100), " ", bwUnit))
-        ),
-        form.is_bodyweight && !bwNum && React.createElement("div", { style: { fontSize: 12, color: "var(--tm)", marginTop: 8 } },
-          "Set your body weight in Settings to see BW options."
+        form.is_bodyweight && React.createElement("div", { style: { marginTop: 12 } },
+          React.createElement("div", { style: { fontSize: 11, fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', color: 'var(--tm)', marginBottom: 8 } }, "Default Weight"),
+          React.createElement("div", { style: { display: 'flex', gap: 6 } },
+            [25, 50, 75, 100].map(p => {
+              const sel = form.default_bw_percent === p;
+              const label = bwNum > 0 ? p + '% · ' + Math.round(bwNum * p / 100) + bwUnit : p + '%';
+              return React.createElement("button", {
+                key: p, type: "button",
+                onClick: () => setForm(f => ({ ...f, default_bw_percent: sel ? null : p })),
+                style: { flex: 1, padding: '8px 0', borderRadius: 8, border: '1px solid ' + (sel ? 'var(--acc)' : 'var(--br)'), background: sel ? 'var(--acc20)' : 'var(--s1)', color: sel ? 'var(--acc)' : 'var(--ts)', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }
+              }, label);
+            })
+          ),
+          !bwNum && React.createElement("div", { style: { fontSize: 11, color: 'var(--tm)', marginTop: 6 } }, "Set body weight in Settings to preview loads.")
         )
       ),
       React.createElement("div", { className: "igrp", style: { marginTop: 12, marginBottom: 0 } },
@@ -3864,7 +3946,30 @@ function ActiveWorkout({
         for (const we of weData) {
           if (we.superset_group != null) ssMap[we.id] = we.superset_group;
         }
-        if (Object.keys(ssMap).length > 0) setSupersets(ssMap);
+        if (Object.keys(ssMap).length > 0) {
+          setSupersets(ssMap);
+          // Restore superset position: find first uncompleted set in round-robin order
+          const byGroup = {};
+          for (const we of weData) {
+            if (we.superset_group != null) {
+              if (!byGroup[we.superset_group]) byGroup[we.superset_group] = [];
+              byGroup[we.superset_group].push({ weId: we.id, sets: (we.sets || []).sort((a, b) => a.set_number - b.set_number) });
+            }
+          }
+          const restoredPos = {};
+          for (const [groupNum, members] of Object.entries(byGroup)) {
+            const maxSets = Math.max(...members.map(m => m.sets.length));
+            let found = false;
+            outer: for (let si = 0; si < maxSets; si++) {
+              for (let ei = 0; ei < members.length; ei++) {
+                const s = members[ei].sets[si];
+                if (s && !s.completed) { restoredPos[groupNum] = { exIdx: ei, setIdx: si }; found = true; break outer; }
+              }
+            }
+            if (!found) restoredPos[groupNum] = { exIdx: 0, setIdx: maxSets };
+          }
+          if (Object.keys(restoredPos).length > 0) setSsPosition(restoredPos);
+        }
       }
       setResumeLoading(false);
     }
@@ -4047,10 +4152,12 @@ function ActiveWorkout({
     });
     if (!weData) return;
     const we = Array.isArray(weData) ? weData[0] : weData;
+    const defaultWeight = ex.is_bodyweight && ex.default_bw_percent && bwNum
+      ? Math.round(bwNum * ex.default_bw_percent / 100) : null;
     const defaultSets = [1, 2, 3, 4].map(n => ({
       workout_exercise_id: we.id,
       set_number: n,
-      weight: null,
+      weight: defaultWeight,
       reps: 10,
       completed: false,
       set_type: 'working',
@@ -4103,7 +4210,8 @@ function ActiveWorkout({
   }, showExPicker && /*#__PURE__*/React.createElement(ExercisePicker, {
     onSelect: addExercise,
     onClose: () => setShowExPicker(false),
-    excludeIds: existingExIds
+    excludeIds: existingExIds,
+    user: user
   }), historyEx && /*#__PURE__*/React.createElement("div", {
     className: "mo",
     onClick: e => { if (e.target === e.currentTarget) setHistoryEx(null); }
@@ -4344,7 +4452,9 @@ function ActiveWorkout({
 
       async function completeAndAdvance() {
         if (!activeSet) return;
-        await toggleDone(activeEx.workoutExerciseId, activeSet.id, activeSet.completed);
+        if (!activeSet.completed) {
+          await toggleDone(activeEx.workoutExerciseId, activeSet.id, false);
+        }
         advanceSsPosition();
       }
 
