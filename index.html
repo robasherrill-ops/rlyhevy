@@ -2107,6 +2107,99 @@ function AuthScreen({
 }
 
 // ── Settings ──────────────────────────────────────────────────────────────────
+function GuideSection() {
+  const [open, setOpen] = React.useState(null);
+  const toggle = key => setOpen(o => o === key ? null : key);
+
+  const sections = [
+    {
+      key: 'start',
+      title: 'Getting Started',
+      items: [
+        ['Log tab', 'Start a workout — pick a template or go free-form. Sets, reps, and weight log in real time as you go.'],
+        ['Home tab', 'See your weekly effort score, today\'s planned split, and recent sessions. Tap a recent session to copy it to today.'],
+        ['Body weight', 'Set your body weight in Settings → Body Stats so bodyweight exercises calculate correct loads.'],
+      ]
+    },
+    {
+      key: 'log',
+      title: 'Logging a Workout',
+      items: [
+        ['Set types', 'Tap the pill next to each set to cycle: W = Working · WU = Warm-up · D = Drop set · F = Failure.'],
+        ['Exercise type', 'Tap the Type label on any exercise to set Eccentric Hold, Concentric Hold, Rep Release, Both, or None — plus 2s or 3s duration.'],
+        ['Previous performance', '"Last: 185×5 · 185×4" shows above each exercise — your most recent session for that movement.'],
+        ['Bodyweight exercises', 'Exercises marked BW use % of your body weight. Tap the weight field to pick 25%, 50%, 75%, or 100%.'],
+        ['Supersets', 'Tap SS on any exercise, then tap a second exercise to link them. A colored connector appears. Tap SS again to unlink.'],
+        ['Finishing', 'Tap Finish Workout to close the session and record it to your history.'],
+      ]
+    },
+    {
+      key: 'library',
+      title: 'Library',
+      items: [
+        ['Exercises tab', 'Your full exercise list. Tap any exercise to edit name, muscle group, bodyweight setting, or notes. Tap Select → check exercises → Delete to bulk remove.'],
+        ['Adding exercises', 'Tap + in the top-right. Name it, pick a muscle group, toggle bodyweight on if needed, add cue notes.'],
+        ['Templates tab', 'Reusable workout blueprints. Tap a template to add or reorder exercises, set default sets/reps, and assign exercise type. Bulk Update applies one setting to every exercise at once.'],
+        ['Forking templates', 'Global (shared) templates can\'t be edited directly — tap Fork to create your own editable copy.'],
+        ['Splits tab', 'Multi-week training programs. Create a split, assign templates to days, and tap any day to override exercises for that slot. Use ▲▼ to reorder days within a week.'],
+        ['Starting a split', 'Tap Start on a split to run it — the Home tab then tracks your current week and day.'],
+      ]
+    },
+    {
+      key: 'mobility',
+      title: 'Mobility (Move tab)',
+      items: [
+        ['What it is', 'A separate library just for stretches, flows, and movement drills — kept out of your main exercise list.'],
+        ['Adding', 'Tap + to add a mobility exercise. Name it, toggle bodyweight if relevant, add setup cues in Notes.'],
+        ['Editing / deleting', 'Tap any exercise row to open the edit sheet. Delete uses a 2-step confirmation so nothing gets removed by accident.'],
+      ]
+    },
+    {
+      key: 'progress',
+      title: 'Stats & Progress',
+      items: [
+        ['Heatmap', 'Stats tab shows a 16-week calendar heatmap — darker cells = more volume that day.'],
+        ['Effort score', 'Calculated as weight × reps × duration across all completed sets. Shown on the Home tab as your 7-day total with a week-over-week delta.'],
+        ['Exercise charts', 'In Library → Exercises, tap the chart icon (∿) on any exercise to see your max weight per session over the last 12 sessions.'],
+        ['Muscle balance', 'The Home card shows your Push / Pull / Legs split as a percentage bar so you can spot imbalances at a glance.'],
+      ]
+    },
+    {
+      key: 'appearance',
+      title: 'Appearance',
+      items: [
+        ['Accent color', 'Pick any pastel swatch above to change the highlight color used throughout the app.'],
+        ['Multi mode', 'The multicolor swatch gives each muscle group its own distinct color — useful if you prefer visual muscle-group coding over a single accent.'],
+        ['Single color mode', 'All shades (charts, badges, progress bars) are derived from your chosen accent hue — lighter and darker variants of the same color.'],
+      ]
+    },
+  ];
+
+  return React.createElement(React.Fragment, null,
+    React.createElement("div", { className: "sec-hd", style: { marginTop: 20 } }, "Guide & Features"),
+    sections.map(sec =>
+      React.createElement("div", { key: sec.key, className: "card", style: { margin: "0 16px 8px", padding: 0 } },
+        React.createElement("div", {
+          style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '14px 16px' },
+          onClick: () => toggle(sec.key)
+        },
+          React.createElement("span", { style: { fontSize: 14, fontWeight: 600, color: 'var(--tx)' } }, sec.title),
+          React.createElement("span", { style: { color: 'var(--tm)', fontSize: 11, fontWeight: 600, letterSpacing: '.5px' } }, open === sec.key ? "▲" : "▼")
+        ),
+        open === sec.key && React.createElement("div", { style: { padding: '0 16px 16px', display: 'flex', flexDirection: 'column', gap: 12 } },
+          React.createElement("div", { style: { height: 1, background: 'var(--divider)', marginBottom: 4 } }),
+          sec.items.map(([label, desc], i) =>
+            React.createElement("div", { key: i },
+              React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: 'var(--acc)', letterSpacing: '.4px', marginBottom: 3 } }, label),
+              React.createElement("div", { style: { fontSize: 13, color: 'var(--ts)', lineHeight: 1.55 } }, desc)
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
 function Settings({
   user,
   onUpdate,
@@ -2325,7 +2418,9 @@ function Settings({
         pwSaving ? React.createElement("span", { className: "spin" }) : "Update Password"
       )
     )
-  ));
+  ),
+  React.createElement(GuideSection, null)
+  );
 }
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
