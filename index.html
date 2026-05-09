@@ -5058,6 +5058,7 @@ function SlotEditor({
   const [showGlobalEdit, setShowGlobalEdit] = useState(false);
   const [bulkState, setBulkState] = useState({ default_sets: 3, default_reps: 10, tut_type: 'none', tut_tension: 'neither', tut_duration: 2 });
   const [bulkApplying, setBulkApplying] = useState(false);
+  const [saveError, setSaveError] = useState(null);
   // No forking needed — split_slot_exercises is the override layer
   const bwNum = parseFloat(user === null || user === void 0 ? void 0 : user.body_weight);
   const bwUnit = (user === null || user === void 0 ? void 0 : user.weight_unit) || 'lbs';
@@ -5112,15 +5113,17 @@ function SlotEditor({
     if (row._isTemplate) {
       if (row.id) {
         // Existing override in split_slot_exercises — just PATCH it
-        await db.patch('split_slot_exercises', payload, `id=eq.${row.id}`);
+        const { error } = await db.patch('split_slot_exercises', payload, `id=eq.${row.id}`);
+        if (error) { setSaveError(JSON.stringify(error)); return; }
       } else {
         // No override yet — POST a new split_slot_exercises row
-        const { data } = await db.post('split_slot_exercises', {
+        const { data, error } = await db.post('split_slot_exercises', {
           split_slot_id: slot.id,
           exercise_id: row.exercise_id,
           sort_order: row.sort_order,
           ...payload
         });
+        if (error) { setSaveError(JSON.stringify(error)); return; }
         if (data) {
           const s = Array.isArray(data) ? data[0] : data;
           setRows(p => p.map(r => r.exercise_id === row.exercise_id ? { ...r, ...updates, id: s.id } : r));
@@ -5182,26 +5185,32 @@ function SlotEditor({
   }
   async function applySlotBulkUpdate() {
     setBulkApplying(true);
+    setSaveError(null);
     const payload = { default_sets: bulkState.default_sets, default_reps: bulkState.default_reps, tut_type: bulkState.tut_type, tut_tension: bulkState.tut_tension, tut_duration: bulkState.tut_duration };
+    // Snapshot rows at call time so we iterate consistently
+    const snapshot = rows.slice();
     setRows(p => p.map(r => ({ ...r, ...payload })));
-    for (const row of rows) {
+    let hadError = false;
+    for (const row of snapshot) {
       if (row._isTemplate) {
         if (row.id) {
-          // Existing override — PATCH split_slot_exercises
-          await db.patch('split_slot_exercises', payload, `id=eq.${row.id}`);
+          const { error } = await db.patch('split_slot_exercises', payload, `id=eq.${row.id}`);
+          if (error) { setSaveError(JSON.stringify(error)); hadError = true; break; }
         } else {
-          // No override yet — POST to split_slot_exercises
-          const { data } = await db.post('split_slot_exercises', { split_slot_id: slot.id, exercise_id: row.exercise_id, sort_order: row.sort_order, ...payload });
+          const { data, error } = await db.post('split_slot_exercises', { split_slot_id: slot.id, exercise_id: row.exercise_id, sort_order: row.sort_order, ...payload });
+          if (error) { setSaveError(JSON.stringify(error)); hadError = true; break; }
           if (data) { const s = Array.isArray(data) ? data[0] : data; setRows(p => p.map(r => r.exercise_id === s.exercise_id ? { ...r, id: s.id } : r)); }
         }
       } else if (row._unsaved || !row.id) {
-        const { data } = await db.post('split_slot_exercises', { split_slot_id: slot.id, exercise_id: row.exercise_id, sort_order: row.sort_order, ...payload });
+        const { data, error } = await db.post('split_slot_exercises', { split_slot_id: slot.id, exercise_id: row.exercise_id, sort_order: row.sort_order, ...payload });
+        if (error) { setSaveError(JSON.stringify(error)); hadError = true; break; }
         if (data) { const s = Array.isArray(data) ? data[0] : data; setRows(p => p.map(r => r.exercise_id === s.exercise_id ? { ...r, id: s.id, _unsaved: false } : r)); }
       } else {
-        await db.patch('split_slot_exercises', payload, `id=eq.${row.id}`);
+        const { error } = await db.patch('split_slot_exercises', payload, `id=eq.${row.id}`);
+        if (error) { setSaveError(JSON.stringify(error)); hadError = true; break; }
       }
     }
-    setShowBulk(false);
+    if (!hadError) setShowBulk(false);
     setBulkApplying(false);
   }
   const tutModalRow = tutModal ? rows.find(r => r.exercise_id === tutModal) : null;
@@ -5276,6 +5285,7 @@ function SlotEditor({
         )
       )
     ),
+    saveError && /*#__PURE__*/React.createElement("div", { className: "alert-e", style: { marginTop: 8, fontSize: 12, wordBreak: 'break-all' } }, "Save failed: ", saveError),
     /*#__PURE__*/React.createElement("button", {
       className: "btn btn-p",
       onClick: applySlotBulkUpdate,
