@@ -2881,7 +2881,6 @@ function Exercises({ user, embedded, onViewProgress }) {
   }
 
   function openEdit(ex) {
-    if (ex.is_global) return;
     setEditEx(ex);
     setEditForm({ name: ex.name, muscle_group: ex.muscle_group, is_bodyweight: !!ex.is_bodyweight, notes: ex.notes || '' });
     setErr("");
@@ -3022,8 +3021,19 @@ function Exercises({ user, embedded, onViewProgress }) {
         ))
       )
     ),
-    embedded && React.createElement("div", { style: { display: 'flex', justifyContent: 'flex-end', padding: '8px 16px 0' } },
-      React.createElement("button", {
+    embedded && React.createElement("div", { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 16px 0' } },
+      selectMode
+        ? React.createElement("button", {
+            className: "hdr-btn",
+            onClick: () => { setSelectMode(false); setSelected([]); setConfirmMultiDel(false); },
+            style: { color: 'var(--tm)', fontSize: 13, fontWeight: 600 }
+          }, "Cancel")
+        : React.createElement("button", {
+            className: "hdr-btn",
+            onClick: () => setSelectMode(true),
+            style: { color: 'var(--tm)', fontSize: 13, fontWeight: 600 }
+          }, "Select"),
+      !selectMode && React.createElement("button", {
         className: "hdr-btn", onClick: () => { setShowAdd(true); setErr(""); },
         style: { color: 'var(--acc)', fontWeight: 600, fontSize: 13 }
       }, "+ Add Exercise")
@@ -3071,16 +3081,15 @@ function Exercises({ user, embedded, onViewProgress }) {
         : React.createElement("div", { className: "lst" },
             filtered.map(ex => {
               const isSelected = selected.includes(ex.id);
-              const canEdit = !ex.is_global;
               return React.createElement("div", {
                 key: ex.id, className: "li",
                 style: isSelected ? { background: 'var(--acc8)' } : undefined,
                 onClick: () => {
-                  if (selectMode) { if (canEdit) toggleSelect(ex.id); }
+                  if (selectMode) { toggleSelect(ex.id); }
                   else { openEdit(ex); }
                 }
               },
-                selectMode && canEdit && React.createElement("div", {
+                selectMode && React.createElement("div", {
                   style: {
                     width: 20, height: 20, borderRadius: 4,
                     border: `2px solid ${isSelected ? 'var(--acc)' : 'var(--br)'}`,
@@ -3109,7 +3118,7 @@ function Exercises({ user, embedded, onViewProgress }) {
                 }, React.createElement("svg", { width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" },
                   React.createElement("polyline", { points: "22 12 18 12 15 21 9 3 6 12 2 12" })
                 )),
-                !selectMode && canEdit && React.createElement(IChev, null)
+                !selectMode && React.createElement(IChev, null)
               );
             })
           ),
@@ -6237,25 +6246,33 @@ function Mobility({ user }) {
   const [showAdd, setShowAdd] = useState(false);
   const [newName, setNewName] = useState('');
   const [isBW, setIsBW] = useState(false);
+  const [newNotes, setNewNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
   const [editEx, setEditEx] = useState(null);
   const [editName, setEditName] = useState('');
   const [editBW, setEditBW] = useState(false);
-  const [newNotes, setNewNotes] = useState('');
   const [editNotes, setEditNotes] = useState('');
+  const [confirmDel, setConfirmDel] = useState(false);
+
   useEffect(() => { load(); }, []);
+
   async function load() {
     setLoading(true);
-    const { data } = await db.get('exercises', 'select=*&muscle_group=eq.mobility&order=name.asc');
+    const { data } = await db.get('exercises', 'select=*,notes&muscle_group=eq.mobility&order=name.asc');
     if (data) setExercises(data);
     setLoading(false);
   }
+
   async function addExercise() {
     if (!newName.trim()) { setErr('Enter a name.'); return; }
     setSaving(true); setErr('');
-    const { data, error } = await db.post('exercises', { name: newName.trim(), muscle_group: 'mobility', is_global: false, created_by: db.uid, is_bodyweight: isBW, notes: newNotes.trim() || null });
-    if (error) setErr(error.message || 'Failed.');
+    const { data, error } = await db.post('exercises', {
+      name: newName.trim(), muscle_group: 'mobility',
+      is_global: false, created_by: db.uid,
+      is_bodyweight: isBW, notes: newNotes.trim() || null
+    });
+    if (error) setErr(error.message || 'Failed to save.');
     else {
       const item = Array.isArray(data) ? data[0] : data;
       setExercises(p => [...p, item].sort((a,b) => a.name.localeCompare(b.name)));
@@ -6263,106 +6280,159 @@ function Mobility({ user }) {
     }
     setSaving(false);
   }
+
   async function saveEdit() {
     if (!editName.trim()) { setErr('Enter a name.'); return; }
     setSaving(true); setErr('');
-    const { error } = await db.patch('exercises', { name: editName.trim(), is_bodyweight: editBW, notes: editNotes.trim() || null }, `id=eq.${editEx.id}`);
-    if (error) setErr(error.message || 'Failed.');
+    const { error } = await db.patch('exercises', {
+      name: editName.trim(), is_bodyweight: editBW, notes: editNotes.trim() || null
+    }, `id=eq.${editEx.id}`);
+    if (error) setErr(error.message || 'Failed to save.');
     else {
-      setExercises(p => p.map(e => e.id === editEx.id ? { ...e, name: editName.trim(), is_bodyweight: editBW, notes: editNotes.trim() || null } : e).sort((a,b) => a.name.localeCompare(b.name)));
+      setExercises(p => p.map(e => e.id === editEx.id
+        ? { ...e, name: editName.trim(), is_bodyweight: editBW, notes: editNotes.trim() || null }
+        : e).sort((a,b) => a.name.localeCompare(b.name)));
       setEditEx(null);
     }
     setSaving(false);
   }
-  async function deleteEx(ex) {
-    if (!window.confirm(`Delete "${ex.name}"?`)) return;
-    await db.del('split_slot_exercises', `exercise_id=eq.${ex.id}`);
-    await db.del('exercises', `id=eq.${ex.id}`);
-    setExercises(p => p.filter(e => e.id !== ex.id));
+
+  async function deleteEx() {
+    setSaving(true);
+    await db.del('split_slot_exercises', `exercise_id=eq.${editEx.id}`);
+    await db.del('exercises', `id=eq.${editEx.id}`);
+    setExercises(p => p.filter(e => e.id !== editEx.id));
+    setEditEx(null);
+    setSaving(false);
   }
+
+  function openEditModal(ex) {
+    setEditEx(ex); setEditName(ex.name); setEditBW(!!ex.is_bodyweight);
+    setEditNotes(ex.notes || ''); setErr(''); setConfirmDel(false);
+  }
+
   const filtered = exercises.filter(e => e.name.toLowerCase().includes(search.toLowerCase()));
-  return /*#__PURE__*/React.createElement("div", { className: "screen" },
-    /*#__PURE__*/React.createElement("div", { className: "hdr" },
-      /*#__PURE__*/React.createElement("span", { className: "hdr-ttl" }, "Mobility")),
-    /*#__PURE__*/React.createElement("div", { style: { margin: '0 16px 12px' } },
-      /*#__PURE__*/React.createElement("div", { className: "srch" },
-        /*#__PURE__*/React.createElement(ISearch, null),
-        /*#__PURE__*/React.createElement("input", { placeholder: "Search mobility exercises...", value: search, onChange: e => setSearch(e.target.value) }),
-        search && /*#__PURE__*/React.createElement("button", { onClick: () => setSearch(''), style: { background:'none',border:'none',color:'var(--tm)',cursor:'pointer',padding:'4px',display:'flex',alignItems:'center' } }, /*#__PURE__*/React.createElement(IX, null))
+  const bwNum = parseFloat(user && user.body_weight);
+  const bwUnit = (user && user.weight_unit) || 'lbs';
+
+  return React.createElement("div", { className: "screen" },
+    React.createElement("div", { className: "hdr" },
+      React.createElement("span", { className: "hdr-ttl" }, "Mobility"),
+      React.createElement("button", {
+        className: "hdr-btn", onClick: () => { setShowAdd(true); setErr(''); }
+      }, React.createElement("svg", { width:"22",height:"22",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"2",strokeLinecap:"round" },
+        React.createElement("line",{x1:"12",y1:"5",x2:"12",y2:"19"}),
+        React.createElement("line",{x1:"5",y1:"12",x2:"19",y2:"12"})
+      ))
+    ),
+    React.createElement("div", { className: "srch" },
+      React.createElement(ISearch, null),
+      React.createElement("input", { placeholder: "Search mobility exercises...", value: search, onChange: e => setSearch(e.target.value) }),
+      search && React.createElement("button", { onClick: () => setSearch(''), style: { background:'none',border:'none',color:'var(--tm)',cursor:'pointer',padding:'4px',display:'flex',alignItems:'center' } },
+        React.createElement(IX, null)
       )
     ),
-    showAdd && /*#__PURE__*/React.createElement("div", { className: "mo", onClick: e => { if (e.target === e.currentTarget) { setShowAdd(false); setErr(''); } } },
-      /*#__PURE__*/React.createElement("div", { className: "mo-box" },
-        /*#__PURE__*/React.createElement("div", { style: { display:'flex', justifyContent:'space-between', alignItems:'center' } },
-          /*#__PURE__*/React.createElement("span", { className: "mo-ttl" }, "Add Mobility Exercise"),
-          /*#__PURE__*/React.createElement("button", { className: "hdr-btn", onClick: () => { setShowAdd(false); setErr(''); } }, /*#__PURE__*/React.createElement(IX, null))
+    // Add modal
+    showAdd && React.createElement("div", { className: "mo", onClick: e => { if (e.target === e.currentTarget) { setShowAdd(false); setErr(''); } } },
+      React.createElement("div", { className: "mo-box" },
+        React.createElement("div", { className: "mo-ttl" }, "Add Mobility Exercise"),
+        React.createElement("div", { className: "igrp" },
+          React.createElement("label", { className: "ilbl" }, "Exercise Name"),
+          React.createElement("input", { className: "inp", placeholder: "e.g. Hip 90/90 Stretch", value: newName, onChange: e => setNewName(e.target.value), autoFocus: true })
         ),
-        /*#__PURE__*/React.createElement("div", { className: "igrp" },
-          /*#__PURE__*/React.createElement("label", { className: "ilbl" }, "Exercise Name"),
-          /*#__PURE__*/React.createElement("input", { className: "inp", placeholder: "e.g. Hip 90/90 Stretch", value: newName, onChange: e => setNewName(e.target.value), onKeyDown: e => e.key === 'Enter' && addExercise(), autoFocus: true })
-        ),
-        /*#__PURE__*/React.createElement("div", { style: { display:'flex', alignItems:'center', justifyContent:'space-between', margin:'0 0 12px' } },
-          /*#__PURE__*/React.createElement("span", { style: { fontSize:14, color:'var(--ts)' } }, "Bodyweight"),
-          /*#__PURE__*/React.createElement(Toggle, { checked: isBW, onChange: setIsBW })
-        ),
-        /*#__PURE__*/React.createElement("div", { className: "igrp", style: { marginBottom: 12 } },
-          /*#__PURE__*/React.createElement("label", { className: "ilbl" }, "Notes"),
-          /*#__PURE__*/React.createElement("textarea", { className: "inp", placeholder: "Cues, setup tips, video links...", value: newNotes, onChange: e => setNewNotes(e.target.value), rows: 3, style: { resize:'none', lineHeight:1.5 } })
-        ),
-        err && /*#__PURE__*/React.createElement("div", { className: "alert-e", style:{ marginBottom:8 } }, err),
-        /*#__PURE__*/React.createElement("button", { className: "btn btn-p", onClick: addExercise, disabled: saving },
-          saving ? /*#__PURE__*/React.createElement("span", { className: "spin" }) : "Add Exercise")
-      )
-    ),
-    editEx && /*#__PURE__*/React.createElement("div", { className: "mo", onClick: e => { if (e.target === e.currentTarget) { setEditEx(null); setErr(''); } } },
-      /*#__PURE__*/React.createElement("div", { className: "mo-box" },
-        /*#__PURE__*/React.createElement("div", { style: { display:'flex', justifyContent:'space-between', alignItems:'center' } },
-          /*#__PURE__*/React.createElement("span", { className: "mo-ttl" }, "Edit Exercise"),
-          /*#__PURE__*/React.createElement("button", { className: "hdr-btn", onClick: () => { setEditEx(null); setErr(''); } }, /*#__PURE__*/React.createElement(IX, null))
-        ),
-        /*#__PURE__*/React.createElement("div", { className: "igrp" },
-          /*#__PURE__*/React.createElement("label", { className: "ilbl" }, "Exercise Name"),
-          /*#__PURE__*/React.createElement("input", { className: "inp", value: editName, onChange: e => setEditName(e.target.value), autoFocus: true })
-        ),
-        /*#__PURE__*/React.createElement("div", { style: { display:'flex', alignItems:'center', justifyContent:'space-between', margin:'0 0 12px' } },
-          /*#__PURE__*/React.createElement("span", { style: { fontSize:14, color:'var(--ts)' } }, "Bodyweight"),
-          /*#__PURE__*/React.createElement(Toggle, { checked: editBW, onChange: setEditBW })
-        ),
-        /*#__PURE__*/React.createElement("div", { className: "igrp", style: { marginBottom: 12 } },
-          /*#__PURE__*/React.createElement("label", { className: "ilbl" }, "Notes"),
-          /*#__PURE__*/React.createElement("textarea", { className: "inp", placeholder: "Cues, setup tips, video links...", value: editNotes, onChange: e => setEditNotes(e.target.value), rows: 3, style: { resize:'none', lineHeight:1.5 } })
-        ),
-        err && /*#__PURE__*/React.createElement("div", { className: "alert-e", style:{ marginBottom:8 } }, err),
-        /*#__PURE__*/React.createElement("div", { style: { display:'flex', gap:8 } },
-          /*#__PURE__*/React.createElement("button", { className: "btn btn-p", style:{ flex:1 }, onClick: saveEdit, disabled: saving },
-            saving ? /*#__PURE__*/React.createElement("span", { className: "spin" }) : "Save"),
-          /*#__PURE__*/React.createElement("button", { className: "btn btn-d", style:{ flex:1 }, onClick: () => deleteEx(editEx) }, "Delete")
-        )
-      )
-    ),
-    loading ? /*#__PURE__*/React.createElement("div", { className: "loading" }, /*#__PURE__*/React.createElement("span", { className: "spin" }))
-    : filtered.length === 0 ? /*#__PURE__*/React.createElement("div", { className: "empty" },
-        /*#__PURE__*/React.createElement(IMobility, null),
-        /*#__PURE__*/React.createElement("div", { className: "empty-ttl" }, search ? "No results" : "No mobility exercises yet"),
-        /*#__PURE__*/React.createElement("div", { className: "empty-sub" }, search ? "Try a different search" : "Add stretches, flows, and movement drills below")
-      )
-    : /*#__PURE__*/React.createElement("div", { style: { margin:'0 16px', background:'var(--s1)', border:'1px solid var(--br)', borderRadius:'var(--r)', overflow:'hidden' } },
-        filtered.map((ex, i) => /*#__PURE__*/React.createElement("div", { key: ex.id, style: { display:'flex', alignItems:'center', padding:'13px 16px', borderBottom: i < filtered.length-1 ? '1px solid var(--br)' : 'none', cursor:'pointer' }, onClick: () => { setEditEx(ex); setEditName(ex.name); setEditBW(!!ex.is_bodyweight); setEditNotes(ex.notes || ''); setErr(''); } },
-          /*#__PURE__*/React.createElement("div", { style:{ flex:1 } },
-            /*#__PURE__*/React.createElement("div", { className: "li-name" }, ex.name),
-            ex.is_bodyweight && /*#__PURE__*/React.createElement("span", { className: "bw-badge", style:{ marginTop:2, display:'inline-block' } }, "BW")
+        React.createElement("div", { style: { background: "var(--s2)", border: "1px solid var(--br)", borderRadius: "var(--rs)", padding: "14px 16px", marginBottom: 12 } },
+          React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
+            React.createElement("div", null,
+              React.createElement("div", { style: { fontSize: 14, fontWeight: 500 } }, "Bodyweight Exercise"),
+              React.createElement("div", { style: { fontSize: 12, color: "var(--tm)", marginTop: 2 } }, "Weight = % of your body weight")
+            ),
+            React.createElement(Toggle, { checked: isBW, onChange: setIsBW })
           ),
-          /*#__PURE__*/React.createElement(IChev, null)
-        ))
-      ),
-    /*#__PURE__*/React.createElement("div", { style:{ padding:'12px 16px' } },
-      /*#__PURE__*/React.createElement("button", { className: "btn btn-s", onClick: () => { setShowAdd(true); setErr(''); } },
-        /*#__PURE__*/React.createElement("svg", { width:"16",height:"16",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"2.5",strokeLinecap:"round" },
-          /*#__PURE__*/React.createElement("line",{x1:"12",y1:"5",x2:"12",y2:"19"}),
-          /*#__PURE__*/React.createElement("line",{x1:"5",y1:"12",x2:"19",y2:"12"})
-        ), " Add Exercise"
+          isBW && bwNum > 0 && React.createElement("div", { className: "bw-preview" },
+            [25, 50, 75, 100].map(p => React.createElement("div", { key: p, className: "bw-chip" }, p, "% = ", Math.round(bwNum * p / 100), " ", bwUnit))
+          )
+        ),
+        React.createElement("div", { className: "igrp", style: { marginBottom: 0 } },
+          React.createElement("label", { className: "ilbl" }, "Notes"),
+          React.createElement("textarea", { className: "inp", placeholder: "Cues, setup tips, video links...", value: newNotes, onChange: e => setNewNotes(e.target.value), rows: 3, style: { resize:'none', lineHeight:1.5 } })
+        ),
+        err && React.createElement("div", { className: "alert-e", style:{ marginTop:8 } }, err),
+        React.createElement("div", { className: "divider" }),
+        React.createElement("button", { className: "btn btn-p", onClick: addExercise, disabled: saving },
+          saving ? React.createElement("span", { className: "spin" }) : "Save Exercise"
+        ),
+        React.createElement("button", { className: "btn btn-g", onClick: () => { setShowAdd(false); setErr(''); } }, "Cancel")
       )
-    )
+    ),
+    // Edit modal
+    editEx && React.createElement("div", { className: "mo", onClick: e => { if (e.target === e.currentTarget) { setEditEx(null); setErr(''); } } },
+      React.createElement("div", { className: "mo-box" },
+        React.createElement("div", { className: "mo-ttl" }, "Edit Exercise"),
+        React.createElement("div", { className: "igrp" },
+          React.createElement("label", { className: "ilbl" }, "Exercise Name"),
+          React.createElement("input", { className: "inp", value: editName, onChange: e => setEditName(e.target.value), autoFocus: true })
+        ),
+        React.createElement("div", { style: { background: "var(--s2)", border: "1px solid var(--br)", borderRadius: "var(--rs)", padding: "14px 16px", marginBottom: 12 } },
+          React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
+            React.createElement("div", null,
+              React.createElement("div", { style: { fontSize: 14, fontWeight: 500 } }, "Bodyweight Exercise"),
+              React.createElement("div", { style: { fontSize: 12, color: "var(--tm)", marginTop: 2 } }, "Weight = % of your body weight")
+            ),
+            React.createElement(Toggle, { checked: editBW, onChange: setEditBW })
+          ),
+          editBW && bwNum > 0 && React.createElement("div", { className: "bw-preview" },
+            [25, 50, 75, 100].map(p => React.createElement("div", { key: p, className: "bw-chip" }, p, "% = ", Math.round(bwNum * p / 100), " ", bwUnit))
+          )
+        ),
+        React.createElement("div", { className: "igrp", style: { marginBottom: 0 } },
+          React.createElement("label", { className: "ilbl" }, "Notes"),
+          React.createElement("textarea", { className: "inp", placeholder: "Cues, setup tips, video links...", value: editNotes, onChange: e => setEditNotes(e.target.value), rows: 3, style: { resize:'none', lineHeight:1.5 } })
+        ),
+        err && React.createElement("div", { className: "alert-e", style:{ marginTop:8 } }, err),
+        React.createElement("div", { className: "divider" }),
+        React.createElement("button", { className: "btn btn-p", onClick: saveEdit, disabled: saving },
+          saving ? React.createElement("span", { className: "spin" }) : "Save Changes"
+        ),
+        confirmDel
+          ? React.createElement(React.Fragment, null,
+              React.createElement("div", { style: { fontSize: 12, color: 'var(--tm)', textAlign: 'center', padding: '8px 0' } },
+                "Permanently deletes this exercise. Cannot be undone."
+              ),
+              React.createElement("button", { className: "btn btn-d", onClick: deleteEx, disabled: saving },
+                saving ? React.createElement("span", { className: "spin" }) : "Yes, delete permanently"
+              ),
+              React.createElement("button", { className: "btn btn-g", onClick: () => setConfirmDel(false) }, "Cancel")
+            )
+          : React.createElement(React.Fragment, null,
+              React.createElement("button", { className: "btn btn-d", onClick: () => setConfirmDel(true), disabled: saving }, "Delete Exercise"),
+              React.createElement("button", { className: "btn btn-g", onClick: () => { setEditEx(null); setErr(''); } }, "Cancel")
+            )
+      )
+    ),
+    // List
+    loading
+      ? React.createElement("div", { className: "loading" }, React.createElement("span", { className: "spin" }))
+      : filtered.length === 0
+        ? React.createElement("div", { className: "empty" },
+            React.createElement(IMobility, null),
+            React.createElement("div", { className: "empty-ttl" }, search ? "No results" : "No mobility exercises yet"),
+            React.createElement("div", { className: "empty-sub" }, search ? "Try a different search" : "Tap + to add your first mobility exercise")
+          )
+        : React.createElement("div", { className: "lst" },
+            filtered.map(ex => React.createElement("div", {
+              key: ex.id, className: "li",
+              onClick: () => openEditModal(ex)
+            },
+              React.createElement("div", { style: { flex: 1 } },
+                React.createElement("div", { style: { display: 'flex', alignItems: 'center', gap: 8 } },
+                  React.createElement("div", { className: "li-name" }, ex.name),
+                  ex.is_bodyweight && React.createElement("span", { className: "bw-badge" }, "BW")
+                ),
+                ex.notes && React.createElement("div", { style: { fontSize: 11, color: 'var(--tm)', marginTop: 4, lineHeight: 1.4 } }, ex.notes)
+              ),
+              React.createElement(IChev, null)
+            ))
+          )
   );
 }
 
