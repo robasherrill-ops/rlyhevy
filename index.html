@@ -4875,6 +4875,8 @@ function Progress() {
   const [histDetLoading, setHistDetLoading] = useState(null);
   const [histExpanded, setHistExpanded] = useState(null);
   const [histScores, setHistScores] = useState({});
+  const [showAllHistory, setShowAllHistory] = useState(false);
+  const [showAllPrs, setShowAllPrs] = useState(false);
   useEffect(() => {
     async function load() {
       const { data: ws } = await db.get('workouts', `select=id,started_at,finished_at&user_id=eq.${db.uid}&finished_at=not.is.null&order=started_at.asc`);
@@ -4933,7 +4935,7 @@ function Progress() {
             };
           }
         }
-        setPrs(Object.values(prByEx).filter(p => p.weight > 0).sort((a, b) => b.weight - a.weight).slice(0, 10));
+        setPrs(Object.values(prByEx).filter(p => p.weight > 0).sort((a, b) => b.weight - a.weight));
       }
       setLoading(false);
       // Load history
@@ -5088,61 +5090,7 @@ function Progress() {
         )
       )
     );
-  })()), prs.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "sec-hd"
-  }, "Personal Records"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      margin: '0 16px 16px',
-      background: 'var(--s1)',
-      border: '1px solid var(--br)',
-      borderRadius: 'var(--r)',
-      overflow: 'hidden'
-    }
-  }, prs.map((pr, i) => /*#__PURE__*/React.createElement("div", {
-    key: i,
-    style: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '11px 14px',
-      borderBottom: i < prs.length - 1 ? '1px solid var(--br)' : 'none'
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      flex: 1
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 14,
-      fontWeight: 600
-    }
-  }, pr.name), /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginTop: 3
-    }
-  }, /*#__PURE__*/React.createElement(Badge, {
-    mg: pr.mg
-  }))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: 'right'
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 17,
-      fontWeight: 700,
-      color: 'var(--acc)'
-    }
-  }, pr.weight, " ", /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 11,
-      color: 'var(--tm)',
-      fontWeight: 400
-    }
-  }, "lbs")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      color: 'var(--tm)'
-    }
-  }, pr.reps, " reps")))))),
+  })()),
   React.createElement("div", { className: "sec-hd" }, "Workout History"),
   histWorkouts.length === 0
     ? React.createElement("div", { className: "empty" },
@@ -5151,9 +5099,10 @@ function Progress() {
       )
     : React.createElement(React.Fragment, null,
       (() => {
+        const visibleWorkouts = showAllHistory ? histWorkouts : histWorkouts.slice(0, 5);
         const grouped = [];
         let curWeek = null;
-        for (const w of histWorkouts) {
+        for (const w of visibleWorkouts) {
           const wl = weekLabelP(w.started_at);
           if (wl !== curWeek) { grouped.push({ type: 'week', label: wl }); curWeek = wl; }
           grouped.push({ type: 'workout', ...w });
@@ -5195,9 +5144,35 @@ function Progress() {
             )
           );
         });
-      })()
+      })(),
+      !showAllHistory && histWorkouts.length > 5 && React.createElement("div", { style: { margin: '4px 16px 8px', textAlign: 'center' } },
+        React.createElement("button", { onClick: () => setShowAllHistory(true), style: { background: 'none', border: '1px solid var(--br)', borderRadius: 8, color: 'var(--ts)', cursor: 'pointer', fontSize: 12, fontWeight: 600, padding: '8px 20px', fontFamily: "'DM Sans',sans-serif" } },
+          `See all ${histWorkouts.length} workouts`)
+      )
     ),
-  /*#__PURE__*/React.createElement("div", { style: { height: 16 } })));
+  prs.length > 0 && React.createElement(React.Fragment, null,
+    React.createElement("div", { className: "sec-hd" }, "Personal Records"),
+    React.createElement("div", { style: { margin: '0 16px 4px', background: 'var(--s1)', border: '1px solid var(--br)', borderRadius: 'var(--r)', overflow: 'hidden' } },
+      (showAllPrs ? prs : prs.slice(0, 5)).map((pr, i, arr) => React.createElement("div", {
+        key: i,
+        style: { display: 'flex', alignItems: 'center', padding: '11px 14px', borderBottom: i < arr.length - 1 ? '1px solid var(--br)' : 'none' }
+      },
+        React.createElement("div", { style: { flex: 1 } },
+          React.createElement("div", { style: { fontSize: 14, fontWeight: 600 } }, pr.name),
+          React.createElement("div", { style: { marginTop: 3 } }, React.createElement(Badge, { mg: pr.mg }))
+        ),
+        React.createElement("div", { style: { textAlign: 'right' } },
+          React.createElement("div", { style: { fontSize: 17, fontWeight: 700, color: 'var(--acc)' } }, pr.weight, " ", React.createElement("span", { style: { fontSize: 11, color: 'var(--tm)', fontWeight: 400 } }, "lbs")),
+          React.createElement("div", { style: { fontSize: 11, color: 'var(--tm)' } }, pr.reps, " reps")
+        )
+      ))
+    ),
+    !showAllPrs && prs.length > 5 && React.createElement("div", { style: { margin: '4px 16px 8px', textAlign: 'center' } },
+      React.createElement("button", { onClick: () => setShowAllPrs(true), style: { background: 'none', border: '1px solid var(--br)', borderRadius: 8, color: 'var(--ts)', cursor: 'pointer', fontSize: 12, fontWeight: 600, padding: '8px 20px', fontFamily: "'DM Sans',sans-serif" } },
+        `See all ${prs.length} records`)
+    )
+  ),
+  React.createElement("div", { style: { height: 16 } })));
 }
 function ComingSoon({
   title,
