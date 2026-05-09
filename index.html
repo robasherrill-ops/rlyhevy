@@ -35,7 +35,7 @@ html,body{background:#000;color:var(--tx);font-family:'Geist',system-ui,sans-ser
 .card-ttl{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);margin-bottom:12px}
 .btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 20px;border-radius:var(--r);font-family:'Geist',system-ui,sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:none;transition:transform .1s;width:100%}
 .btn:active{transform:scale(.97)}
-.btn-p{background:linear-gradient(180deg,#d4b07a,#c9a36a);color:#0a0806;box-shadow:0 0 16px rgba(201,163,106,.3)}
+.btn-p{background:var(--acc);color:#0a0806;box-shadow:0 0 16px var(--acc40)}
 .btn-s{background:var(--s2);color:var(--tx);border:1px solid var(--br)}
 .btn-g{background:transparent;color:var(--tm);border:1px solid var(--br)}
 .btn-d{background:rgba(255,68,68,.08);color:#ff6b6b;border:1px solid rgba(255,68,68,.2)}
@@ -6667,9 +6667,9 @@ function BottomNav({
           /*#__PURE__*/React.createElement("div", {
             style: {
               width: 38, height: 38, borderRadius: '50%',
-              background: 'radial-gradient(circle at 30% 25%, #d4b07a, #c9a36a)',
+              background: 'var(--acc)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,.2), 0 0 16px rgba(201,163,106,.5), 0 4px 8px rgba(0,0,0,.4)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,.2), 0 0 16px var(--acc50), 0 4px 8px rgba(0,0,0,.4)',
               color: '#0a0806'
             }
           },
