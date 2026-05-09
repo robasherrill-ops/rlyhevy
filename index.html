@@ -11,13 +11,13 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#000000;--s1:#0e0c08;--s2:#18140f;--br:#221d16;--divider:#14110d;
+  --bg:#000000;--s1:#0d0d0d;--s2:#141414;--br:#1e1e1e;--divider:#111111;
   --acc:#c47a88;--acc4:rgba(196,122,136,.04);--acc8:rgba(196,122,136,.08);--acc12:rgba(196,122,136,.12);--acc20:rgba(196,122,136,.22);--acc25:rgba(196,122,136,.25);--acc40:rgba(196,122,136,.4);--acc50:rgba(196,122,136,.5);
   --tx:#f3ece0;--tm:#5a5550;--ts:#8a847b;
   --push:#d4956a;--pull:#7ab0d4;--legs:#9abb6a;
   --err:#ff6b6b;--err8:rgba(255,107,107,.08);--err20:rgba(255,107,107,.2);
   --r:18px;--rs:10px;
-  --emboss:inset 0 1px 0 rgba(255,236,200,.08),inset 0 -1px 0 rgba(0,0,0,.6),0 14px 28px rgba(0,0,0,.6),0 4px 10px rgba(0,0,0,.4);
+  --emboss:inset 0 1px 0 rgba(255,255,255,.06),inset 0 -1px 0 rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.4),0 2px 6px rgba(0,0,0,.3);
 }
 html,body{background:#000;color:var(--tx);font-family:'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 #root{display:flex;justify-content:center;min-height:100vh;background:#000}
@@ -27,11 +27,11 @@ html,body{background:#000;color:var(--tx);font-family:'Geist',system-ui,sans-ser
 .hdr-ttl{font-size:22px;font-weight:700;letter-spacing:-0.5px;color:var(--tx)}
 .hdr-btn{background:none;border:none;color:var(--ts);cursor:pointer;padding:8px;display:flex;align-items:center;gap:5px;border-radius:10px;font-family:'Geist',system-ui,sans-serif;font-size:14px;font-weight:500}
 .hdr-btn:hover{background:var(--s2)}
-.bnav{position:fixed;bottom:max(20px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:calc(100% - 40px);max-width:380px;background:linear-gradient(180deg,#18140f 0%,#0e0c08 100%);border:1px solid #221d16;border-radius:28px;box-shadow:inset 0 1px 0 rgba(255,236,200,.08),inset 0 -1px 0 rgba(0,0,0,.6),0 14px 28px rgba(0,0,0,.6),0 4px 10px rgba(0,0,0,.4);display:flex;z-index:100;padding:10px 14px}
+.bnav{position:fixed;bottom:max(20px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:calc(100% - 40px);max-width:380px;background:linear-gradient(180deg,#141414 0%,#0d0d0d 100%);border:1px solid #1e1e1e;border-radius:28px;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),inset 0 -1px 0 rgba(0,0,0,.6),0 14px 28px rgba(0,0,0,.6),0 4px 10px rgba(0,0,0,.4);display:flex;z-index:100;padding:10px 14px}
 .ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;cursor:pointer;background:none;border:none;color:var(--ts);font-family:'Geist',system-ui,sans-serif;font-size:9px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;transition:color .15s}
 .ni.on{color:var(--acc)}
 .ni svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.card{background:linear-gradient(180deg,#18140f 0%,#0e0c08 100%);border:1px solid #221d16;border-radius:var(--r);padding:16px;margin:0 16px 12px;box-shadow:var(--emboss)}
+.card{background:linear-gradient(180deg,#141414 0%,#0d0d0d 100%);border:1px solid #1e1e1e;border-radius:var(--r);padding:16px;margin:0 16px 12px;box-shadow:var(--emboss)}
 .card-ttl{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);margin-bottom:12px}
 .btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 20px;border-radius:var(--r);font-family:'Geist',system-ui,sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:none;transition:transform .1s;width:100%}
 .btn:active{transform:scale(.97)}
@@ -74,11 +74,11 @@ html,body{background:#000;color:var(--tx);font-family:'Geist',system-ui,sans-ser
 .empty-ttl{font-size:15px;font-weight:500;color:var(--ts)}
 .empty-sub{font-size:13px;color:var(--tm)}
 .mo{position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:flex-end}
-.mo-box{background:linear-gradient(180deg,#18140f 0%,#0e0c08 100%);border:1px solid var(--br);border-top-left-radius:var(--r);border-top-right-radius:var(--r);padding:24px 24px calc(24px + env(safe-area-inset-bottom));width:100%;display:flex;flex-direction:column;gap:12px;max-height:92vh;overflow-y:auto;overscroll-behavior:contain;box-shadow:0 -8px 32px rgba(0,0,0,.6)}
+.mo-box{background:linear-gradient(180deg,#141414 0%,#0d0d0d 100%);border:1px solid var(--br);border-top-left-radius:var(--r);border-top-right-radius:var(--r);padding:24px 24px calc(24px + env(safe-area-inset-bottom));width:100%;display:flex;flex-direction:column;gap:12px;max-height:92vh;overflow-y:auto;overscroll-behavior:contain;box-shadow:0 -8px 32px rgba(0,0,0,.6)}
 .mo-ttl{font-size:18px;font-weight:700;letter-spacing:-0.5px;color:var(--tx)}
 .divider{height:1px;background:var(--divider)}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 16px 12px}
-.stat-card{background:linear-gradient(180deg,#18140f 0%,#0e0c08 100%);border:1px solid var(--br);border-radius:var(--r);padding:14px;box-shadow:var(--emboss)}
+.stat-card{background:linear-gradient(180deg,#141414 0%,#0d0d0d 100%);border:1px solid var(--br);border-radius:var(--r);padding:14px;box-shadow:var(--emboss)}
 .stat-v{font-size:28px;font-weight:200;letter-spacing:-1px;color:var(--acc);font-variant-numeric:tabular-nums}
 .stat-l{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--tm);margin-top:3px}
 .stat-hint{font-size:10px;color:var(--tm);margin-top:1px;opacity:.7}
@@ -2618,7 +2618,7 @@ function Dashboard({ user, onNav, layout, onSetLayout }) {
     React.createElement('div', { style:{
       position:'absolute', inset:0, borderRadius:'50%',
       background:'conic-gradient(from 230deg, #1a1611, #0a0907 25%, #1f1a13 50%, #0a0907 75%, #1a1611)',
-      boxShadow:'inset 0 2px 1px rgba(255,236,200,.10), inset 0 -2px 2px rgba(0,0,0,.8), 0 18px 32px rgba(0,0,0,.7), 0 4px 10px rgba(0,0,0,.5)'
+      boxShadow:'inset 0 2px 1px rgba(255,255,255,.08), inset 0 -2px 2px rgba(0,0,0,.8), 0 18px 32px rgba(0,0,0,.7), 0 4px 10px rgba(0,0,0,.5)'
     } }),
     // Tick SVG
     React.createElement('svg', {
@@ -2657,7 +2657,7 @@ function Dashboard({ user, onNav, layout, onSetLayout }) {
     React.createElement('div', { style:{
       position:'absolute', inset:22, borderRadius:'50%',
       background:'radial-gradient(circle at 50% 30%, #0d0b08 0%, #050403 100%)',
-      boxShadow:'inset 0 4px 8px rgba(0,0,0,.9), inset 0 -1px 0 rgba(255,236,200,.06), inset 0 1px 1px rgba(0,0,0,.8)',
+      boxShadow:'inset 0 4px 8px rgba(0,0,0,.9), inset 0 -1px 0 rgba(255,255,255,.05), inset 0 1px 1px rgba(0,0,0,.8)',
       display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
       textAlign:'center', overflow:'hidden'
     } },
@@ -2693,7 +2693,7 @@ function Dashboard({ user, onNav, layout, onSetLayout }) {
         position:'absolute', top:'50%', left:-4, transform:'translateY(-50%)',
         width:30, height:30, borderRadius:'50%',
         background:'linear-gradient(180deg,#1c1812,#0a0907)',
-        boxShadow:'inset 0 1px 0 rgba(255,236,200,.1), inset 0 -1px 0 rgba(0,0,0,.7), 0 4px 8px rgba(0,0,0,.6)',
+        boxShadow:'inset 0 1px 0 rgba(255,255,255,.07), inset 0 -1px 0 rgba(0,0,0,.7), 0 4px 8px rgba(0,0,0,.6)',
         border:'none', cursor:'pointer',
         display:'flex', alignItems:'center', justifyContent:'center'
       }
@@ -2709,7 +2709,7 @@ function Dashboard({ user, onNav, layout, onSetLayout }) {
         position:'absolute', top:'50%', right:-4, transform:'translateY(-50%)',
         width:30, height:30, borderRadius:'50%',
         background:'linear-gradient(180deg,#1c1812,#0a0907)',
-        boxShadow:'inset 0 1px 0 rgba(255,236,200,.1), inset 0 -1px 0 rgba(0,0,0,.7), 0 4px 8px rgba(0,0,0,.6)',
+        boxShadow:'inset 0 1px 0 rgba(255,255,255,.07), inset 0 -1px 0 rgba(0,0,0,.7), 0 4px 8px rgba(0,0,0,.6)',
         border:'none', cursor:'pointer',
         display:'flex', alignItems:'center', justifyContent:'center'
       }
@@ -2776,9 +2776,9 @@ function Dashboard({ user, onNav, layout, onSetLayout }) {
     // Effort hero card
     React.createElement('div', { style:{ padding:'20px 20px 0', position:'relative' } },
       React.createElement('div', { style:{
-        background:'linear-gradient(180deg,#18140f 0%,#0e0c08 100%)',
-        border:'1px solid #221d16', borderRadius:22,
-        boxShadow:'inset 0 1px 0 rgba(255,236,200,.08), inset 0 -1px 0 rgba(0,0,0,.6), 0 14px 28px rgba(0,0,0,.6), 0 4px 10px rgba(0,0,0,.4)',
+        background:'linear-gradient(180deg,#141414 0%,#0d0d0d 100%)',
+        border:'1px solid #1e1e1e', borderRadius:22,
+        boxShadow:'inset 0 1px 0 rgba(255,255,255,.06), inset 0 -1px 0 rgba(0,0,0,.6), 0 14px 28px rgba(0,0,0,.6), 0 4px 10px rgba(0,0,0,.4)',
         padding:'18px 20px', position:'relative', overflow:'hidden'
       } },
         // Warm glow top-left
@@ -2807,7 +2807,7 @@ function Dashboard({ user, onNav, layout, onSetLayout }) {
         React.createElement('div', { style:{
           marginTop:12, height:7, borderRadius:4,
           background:'linear-gradient(180deg,#060503,#0f0c08)',
-          boxShadow:'inset 0 2px 4px rgba(0,0,0,.8), inset 0 -1px 0 rgba(255,236,200,.04)',
+          boxShadow:'inset 0 2px 4px rgba(0,0,0,.8), inset 0 -1px 0 rgba(255,255,255,.03)',
           position:'relative', overflow:'hidden'
         } },
           React.createElement('div', { style:{
@@ -2900,7 +2900,7 @@ function Dashboard({ user, onNav, layout, onSetLayout }) {
               const score = doneSets.reduce((sum,s) => sum+(parseFloat(s.weight)||0)*(s.reps||0)*(s.tut_duration||1), 0);
               const dotColors = ['var(--push)','var(--pull)','var(--legs)'];
               const dotC = dotColors[i%3];
-              return React.createElement('div', { key:w.id, style:{ borderBottom: i < recent.length-1 ? '1px solid #14110d' : 'none' } },
+              return React.createElement('div', { key:w.id, style:{ borderBottom: i < recent.length-1 ? '1px solid #111111' : 'none' } },
                 React.createElement('div', {
                   style:{ display:'flex', alignItems:'center', gap:12, padding:'10px 0', cursor:'pointer' },
                   onClick:()=>toggleDetail(w.id)
@@ -2915,7 +2915,7 @@ function Dashboard({ user, onNav, layout, onSetLayout }) {
                   )
                 ),
                 expanded && det && React.createElement('div', { style:{ paddingBottom:8 } },
-                  React.createElement('div', { style:{ display:'flex', gap:20, padding:'8px 0', borderTop:'1px solid #14110d', borderBottom:'1px solid #14110d', marginBottom:8 } },
+                  React.createElement('div', { style:{ display:'flex', gap:20, padding:'8px 0', borderTop:'1px solid #111111', borderBottom:'1px solid #111111', marginBottom:8 } },
                     [['Sets',doneSets.length],['Exercises',det.length],['Score',fmtScore(score)]].map(pair =>
                       React.createElement('div', { key:pair[0], style:{ textAlign:'center' } },
                         React.createElement('div', { style:{ fontSize:14, fontWeight:600, color:'var(--acc)' } }, pair[1]),
